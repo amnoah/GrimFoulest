@@ -26,9 +26,9 @@ public class BadPacketsS extends PacketCheck {
                 return;
             }
 
-            boolean calcOnGround = (player.onGround || player.lastOnGround) && (posY % 1.0 == 0.1665803780930375D
-                    || posY % 1.0 == 0.5D || posY % 1.0 == 0.015625D || posY % 1.0 == 0.0625D || posY % 1.0 == 0.0D
-                    || posY % 1.0 == 0.09375D || posY % 1.0 == 0.1875D || posY % 1.0 == 0.03);
+            boolean calcOnGround = (player.onGround || player.lastOnGround) && (posY % 1.0 == 0.1665803780930375
+                    || posY % 1.0 == 0.5 || posY % 1.0 == 0.015625 || posY % 1.0 == 0.0625 || posY % 1.0 == 0.0
+                    || posY % 1.0 == 0.09375 || posY % 1.0 == 0.1875);
 
             if (!hasPos && !hasLook && isOnGround != calcOnGround) {
                 flagAndAlert("Flying On Ground (Y: " + posY % 1.0D + ")");
