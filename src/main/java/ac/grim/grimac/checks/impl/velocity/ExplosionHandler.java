@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 @CheckData(name = "AntiExplosion", configName = "Explosion", setback = 10)
 public class ExplosionHandler extends PacketCheck {
-    ConcurrentLinkedQueue<VelocityData> firstBreadMap = new ConcurrentLinkedQueue<>();
+    final ConcurrentLinkedQueue<VelocityData> firstBreadMap = new ConcurrentLinkedQueue<>();
 
     VelocityData lastExplosionsKnownTaken = null;
     VelocityData firstBreadAddedExplosion = null;
@@ -34,7 +34,7 @@ public class ExplosionHandler extends PacketCheck {
     }
 
     @Override
-    public void onPacketSend(final PacketSendEvent event) {
+    public void onPacketSend(PacketSendEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.EXPLOSION) {
             WrapperPlayServerExplosion explosion = new WrapperPlayServerExplosion(event);
 
@@ -52,7 +52,9 @@ public class ExplosionHandler extends PacketCheck {
 
             if (velocity.x != 0 || velocity.y != 0 || velocity.z != 0) {
                 // No need to spam transactions
-                if (explosion.getRecords().isEmpty()) player.sendTransaction();
+                if (explosion.getRecords().isEmpty()) {
+                    player.sendTransaction();
+                }
                 addPlayerExplosion(player.lastTransactionSent.get(), velocity);
                 event.getPostTasks().add(player::sendTransaction);
             }
@@ -164,8 +166,9 @@ public class ExplosionHandler extends PacketCheck {
 
     public VelocityData getPossibleExplosions(int lastTransaction) {
         handleTransactionPacket(lastTransaction);
-        if (lastExplosionsKnownTaken == null)
+        if (lastExplosionsKnownTaken == null) {
             return null;
+        }
 
         VelocityData returnLastExplosion = lastExplosionsKnownTaken;
         lastExplosionsKnownTaken = null;
@@ -178,19 +181,22 @@ public class ExplosionHandler extends PacketCheck {
         while (data != null) {
             if (data.transaction == transactionID) { // First bread explosion
                 firstBreadMap.poll();
-                if (lastExplosionsKnownTaken != null)
+                if (lastExplosionsKnownTaken != null) {
                     firstBreadAddedExplosion = new VelocityData(-1, data.transaction, data.isSetback, lastExplosionsKnownTaken.vector.clone().add(data.vector));
-                else
+                } else {
                     firstBreadAddedExplosion = new VelocityData(-1, data.transaction, data.isSetback, data.vector);
+                }
                 break; // All knockback after this will have not been applied
             } else if (data.transaction < transactionID) {
-                if (lastExplosionsKnownTaken != null)
+                if (lastExplosionsKnownTaken != null) {
                     lastExplosionsKnownTaken.vector.clone().add(data.vector);
-                else {
+                } else {
                     if (firstBreadAddedExplosion != null) // Bring over the previous offset, don't require explosions twice
+                    {
                         lastExplosionsKnownTaken = new VelocityData(-1, data.transaction, data.vector, data.isSetback, firstBreadAddedExplosion.offset);
-                    else
+                    } else {
                         lastExplosionsKnownTaken = new VelocityData(-1, data.transaction, data.isSetback, data.vector);
+                    }
                 }
 
                 firstBreadAddedExplosion = null;
@@ -214,6 +220,8 @@ public class ExplosionHandler extends PacketCheck {
         offsetToFlag = getConfig().getDoubleElse("Explosion.threshold", 0.00001);
         setbackVL = getConfig().getDoubleElse("Explosion.setbackvl", 10);
 
-        if (setbackVL == -1) setbackVL = Double.MAX_VALUE;
+        if (setbackVL == -1) {
+            setbackVL = Double.MAX_VALUE;
+        }
     }
 }

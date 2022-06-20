@@ -32,29 +32,28 @@ import java.util.List;
 // You may not copy this check unless your anticheat is licensed under GPL
 public class PacketEntity {
     public Vector3d desyncClientPos;
-    public EntityType type;
+    public final EntityType type;
 
     public PacketEntity riding;
-    public List<PacketEntity> passengers = new ArrayList<>(0);
+    public final List<PacketEntity> passengers = new ArrayList<>(0);
     public boolean isDead = false;
     public boolean isBaby = false;
     public boolean hasGravity = true;
+    public HashMap<PotionType, Integer> potionsMap = null;
     private ReachInterpolationData oldPacketLocation;
     private ReachInterpolationData newPacketLocation;
-
-    public HashMap<PotionType, Integer> potionsMap = null;
 
     public PacketEntity(EntityType type) {
         this.type = type;
     }
 
     public PacketEntity(GrimPlayer player, EntityType type, double x, double y, double z) {
-        this.desyncClientPos = new Vector3d(x, y, z);
+        desyncClientPos = new Vector3d(x, y, z);
         if (player.getClientVersion().isOlderThan(ClientVersion.V_1_9)) { // Thanks ViaVersion
             desyncClientPos = new Vector3d(((int) (desyncClientPos.getX() * 32)) / 32d, ((int) (desyncClientPos.getY() * 32)) / 32d, ((int) (desyncClientPos.getZ() * 32)) / 32d);
         }
         this.type = type;
-        this.newPacketLocation = new ReachInterpolationData(player, GetBoundingBox.getPacketEntityBoundingBox(player, x, y, z, this),
+        newPacketLocation = new ReachInterpolationData(player, GetBoundingBox.getPacketEntityBoundingBox(player, x, y, z, this),
                 desyncClientPos.getX(), desyncClientPos.getY(), desyncClientPos.getZ(), !player.compensatedEntities.getSelf().inVehicle() && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9), this);
     }
 
@@ -101,13 +100,13 @@ public class PacketEntity {
             }
         }
 
-        this.oldPacketLocation = newPacketLocation;
-        this.newPacketLocation = new ReachInterpolationData(player, oldPacketLocation.getPossibleLocationCombined(), desyncClientPos.getX(), desyncClientPos.getY(), desyncClientPos.getZ(), !player.compensatedEntities.getSelf().inVehicle() && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9), this);
+        oldPacketLocation = newPacketLocation;
+        newPacketLocation = new ReachInterpolationData(player, oldPacketLocation.getPossibleLocationCombined(), desyncClientPos.getX(), desyncClientPos.getY(), desyncClientPos.getZ(), !player.compensatedEntities.getSelf().inVehicle() && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9), this);
     }
 
     // Remove the possibility of the old packet location
     public void onSecondTransaction() {
-        this.oldPacketLocation = null;
+        oldPacketLocation = null;
     }
 
     // If the old and new packet location are split, we need to combine bounding boxes
@@ -126,7 +125,9 @@ public class PacketEntity {
     }
 
     public void mount(PacketEntity vehicle) {
-        if (riding != null) eject();
+        if (riding != null) {
+            eject();
+        }
         vehicle.passengers.add(this);
         riding = vehicle;
     }
@@ -135,16 +136,16 @@ public class PacketEntity {
         if (riding != null) {
             riding.passengers.remove(this);
         }
-        this.riding = null;
+        riding = null;
     }
 
     // This is for handling riding and entities attached to one another.
     public void setPositionRaw(SimpleCollisionBox box) {
         // I'm disappointed in you mojang.  Please don't set the packet position as it desyncs it...
         // But let's follow this flawed client-sided logic!
-        this.desyncClientPos = new Vector3d((box.maxX - box.minX) / 2 + box.minX, box.minY, (box.maxZ - box.minZ) / 2 + box.minZ);
+        desyncClientPos = new Vector3d((box.maxX - box.minX) / 2 + box.minX, box.minY, (box.maxZ - box.minZ) / 2 + box.minZ);
         // This disables interpolation
-        this.newPacketLocation = new ReachInterpolationData(box);
+        newPacketLocation = new ReachInterpolationData(box);
     }
 
     public SimpleCollisionBox getPossibleCollisionBoxes() {
@@ -167,7 +168,9 @@ public class PacketEntity {
     }
 
     public void removePotionEffect(PotionType effect) {
-        if (potionsMap == null) return;
+        if (potionsMap == null) {
+            return;
+        }
         potionsMap.remove(effect);
     }
 }

@@ -24,8 +24,4 @@ public class VehicleData {
     public float nextHorseJump = 0;
     public float horseJump = 0;
     public boolean horseJumping = false;
-
-    public VehicleData() {
-
-    }
 }

@@ -29,9 +29,13 @@ public class NoFallA extends PacketCheck {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_FLYING || event.getPacketType() == PacketType.Play.Client.PLAYER_ROTATION) {
             // The player hasn't spawned yet
-            if (player.getSetbackTeleportUtil().insideUnloadedChunk()) return;
+            if (player.getSetbackTeleportUtil().insideUnloadedChunk()) {
+                return;
+            }
             // The player has already been flagged, and
-            if (player.getSetbackTeleportUtil().blockOffsets) return;
+            if (player.getSetbackTeleportUtil().blockOffsets) {
+                return;
+            }
 
             WrapperPlayClientPlayerFlying wrapper = new WrapperPlayClientPlayerFlying(event);
             boolean hasPosition = false;
@@ -44,7 +48,9 @@ public class NoFallA extends PacketCheck {
                     if (!GhostBlockDetector.isGhostBlock(player)) {
                         flagWithSetback();
                     }
-                    if (!player.disableGrim) wrapper.setOnGround(false);
+                    if (!player.disableGrim) {
+                        wrapper.setOnGround(false);
+                    }
                 }
             }
         }
@@ -60,10 +66,14 @@ public class NoFallA extends PacketCheck {
             // Also flip teleports because I don't trust vanilla's handling of teleports and ground
             if (flipPlayerGroundStatus) {
                 flipPlayerGroundStatus = false;
-                if (!player.disableGrim) wrapper.setOnGround(!wrapper.isOnGround());
+                if (!player.disableGrim) {
+                    wrapper.setOnGround(!wrapper.isOnGround());
+                }
             }
             if (player.packetStateData.lastPacketWasTeleport) {
-                if (!player.disableGrim) wrapper.setOnGround(false);
+                if (!player.disableGrim) {
+                    wrapper.setOnGround(false);
+                }
             }
         }
     }

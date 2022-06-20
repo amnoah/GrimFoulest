@@ -54,14 +54,16 @@ public class TimerCheck extends PacketCheck {
     }
 
     @Override
-    public void onPacketReceive(final PacketReceiveEvent event) {
+    public void onPacketReceive(PacketReceiveEvent event) {
         if (hasGottenMovementAfterTransaction && checkForTransaction(event.getPacketType())) {
             knownPlayerClockTime = lastMovementPlayerClock;
             lastMovementPlayerClock = player.getPlayerClockAtLeast();
             hasGottenMovementAfterTransaction = false;
         }
 
-        if (!shouldCountPacketForTimer(event.getPacketType())) return;
+        if (!shouldCountPacketForTimer(event.getPacketType())) {
+            return;
+        }
 
         hasGottenMovementAfterTransaction = true;
         timerBalanceRealTime += 50e6;
@@ -69,7 +71,9 @@ public class TimerCheck extends PacketCheck {
         if (timerBalanceRealTime > System.nanoTime()) {
             if (flag()) {
                 // Cancel the packet
-                if (!player.disableGrim) event.setCancelled(true);
+                if (!player.disableGrim) {
+                    event.setCancelled(true);
+                }
                 alert("");
             }
 

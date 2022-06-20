@@ -1,7 +1,8 @@
 package ac.grim.grimac.manager;
 
 import ac.grim.grimac.checks.Check;
-import ac.grim.grimac.checks.impl.aim.*;
+import ac.grim.grimac.checks.impl.aim.AimDuplicateLook;
+import ac.grim.grimac.checks.impl.aim.AimModulo360;
 import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
 import ac.grim.grimac.checks.impl.aim.processor.Cinematic;
 import ac.grim.grimac.checks.impl.badpackets.*;
@@ -14,7 +15,6 @@ import ac.grim.grimac.checks.impl.groundspoof.NoFallA;
 import ac.grim.grimac.checks.impl.misc.ClientBrand;
 import ac.grim.grimac.checks.impl.misc.FastBreak;
 import ac.grim.grimac.checks.impl.movement.*;
-import ac.grim.grimac.checks.impl.badpackets.BadPacketsO;
 import ac.grim.grimac.checks.impl.post.PostCheck;
 import ac.grim.grimac.checks.impl.prediction.DebugHandler;
 import ac.grim.grimac.checks.impl.prediction.NoFallB;
@@ -41,16 +41,14 @@ import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableClassToInstanceMap;
 
 public class CheckManager {
-    ClassToInstanceMap<PacketCheck> packetChecks;
-    ClassToInstanceMap<PositionCheck> positionCheck;
-    ClassToInstanceMap<RotationCheck> rotationCheck;
-    ClassToInstanceMap<VehicleCheck> vehicleCheck;
-    ClassToInstanceMap<PacketCheck> timerCheck;
-
-    ClassToInstanceMap<BlockPlaceCheck> blockPlaceCheck;
-    ClassToInstanceMap<PostPredictionCheck> postPredictionCheck;
-
-    public ClassToInstanceMap<Check<?>> allChecks;
+    public final ClassToInstanceMap<Check<?>> allChecks;
+    final ClassToInstanceMap<PacketCheck> packetChecks;
+    final ClassToInstanceMap<PositionCheck> positionCheck;
+    final ClassToInstanceMap<RotationCheck> rotationCheck;
+    final ClassToInstanceMap<VehicleCheck> vehicleCheck;
+    final ClassToInstanceMap<PacketCheck> timerCheck;
+    final ClassToInstanceMap<BlockPlaceCheck> blockPlaceCheck;
+    final ClassToInstanceMap<PostPredictionCheck> postPredictionCheck;
 
     public CheckManager(GrimPlayer player) {
         // Include post checks in the packet check too
@@ -83,6 +81,10 @@ public class CheckManager {
                 .put(BadPacketsL.class, new BadPacketsL(player))
                 .put(BadPacketsM.class, new BadPacketsM(player))
                 .put(BadPacketsN.class, new BadPacketsN(player))
+                .put(BadPacketsP.class, new BadPacketsP(player))
+                .put(BadPacketsQ.class, new BadPacketsQ(player))
+                .put(BadPacketsR.class, new BadPacketsR(player))
+                .put(BadPacketsS.class, new BadPacketsS(player))
                 .put(PostCheck.class, new PostCheck(player))
                 .put(FastBreak.class, new FastBreak(player))
                 .put(SetbackBlocker.class, new SetbackBlocker(player)) // Must be last class otherwise we can't check while blocking packets
@@ -155,42 +157,42 @@ public class CheckManager {
         return (T) vehicleCheck.get(check);
     }
 
-    public void onPrePredictionReceivePacket(final PacketReceiveEvent packet) {
+    public void onPrePredictionReceivePacket(PacketReceiveEvent packet) {
         timerCheck.values().forEach(check -> check.onPacketReceive(packet));
     }
 
-    public void onPacketReceive(final PacketReceiveEvent packet) {
+    public void onPacketReceive(PacketReceiveEvent packet) {
         packetChecks.values().forEach(packetCheck -> packetCheck.onPacketReceive(packet));
     }
 
-    public void onPacketSend(final PacketSendEvent packet) {
+    public void onPacketSend(PacketSendEvent packet) {
         timerCheck.values().forEach(check -> check.onPacketSend(packet));
         packetChecks.values().forEach(packetCheck -> packetCheck.onPacketSend(packet));
     }
 
-    public void onPositionUpdate(final PositionUpdate position) {
+    public void onPositionUpdate(PositionUpdate position) {
         positionCheck.values().forEach(positionCheck -> positionCheck.onPositionUpdate(position));
         // Allow the reach check to listen to filtered position packets
         packetChecks.values().forEach(packetCheck -> packetCheck.onPositionUpdate(position));
     }
 
-    public void onRotationUpdate(final RotationUpdate rotation) {
+    public void onRotationUpdate(RotationUpdate rotation) {
         rotationCheck.values().forEach(rotationCheck -> rotationCheck.process(rotation));
     }
 
-    public void onVehiclePositionUpdate(final VehiclePositionUpdate update) {
+    public void onVehiclePositionUpdate(VehiclePositionUpdate update) {
         vehicleCheck.values().forEach(vehicleCheck -> vehicleCheck.process(update));
     }
 
-    public void onPredictionFinish(final PredictionComplete complete) {
+    public void onPredictionFinish(PredictionComplete complete) {
         postPredictionCheck.values().forEach(predictionCheck -> predictionCheck.onPredictionComplete(complete));
     }
 
-    public void onBlockPlace(final BlockPlace place) {
+    public void onBlockPlace(BlockPlace place) {
         blockPlaceCheck.values().forEach(check -> check.onBlockPlace(place));
     }
 
-    public void onPostFlyingBlockPlace(final BlockPlace place) {
+    public void onPostFlyingBlockPlace(BlockPlace place) {
         blockPlaceCheck.values().forEach(check -> check.onPostFlyingBlockPlace(place));
     }
 

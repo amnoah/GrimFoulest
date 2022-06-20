@@ -14,15 +14,18 @@ import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.protocol.world.BlockFace;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public class UncertaintyHandler {
     private final GrimPlayer player;
     // Handles uncertainty when a piston could have pushed a player in a direction
     // Only the required amount of uncertainty is given
-    public EvictingList<Double> pistonX = new EvictingList<>(5);
-    public EvictingList<Double> pistonY = new EvictingList<>(5);
-    public EvictingList<Double> pistonZ = new EvictingList<>(5);
+    public final EvictingList<Double> pistonX = new EvictingList<>(5);
+    public final EvictingList<Double> pistonY = new EvictingList<>(5);
+    public final EvictingList<Double> pistonZ = new EvictingList<>(5);
     // Did the player step onto a block?
     // This is needed because we don't know if a player jumped onto the step block or not
     // Jumping would set onGround to false while not would set it to true
@@ -63,46 +66,46 @@ public class UncertaintyHandler {
     // Handles 0.03 vertical false where actual velocity is greater than predicted because of previous lenience
     public boolean wasZeroPointThreeVertically = false;
     // How many entities are within 0.5 blocks of the player's bounding box?
-    public EvictingList<Integer> collidingEntities = new EvictingList<>(3);
+    public final EvictingList<Integer> collidingEntities = new EvictingList<>(3);
     // Fishing rod pulling is another method of adding to a player's velocity
-    public List<Integer> fishingRodPulls = new ArrayList<>();
+    public final List<Integer> fishingRodPulls = new ArrayList<>();
     public SimpleCollisionBox fireworksBox = null;
     public SimpleCollisionBox fishingRodPullBox = null;
 
-    public LastInstance lastFlyingTicks;
-    public LastInstance lastFlyingStatusChange;
-    public LastInstance lastUnderwaterFlyingHack;
-    public LastInstance lastStuckSpeedMultiplier;
-    public LastInstance lastHardCollidingLerpingEntity;
-    public LastInstance lastThirtyMillionHardBorder;
-    public LastInstance lastTeleportTicks;
-    public LastInstance lastPointThree;
+    public final LastInstance lastFlyingTicks;
+    public final LastInstance lastFlyingStatusChange;
+    public final LastInstance lastUnderwaterFlyingHack;
+    public final LastInstance lastStuckSpeedMultiplier;
+    public final LastInstance lastHardCollidingLerpingEntity;
+    public final LastInstance lastThirtyMillionHardBorder;
+    public final LastInstance lastTeleportTicks;
+    public final LastInstance lastPointThree;
 
-    public LastInstance stuckOnEdge;
-    public LastInstance lastStuckNorth;
-    public LastInstance lastStuckSouth;
-    public LastInstance lastStuckWest;
-    public LastInstance lastStuckEast;
-    public LastInstance lastVehicleSwitch;
+    public final LastInstance stuckOnEdge;
+    public final LastInstance lastStuckNorth;
+    public final LastInstance lastStuckSouth;
+    public final LastInstance lastStuckWest;
+    public final LastInstance lastStuckEast;
+    public final LastInstance lastVehicleSwitch;
     public double lastHorizontalOffset = 0;
     public double lastVerticalOffset = 0;
 
     public UncertaintyHandler(GrimPlayer player) {
         this.player = player;
-        this.lastFlyingTicks = new LastInstance(player);
-        this.lastFlyingStatusChange = new LastInstance(player);
-        this.lastUnderwaterFlyingHack = new LastInstance(player);
-        this.lastStuckSpeedMultiplier = new LastInstance(player);
-        this.lastHardCollidingLerpingEntity = new LastInstance(player);
-        this.lastThirtyMillionHardBorder = new LastInstance(player);
-        this.lastTeleportTicks = new LastInstance(player);
-        this.lastPointThree = new LastInstance(player);
-        this.stuckOnEdge = new LastInstance(player);
-        this.lastStuckNorth = new LastInstance(player);
-        this.lastStuckSouth = new LastInstance(player);
-        this.lastStuckWest = new LastInstance(player);
-        this.lastStuckEast = new LastInstance(player);
-        this.lastVehicleSwitch = new LastInstance(player);
+        lastFlyingTicks = new LastInstance(player);
+        lastFlyingStatusChange = new LastInstance(player);
+        lastUnderwaterFlyingHack = new LastInstance(player);
+        lastStuckSpeedMultiplier = new LastInstance(player);
+        lastHardCollidingLerpingEntity = new LastInstance(player);
+        lastThirtyMillionHardBorder = new LastInstance(player);
+        lastTeleportTicks = new LastInstance(player);
+        lastPointThree = new LastInstance(player);
+        stuckOnEdge = new LastInstance(player);
+        lastStuckNorth = new LastInstance(player);
+        lastStuckSouth = new LastInstance(player);
+        lastStuckWest = new LastInstance(player);
+        lastStuckEast = new LastInstance(player);
+        lastVehicleSwitch = new LastInstance(player);
         tick();
     }
 
@@ -125,7 +128,9 @@ public class UncertaintyHandler {
 
         for (int owner : fishingRodPulls) {
             PacketEntity entity = player.compensatedEntities.getEntity(owner);
-            if (entity == null) continue;
+            if (entity == null) {
+                continue;
+            }
 
             SimpleCollisionBox entityBox = entity.getPossibleCollisionBoxes();
             float width = BoundingBoxSize.getWidth(player, entity);
@@ -204,31 +209,37 @@ public class UncertaintyHandler {
         }
 
         // (offset * 2) * 0.91 * 0.8 = max + 0.03 offset
-        if (either003 && (influencedByBouncyBlock() || isSteppingOnHoney))
+        if (either003 && (influencedByBouncyBlock() || isSteppingOnHoney)) {
             pointThree = 0.91 * 0.8 * (threshold * 2) + threshold;
+        }
 
         // (offset * 2) * 0.91 * 0.989 = max + 0.03 offset
-        if (either003 && isSteppingOnIce)
+        if (either003 && isSteppingOnIce) {
             pointThree = 0.91 * 0.989 * (threshold * 2) + threshold;
+        }
 
         // Reduce second tick uncertainty by minimum friction amount
-        if (!newVectorPointThree && either003)
+        if (!newVectorPointThree && either003) {
             pointThree *= 0.91 * 0.989;
+        }
 
         // 0.06 * 0.91 = max + 0.03 offset
-        if (either003 && (player.lastOnGround || player.isFlying))
+        if (either003 && (player.lastOnGround || player.isFlying)) {
             pointThree = 0.91 * (threshold * 2) + threshold;
+        }
 
         // Friction while gliding is 0.99 horizontally
         if (either003 && (player.isGliding || player.wasGliding)) {
             pointThree = (0.99 * (threshold * 2)) + threshold;
         }
 
-        if (player.uncertaintyHandler.claimingLeftStuckSpeed)
+        if (player.uncertaintyHandler.claimingLeftStuckSpeed) {
             pointThree = 0.15;
+        }
 
-        if (lastThirtyMillionHardBorder.hasOccurredSince(3))
+        if (lastThirtyMillionHardBorder.hasOccurredSince(3)) {
             pointThree = 0.15;
+        }
 
         return pointThree;
     }
@@ -238,37 +249,47 @@ public class UncertaintyHandler {
     }
 
     public double getVerticalOffset(VectorData data) {
-        if (lastThirtyMillionHardBorder.hasOccurredSince(3))
+        if (lastThirtyMillionHardBorder.hasOccurredSince(3)) {
             return 0.15;
+        }
 
-        if (player.uncertaintyHandler.claimingLeftStuckSpeed)
+        if (player.uncertaintyHandler.claimingLeftStuckSpeed) {
             return 0.06;
+        }
 
         // We don't know if the player was pressing jump or not
-        if (player.uncertaintyHandler.wasSteppingOnBouncyBlock && (player.wasTouchingWater || player.wasTouchingLava))
+        if (player.uncertaintyHandler.wasSteppingOnBouncyBlock && (player.wasTouchingWater || player.wasTouchingLava)) {
             return 0.06;
+        }
 
         // Not worth my time to fix this because checking flying generally sucks - if player was flying in last 2 ticks
-        if ((lastFlyingTicks.hasOccurredSince(5)) && Math.abs(data.vector.getY()) < (4.5 * player.flySpeed - 0.25))
+        if ((lastFlyingTicks.hasOccurredSince(5)) && Math.abs(data.vector.getY()) < (4.5 * player.flySpeed - 0.25)) {
             return 0.06;
+        }
 
         double pointThree = player.getMovementThreshold();
         // This swim hop could be 0.03-influenced movement
-        if (data.isTrident())
+        if (data.isTrident()) {
             return pointThree * 2;
+        }
 
         // Velocity resets velocity, so we only have to give 0.03 uncertainty rather than 0.06
-        if (player.couldSkipTick && (data.isKnockback() || player.isClimbing))
+        if (player.couldSkipTick && (data.isKnockback() || player.isClimbing)) {
             return pointThree;
+        }
 
         if (player.pointThreeEstimator.controlsVerticalMovement()) {
             // Yeah, the second 0.06 isn't mathematically correct but 0.03 messes everything up...
             // Water pushing, elytras, EVERYTHING vertical movement gets messed up.
-            if (data.isZeroPointZeroThree() || lastMovementWasZeroPointZeroThree) return pointThree * 2;
+            if (data.isZeroPointZeroThree() || lastMovementWasZeroPointZeroThree) {
+                return pointThree * 2;
+            }
         }
 
         // Handle the player landing on this tick or the next tick
-        if (wasZeroPointThreeVertically || player.uncertaintyHandler.onGroundUncertain || player.uncertaintyHandler.lastPacketWasGroundPacket) return pointThree;
+        if (wasZeroPointThreeVertically || player.uncertaintyHandler.onGroundUncertain || player.uncertaintyHandler.lastPacketWasGroundPacket) {
+            return pointThree;
+        }
 
         return 0;
     }
@@ -303,8 +324,9 @@ public class UncertaintyHandler {
         // I can't figure out how the client exactly tracks boost time
         if (player.compensatedEntities.getSelf().getRiding() instanceof PacketEntityRideable) {
             PacketEntityRideable vehicle = (PacketEntityRideable) player.compensatedEntities.getSelf().getRiding();
-            if (vehicle.currentBoostTime < vehicle.boostTimeMax + 20)
+            if (vehicle.currentBoostTime < vehicle.boostTimeMax + 20) {
                 offset -= 0.01;
+            }
         }
 
         return Math.max(0, offset);
@@ -312,7 +334,9 @@ public class UncertaintyHandler {
 
     public void checkForHardCollision() {
         // Look for boats the player could collide with
-        if (hasHardCollision()) player.uncertaintyHandler.lastHardCollidingLerpingEntity.reset();
+        if (hasHardCollision()) {
+            player.uncertaintyHandler.lastHardCollidingLerpingEntity.reset();
+        }
     }
 
     private boolean hasHardCollision() {

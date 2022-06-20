@@ -7,7 +7,7 @@ public class Column {
     public final int x;
     public final int z;
     public final int transaction;
-    public BaseChunk[] chunks;
+    public final BaseChunk[] chunks;
 
     public Column(int x, int z, BaseChunk[] chunks, int transaction) {
         this.chunks = chunks;
@@ -24,7 +24,9 @@ public class Column {
     // Therefore, the size of the chunks are ALWAYS 16!
     public void mergeChunks(BaseChunk[] toMerge) {
         for (int i = 0; i < 16; i++) {
-            if (toMerge[i] != null) chunks[i] = toMerge[i];
+            if (toMerge[i] != null) {
+                chunks[i] = toMerge[i];
+            }
         }
     }
 }

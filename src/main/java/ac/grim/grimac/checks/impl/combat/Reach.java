@@ -42,13 +42,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 // You may not copy the check unless you are licensed under GPL
 @CheckData(name = "Reach", configName = "Reach", setback = 10)
 public class Reach extends PacketCheck {
-    // Concurrent to support weird entity trackers
-    private final ConcurrentLinkedQueue<Integer> playerAttackQueue = new ConcurrentLinkedQueue<>();
     private static final List<EntityType> blacklisted = Arrays.asList(
             EntityTypes.BOAT,
             EntityTypes.CHEST_BOAT,
             EntityTypes.SHULKER);
-
+    // Concurrent to support weird entity trackers
+    private final ConcurrentLinkedQueue<Integer> playerAttackQueue = new ConcurrentLinkedQueue<>();
     private boolean cancelImpossibleHits;
     private double threshold;
     private double cancelBuffer; // For the next 4 hits after using reach, we aggressively cancel reach
@@ -58,7 +57,7 @@ public class Reach extends PacketCheck {
     }
 
     @Override
-    public void onPacketReceive(final PacketReceiveEvent event) {
+    public void onPacketReceive(PacketReceiveEvent event) {
         if (!player.disableGrim && event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
             WrapperPlayClientInteractEntity action = new WrapperPlayClientInteractEntity(event);
 
@@ -79,9 +78,15 @@ public class Reach extends PacketCheck {
                 return;
             }
 
-            if (player.gamemode == GameMode.CREATIVE) return;
-            if (player.compensatedEntities.getSelf().inVehicle()) return;
-            if (entity.riding != null) return;
+            if (player.gamemode == GameMode.CREATIVE) {
+                return;
+            }
+            if (player.compensatedEntities.getSelf().inVehicle()) {
+                return;
+            }
+            if (entity.riding != null) {
+                return;
+            }
 
             playerAttackQueue.add(action.getEntityId()); // Queue for next tick for very precise check
 
@@ -92,8 +97,9 @@ public class Reach extends PacketCheck {
 
         if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             // Teleports don't interpolate, duplicate 1.17 packets don't interpolate
-            if (player.packetStateData.lastPacketWasTeleport || player.packetStateData.lastPacketWasOnePointSeventeenDuplicate)
+            if (player.packetStateData.lastPacketWasTeleport || player.packetStateData.lastPacketWasOnePointSeventeenDuplicate) {
                 return;
+            }
             tickFlying();
         }
     }
@@ -110,11 +116,16 @@ public class Reach extends PacketCheck {
         boolean giveMovementThresholdLenience = player.packetStateData.didLastMovementIncludePosition || player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9);
 
         // If the entity doesn't exist, or if it is exempt, or if it is dead
-        if ((blacklisted.contains(reachEntity.type) || !reachEntity.isLivingEntity()) && reachEntity.type != EntityTypes.END_CRYSTAL)
+        if ((blacklisted.contains(reachEntity.type) || !reachEntity.isLivingEntity()) && reachEntity.type != EntityTypes.END_CRYSTAL) {
             return false; // exempt
+        }
 
-        if (player.gamemode == GameMode.CREATIVE) return false;
-        if (player.compensatedEntities.getSelf().inVehicle()) return false;
+        if (player.gamemode == GameMode.CREATIVE) {
+            return false;
+        }
+        if (player.compensatedEntities.getSelf().inVehicle()) {
+            return false;
+        }
 
         double lowest = 6;
         // Filter out what we assume to be cheats
@@ -171,15 +182,16 @@ public class Reach extends PacketCheck {
         // Adds some more than 0.03 uncertainty in some cases, but a good trade off for simplicity
         //
         // Just give the uncertainty on 1.9+ clients as we have no way of knowing whether they had 0.03 movement
-        if (!player.packetStateData.didLastLastMovementIncludePosition || player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9))
+        if (!player.packetStateData.didLastLastMovementIncludePosition || player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9)) {
             targetBox.expand(player.getMovementThreshold());
+        }
 
         Vector3d from = new Vector3d(player.lastX, player.lastY, player.lastZ);
 
         double minDistance = Double.MAX_VALUE;
 
         // https://bugs.mojang.com/browse/MC-67665
-        List<Vector> possibleLookDirs = new ArrayList<>(Arrays.asList(ReachUtils.getLook(player, player.xRot, player.yRot)));
+        List<Vector> possibleLookDirs = new ArrayList<>(Collections.singletonList(ReachUtils.getLook(player, player.xRot, player.yRot)));
 
         // If we are a tick behind, we don't know their next look so don't bother doing this
         if (!isPrediction) {
@@ -233,7 +245,7 @@ public class Reach extends PacketCheck {
     @Override
     public void reload() {
         super.reload();
-        this.cancelImpossibleHits = getConfig().getBooleanElse("Reach.block-impossible-hits", true);
-        this.threshold = getConfig().getDoubleElse("Reach.threshold", 0.0005);
+        cancelImpossibleHits = getConfig().getBooleanElse("Reach.block-impossible-hits", true);
+        threshold = getConfig().getDoubleElse("Reach.threshold", 0.0005);
     }
 }

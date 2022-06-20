@@ -16,7 +16,6 @@ import ac.grim.grimac.utils.nmsutil.Collisions;
 import ac.grim.grimac.utils.nmsutil.GetBoundingBox;
 import ac.grim.grimac.utils.nmsutil.Materials;
 import com.github.retrooper.packetevents.PacketEvents;
-import com.github.retrooper.packetevents.event.PacketEvent;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.netty.channel.ChannelHelper;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
@@ -56,21 +55,20 @@ public class CompensatedWorld {
     private static final WrappedBlockState airData = WrappedBlockState.getByGlobalId(blockVersion, 0);
     public final GrimPlayer player;
     public final Map<Long, Column> chunks;
-    // Packet locations for blocks
-    public Set<PistonData> activePistons = ConcurrentHashMap.newKeySet();
-    public Set<ShulkerData> openShulkerBoxes = ConcurrentHashMap.newKeySet();
-    // 1.17 with datapacks, and 1.18, have negative world offset values
-    private int minHeight = 0;
-    private int maxHeight = 256;
-
     // When the player changes the blocks, they track what the server thinks the blocks are
     //
     // Pair of the block position and the owning list TO the actual block
     // The owning list is so that this info can be removed when the final list is processed
     private final Long2ObjectOpenHashMap<BlockPrediction> originalServerBlocks = new Long2ObjectOpenHashMap<>();
+    private final Map<Integer, List<Vector3i>> serverIsCurrentlyProcessingThesePredictions = new HashMap<>();
+    // Packet locations for blocks
+    public final Set<PistonData> activePistons = ConcurrentHashMap.newKeySet();
+    public final Set<ShulkerData> openShulkerBoxes = ConcurrentHashMap.newKeySet();
+    // 1.17 with datapacks, and 1.18, have negative world offset values
+    private int minHeight = 0;
+    private int maxHeight = 256;
     // Blocks the client changed while placing or breaking blocks
     private List<Vector3i> currentlyChangedBlocks = new LinkedList<>();
-    private final Map<Integer, List<Vector3i>> serverIsCurrentlyProcessingThesePredictions = new HashMap<>();
     private boolean isCurrentlyPredicting = false;
 
     public CompensatedWorld(GrimPlayer player) {
@@ -78,14 +76,31 @@ public class CompensatedWorld {
         chunks = new Long2ObjectOpenHashMap<>(81, 0.5f);
     }
 
+    public static long chunkPositionToLong(int x, int z) {
+        return ((x & 0xFFFFFFFFL) << 32L) | (z & 0xFFFFFFFFL);
+    }
+
+    private static BaseChunk create() {
+        if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_18)) {
+            return new Chunk_v1_18();
+        } else if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_16)) {
+            return new Chunk_v1_9(0, DataPalette.createForChunk());
+        }
+        return new Chunk_v1_9(0, new DataPalette(new ListPalette(4), new LegacyFlexibleStorage(4, 4096), PaletteType.CHUNK));
+    }
+
     public void startPredicting() {
-        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_18_2)) return; // No predictions
-        this.isCurrentlyPredicting = true;
+        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_18_2)) {
+            return; // No predictions
+        }
+        isCurrentlyPredicting = true;
     }
 
     public void handlePredictionConfirmation(int prediction) {
         List<Vector3i> changes = serverIsCurrentlyProcessingThesePredictions.remove(prediction);
-        if (changes == null) return;
+        if (changes == null) {
+            return;
+        }
         applyBlockChanges(changes);
     }
 
@@ -119,13 +134,17 @@ public class CompensatedWorld {
     }
 
     public void stopPredicting(PacketWrapper<?> wrapper) {
-        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_18_2)) return; // No predictions
-        this.isCurrentlyPredicting = false; // We aren't in a block place or use item
+        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_18_2)) {
+            return; // No predictions
+        }
+        isCurrentlyPredicting = false; // We aren't in a block place or use item
 
-        if (this.currentlyChangedBlocks.isEmpty()) return; // Nothing to change
+        if (currentlyChangedBlocks.isEmpty()) {
+            return; // Nothing to change
+        }
 
-        List<Vector3i> toApplyBlocks = this.currentlyChangedBlocks; // We must now track the client applying the server predicted blocks
-        this.currentlyChangedBlocks = new LinkedList<>(); // Reset variable without changing original
+        List<Vector3i> toApplyBlocks = currentlyChangedBlocks; // We must now track the client applying the server predicted blocks
+        currentlyChangedBlocks = new LinkedList<>(); // Reset variable without changing original
 
         // We don't need to simulate any packets, it is native to the version we are on
         if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_19)) {
@@ -150,10 +169,6 @@ public class CompensatedWorld {
         } else { // ViaVersion is being stupid and sending acks immediately
             applyBlockChanges(toApplyBlocks);
         }
-    }
-
-    public static long chunkPositionToLong(int x, int z) {
-        return ((x & 0xFFFFFFFFL) << 32L) | (z & 0xFFFFFFFFL);
     }
 
     public boolean isNearHardEntity(SimpleCollisionBox playerBox) {
@@ -186,15 +201,6 @@ public class CompensatedWorld {
         return false;
     }
 
-    private static BaseChunk create() {
-        if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_18)) {
-            return new Chunk_v1_18();
-        } else if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_16)) {
-            return new Chunk_v1_9(0, DataPalette.createForChunk());
-        }
-        return new Chunk_v1_9(0, new DataPalette(new ListPalette(4), new LegacyFlexibleStorage(4, 4096), PaletteType.CHUNK));
-    }
-
     public void updateBlock(int x, int y, int z, int combinedID) {
         Vector3i asVector = new Vector3i(x, y, z);
 
@@ -215,7 +221,9 @@ public class CompensatedWorld {
         int offsetY = y - minHeight;
 
         if (column != null) {
-            if (column.getChunks().length <= (offsetY >> 4)) return;
+            if (column.getChunks().length <= (offsetY >> 4)) {
+                return;
+            }
 
             BaseChunk chunk = column.getChunks()[offsetY >> 4];
 
@@ -256,8 +264,9 @@ public class CompensatedWorld {
                     // The doors are probably connected
                     boolean isBottom = data.getHalf() == Half.LOWER;
                     // 1.12- stores door data in the bottom door
-                    if (!isBottom)
+                    if (!isBottom) {
                         data = otherDoor;
+                    }
                     // 1.13+ - We need to grab the bukkit block data, flip the open state, then get combined ID
                     // 1.12- - We can just flip a bit in the lower door and call it a day
                     data.setOpen(!data.isOpen());
@@ -274,7 +283,9 @@ public class CompensatedWorld {
     public void tickPlayerInPistonPushingArea() {
         player.uncertaintyHandler.tick();
         // Occurs on player login
-        if (player.boundingBox == null) return;
+        if (player.boundingBox == null) {
+            return;
+        }
         SimpleCollisionBox playerBox = player.boundingBox.copy();
 
         double modX = 0;
@@ -311,7 +322,9 @@ public class CompensatedWorld {
                 direction = ((PacketEntityShulker) data.entity).facing.getOppositeFace();
             }
 
-            if (direction == null) direction = BlockFace.UP; // default state
+            if (direction == null) {
+                direction = BlockFace.UP; // default state
+            }
 
             // Change negative corner in expansion as the direction is negative
             // We don't bother differentiating shulker entities and shulker boxes
@@ -358,7 +371,9 @@ public class CompensatedWorld {
             Column column = getChunk(x >> 4, z >> 4);
 
             y -= minHeight;
-            if (column == null || y < 0 || (y >> 4) >= column.getChunks().length) return airData;
+            if (column == null || y < 0 || (y >> 4) >= column.getChunks().length) {
+                return airData;
+            }
 
             BaseChunk chunk = column.getChunks()[y >> 4];
             if (chunk != null) {
@@ -546,8 +561,12 @@ public class CompensatedWorld {
         WrappedBlockState magicBlockState = getWrappedBlockStateAt(x, y, z);
         WrappedBlockState magicBlockStateAbove = getWrappedBlockStateAt(x, y + 1, z);
 
-        if (magicBlockState.getType() != StateTypes.LAVA) return 0;
-        if (magicBlockStateAbove.getType() == StateTypes.LAVA) return 1;
+        if (magicBlockState.getType() != StateTypes.LAVA) {
+            return 0;
+        }
+        if (magicBlockStateAbove.getType() == StateTypes.LAVA) {
+            return 1;
+        }
 
         int level = magicBlockState.getLevel();
 
@@ -572,7 +591,9 @@ public class CompensatedWorld {
         WrappedBlockState wrappedBlock = getWrappedBlockStateAt(x, y, z);
         boolean isWater = Materials.isWater(player.getClientVersion(), wrappedBlock);
 
-        if (!isWater) return 0;
+        if (!isWater) {
+            return 0;
+        }
 
         // If water has water above it, it's block height is 1, even if it's waterlogged
         if (Materials.isWater(player.getClientVersion(), getWrappedBlockStateAt(x, y + 1, z))) {
@@ -584,7 +605,9 @@ public class CompensatedWorld {
             int level = wrappedBlock.getLevel();
 
             // Falling water has a level of 8
-            if ((level & 0x8) == 8) return 8 / 9f;
+            if ((level & 0x8) == 8) {
+                return 8 / 9f;
+            }
 
             return (8 - level) / 9f;
         }
@@ -605,7 +628,9 @@ public class CompensatedWorld {
 
     public void setDimension(String dimension, User user) {
         // No world height NBT
-        if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_17)) return;
+        if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_17)) {
+            return;
+        }
 
         NBTCompound dimensionNBT = user.getWorldNBT(dimension).getCompoundTagOrNull("element");
         minHeight = dimensionNBT.getNumberTagOrThrow("min_y").getAsInt();

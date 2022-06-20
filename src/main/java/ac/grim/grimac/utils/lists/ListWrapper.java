@@ -11,6 +11,6 @@ public abstract class ListWrapper<T> implements List<T> {
     }
 
     public List<T> getBase() {
-        return this.base;
+        return base;
     }
 }

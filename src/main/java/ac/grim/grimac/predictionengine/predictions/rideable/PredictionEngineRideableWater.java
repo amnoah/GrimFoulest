@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class PredictionEngineRideableWater extends PredictionEngineWater {
 
-    Vector movementVector;
+    final Vector movementVector;
 
     public PredictionEngineRideableWater(Vector movementVector) {
         this.movementVector = movementVector;

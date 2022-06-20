@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.bukkit.util.Vector;
 
 public class VectorData {
-    public VectorType vectorType;
+    public final VectorType vectorType;
     public VectorData lastVector;
     public VectorData preUncertainty;
     public Vector vector;
@@ -51,8 +51,12 @@ public class VectorData {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         VectorData that = (VectorData) o;
         return isKnockback == that.isKnockback && isExplosion == that.isExplosion && isTrident == that.isTrident && isZeroPointZeroThree == that.isZeroPointZeroThree && isSwimHop == that.isSwimHop && isFlipSneaking == that.isFlipSneaking && isFlipItem == that.isFlipItem && isJump == that.isJump && Objects.equal(vector, that.vector);
     }

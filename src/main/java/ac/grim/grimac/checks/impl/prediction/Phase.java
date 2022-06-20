@@ -24,7 +24,7 @@ public class Phase extends PostPredictionCheck {
     }
 
     @Override
-    public void onPredictionComplete(final PredictionComplete predictionComplete) {
+    public void onPredictionComplete(PredictionComplete predictionComplete) {
         if (!player.getSetbackTeleportUtil().blockOffsets) { // Not falling through world
             SimpleCollisionBox newBB = player.boundingBox;
 

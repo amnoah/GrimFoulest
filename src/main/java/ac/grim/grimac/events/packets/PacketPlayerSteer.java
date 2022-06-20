@@ -28,7 +28,9 @@ public class PacketPlayerSteer extends PacketListenerAbstract {
             WrapperPlayClientSteerVehicle steer = new WrapperPlayClientSteerVehicle(event);
 
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             float forwards = steer.getForward();
             float sideways = steer.getSideways();

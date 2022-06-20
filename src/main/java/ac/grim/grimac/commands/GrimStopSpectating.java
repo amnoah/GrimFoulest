@@ -14,7 +14,9 @@ public class GrimStopSpectating extends BaseCommand {
     @Subcommand("stopspectating")
     @CommandPermission("grim.spectate")
     public void onStopSpectate(CommandSender sender) {
-        if (!(sender instanceof Player)) return;
+        if (!(sender instanceof Player)) {
+            return;
+        }
         Player player = (Player) sender;
         if (GrimAPI.INSTANCE.getSpectateManager().isSpectating(player.getUniqueId())) {
             GrimAPI.INSTANCE.getSpectateManager().disable(player);

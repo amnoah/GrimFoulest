@@ -6,11 +6,11 @@ import ac.grim.grimac.utils.anticheat.update.VehiclePositionUpdate;
 
 public class VehicleCheck extends Check<VehiclePositionUpdate> {
 
-    public VehicleCheck(final GrimPlayer playerData) {
+    public VehicleCheck(GrimPlayer playerData) {
         super(playerData);
     }
 
-    public void process(final VehiclePositionUpdate vehicleUpdate) {
+    public void process(VehiclePositionUpdate vehicleUpdate) {
 
     }
 }

@@ -42,8 +42,9 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
                     || material == ItemTypes.POTION || material == ItemTypes.MILK_BUCKET) {
 
                 // Pls have this mapped correctly retrooper
-                if (item.getType() == ItemTypes.SPLASH_POTION)
+                if (item.getType() == ItemTypes.SPLASH_POTION) {
                     return;
+                }
                 // 1.8 splash potion
                 if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9) && item.getLegacyData() > 16384) {
                     return;
@@ -108,10 +109,12 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
 
             // Only 1.8 and below players can block with swords
             if (material.hasAttribute(ItemTypes.ItemAttribute.SWORD)) {
-                if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_8))
+                if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_8)) {
                     player.packetStateData.slowedByUsingItem = true;
-                else if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9)) // ViaVersion stuff
+                } else if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9)) // ViaVersion stuff
+                {
                     player.packetStateData.slowedByUsingItem = false;
+                }
             }
         } else {
             player.packetStateData.slowedByUsingItem = false;
@@ -123,7 +126,9 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
 
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             WrapperPlayClientPlayerDigging dig = new WrapperPlayClientPlayerDigging(event);
 
@@ -152,12 +157,16 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
 
         if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             WrapperPlayClientHeldItemChange slot = new WrapperPlayClientHeldItemChange(event);
 
             // Stop people from spamming the server with out of bounds exceptions
-            if (slot.getSlot() > 8) return;
+            if (slot.getSlot() > 8) {
+                return;
+            }
 
             if (player.packetStateData.lastSlotSelected != slot.getSlot()) {
                 player.packetStateData.slowedByUsingItem = false; // TODO: Send a STOP_USE_ITEM on behalf of the player
@@ -170,16 +179,20 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
             WrapperPlayClientUseItem place = new WrapperPlayClientUseItem(event);
 
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_8)
-                    && player.gamemode == GameMode.SPECTATOR)
+                    && player.gamemode == GameMode.SPECTATOR) {
                 return;
+            }
 
             // This was an interaction with a block, not a use item
             // TODO: What is 1.8 doing with packets?  I think it's BLOCK_PLACE not USE_ITEM
-            if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9))
+            if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9)) {
                 return;
+            }
 
             player.packetStateData.slowedByUsingItemTransaction = player.lastTransactionReceived.get();
 

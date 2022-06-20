@@ -7,14 +7,14 @@ import ac.grim.grimac.utils.anticheat.update.RotationUpdate;
 
 @CheckData(name = "AimDuplicateLook")
 public class AimDuplicateLook extends RotationCheck {
+    boolean exempt = false;
+
     public AimDuplicateLook(GrimPlayer playerData) {
         super(playerData);
     }
 
-    boolean exempt = false;
-
     @Override
-    public void process(final RotationUpdate rotationUpdate) {
+    public void process(RotationUpdate rotationUpdate) {
         if (player.packetStateData.lastPacketWasTeleport || player.compensatedEntities.getSelf().getRiding() != null) {
             exempt = true;
             return;

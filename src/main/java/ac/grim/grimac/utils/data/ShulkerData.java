@@ -18,7 +18,7 @@ public class ShulkerData {
     public ShulkerData(Vector3i position, int lastTransactionSent, boolean isClosing) {
         this.lastTransactionSent = lastTransactionSent;
         this.isClosing = isClosing;
-        this.blockPos = position;
+        blockPos = position;
     }
 
     public ShulkerData(PacketEntity entity, int lastTransactionSent, boolean isClosing) {

@@ -4,7 +4,10 @@ import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.MessageUtil;
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.*;
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import com.github.puregero.multilib.MultiLib;
 import net.kyori.adventure.text.Component;
@@ -21,7 +24,9 @@ public class GrimSpectate extends BaseCommand {
     @CommandPermission("grim.spectate")
     @CommandCompletion("@players")
     public void onSpectate(CommandSender sender, OnlinePlayer target) {
-        if (!(sender instanceof Player)) return;
+        if (!(sender instanceof Player)) {
+            return;
+        }
         Player player = (Player) sender;
 
         if (target == null || MultiLib.isExternalPlayer(target.getPlayer())) {

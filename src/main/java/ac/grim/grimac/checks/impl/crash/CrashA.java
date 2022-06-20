@@ -16,11 +16,15 @@ public class CrashA extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (player.packetStateData.lastPacketWasTeleport) return;
+        if (player.packetStateData.lastPacketWasTeleport) {
+            return;
+        }
         if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
 
-            if (!packet.hasPositionChanged()) return;
+            if (!packet.hasPositionChanged()) {
+                return;
+            }
             if (Math.abs(packet.getLocation().getX()) > HARD_CODED_BORDER || Math.abs(packet.getLocation().getZ()) > HARD_CODED_BORDER) {
                 flagAndAlert(); // Ban
             }

@@ -29,10 +29,6 @@ import org.bukkit.entity.Player;
 // Also based off minecraft wiki: https://minecraft.fandom.com/wiki/Breaking#Instant_breaking
 @CheckData(name = "FastBreak")
 public class FastBreak extends PacketCheck {
-    public FastBreak(GrimPlayer playerData) {
-        super(playerData);
-    }
-
     // The block the player is currently breaking
     Vector3i targetBlock = null;
     // The maximum amount of damage the player deals to the block
@@ -42,10 +38,12 @@ public class FastBreak extends PacketCheck {
     long lastFinishBreak = 0;
     // The time the player started to break the block, to know how long the player waited until they finished breaking the block
     long startBreak = 0;
-
     // The buffer to this check
     double blockBreakBalance = 0;
     double blockDelayBalance = 0;
+    public FastBreak(GrimPlayer playerData) {
+        super(playerData);
+    }
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
@@ -95,11 +93,15 @@ public class FastBreak extends PacketCheck {
                 if (blockBreakBalance > 1000) { // If more than a second of advantage
                     Bukkit.getScheduler().runTask(GrimAPI.INSTANCE.getPlugin(), () -> {
                         Player bukkitPlayer = player.bukkitPlayer;
-                        if (bukkitPlayer == null || !bukkitPlayer.isOnline()) return;
+                        if (bukkitPlayer == null || !bukkitPlayer.isOnline()) {
+                            return;
+                        }
 
                         if (bukkitPlayer.getLocation().distance(new Location(bukkitPlayer.getWorld(), digging.getBlockPosition().getX(), digging.getBlockPosition().getY(), digging.getBlockPosition().getZ())) < 64) {
                             Chunk chunk = bukkitPlayer.getWorld().getChunkAt(digging.getBlockPosition().getX() >> 4, digging.getBlockPosition().getZ() >> 4);
-                            if (!chunk.isLoaded()) return; // Don't load chunks sync
+                            if (!chunk.isLoaded()) {
+                                return; // Don't load chunks sync
+                            }
 
                             Block block = chunk.getBlock(digging.getBlockPosition().getX() & 15, digging.getBlockPosition().getY(), digging.getBlockPosition().getZ() & 15);
 

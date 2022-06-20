@@ -25,13 +25,15 @@ public class PacketServerTeleport extends PacketListenerAbstract {
     @Override
     public void onPacketSend(PacketSendEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.PLAYER_POSITION_AND_LOOK) {
-           WrapperPlayServerPlayerPositionAndLook teleport = new WrapperPlayServerPlayerPositionAndLook(event);
+            WrapperPlayServerPlayerPositionAndLook teleport = new WrapperPlayServerPlayerPositionAndLook(event);
 
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
 
             Vector3d pos = new Vector3d(teleport.getX(), teleport.getY(), teleport.getZ());
 
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             // This is the first packet sent to the client which we need to track
             if (player.getSetbackTeleportUtil().getRequiredSetBack() == null) {
@@ -80,19 +82,18 @@ public class PacketServerTeleport extends PacketListenerAbstract {
             }
 
             player.sendTransaction();
-            final int lastTransactionSent = player.lastTransactionSent.get();
+            int lastTransactionSent = player.lastTransactionSent.get();
             event.getPostTasks().add(player::sendTransaction);
 
             if (teleport.isDismountVehicle()) {
                 // Remove player from vehicle
-                event.getPostTasks().add(() -> {
-                    player.compensatedEntities.getSelf().eject();
-                });
+                event.getPostTasks().add(() -> player.compensatedEntities.getSelf().eject());
             }
 
             // For some reason teleports on 1.7 servers are offset by 1.62?
-            if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_8))
+            if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_8)) {
                 pos = pos.withY(pos.getY() - 1.62);
+            }
 
             Location target = new Location(null, pos.getX(), pos.getY(), pos.getZ());
             player.getSetbackTeleportUtil().addSentTeleport(target, lastTransactionSent, teleport.getRelativeFlags(), true);
@@ -102,7 +103,9 @@ public class PacketServerTeleport extends PacketListenerAbstract {
             WrapperPlayServerVehicleMove vehicleMove = new WrapperPlayServerVehicleMove(event);
 
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             player.sendTransaction();
             int lastTransactionSent = player.lastTransactionSent.get();

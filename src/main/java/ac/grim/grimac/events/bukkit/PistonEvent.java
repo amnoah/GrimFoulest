@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PistonEvent implements Listener {
-    Material SLIME_BLOCK = Material.getMaterial("SLIME_BLOCK");
-    Material HONEY_BLOCK = Material.getMaterial("HONEY_BLOCK");
+    final Material SLIME_BLOCK = Material.getMaterial("SLIME_BLOCK");
+    final Material HONEY_BLOCK = Material.getMaterial("HONEY_BLOCK");
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPistonPushEvent(BlockPistonExtendEvent event) {

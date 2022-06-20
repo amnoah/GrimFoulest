@@ -6,12 +6,16 @@ import ac.grim.grimac.utils.math.GrimMath;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.server.*;
+import lombok.Getter;
 
 public class PacketWorldBorder extends PacketCheck {
+    @Getter
     double centerX;
+    @Getter
     double centerZ;
     double oldDiameter;
     double newDiameter;
+    @Getter
     double absoluteMaxSize;
     long startTime = 1;
     long endTime = 1;
@@ -20,16 +24,8 @@ public class PacketWorldBorder extends PacketCheck {
         super(playerData);
     }
 
-    public double getCenterX() {
-        return centerX;
-    }
-
-    public double getCenterZ() {
-        return centerZ;
-    }
-
     public double getCurrentDiameter() {
-        double d0 = (double) (System.currentTimeMillis() - this.startTime) / ((double) this.endTime - this.startTime);
+        double d0 = (System.currentTimeMillis() - startTime) / ((double) endTime - startTime);
         return d0 < 1.0D ? GrimMath.lerp(d0, oldDiameter, newDiameter) : newDiameter;
     }
 
@@ -39,6 +35,7 @@ public class PacketWorldBorder extends PacketCheck {
             WrapperPlayServerWorldBorder packet = new WrapperPlayServerWorldBorder(event);
 
             player.sendTransaction();
+
             // Names are misleading, it's diameter not radius.
             if (packet.getAction() == WrapperPlayServerWorldBorder.WorldBorderAction.SET_SIZE) {
                 setSize(packet.getRadius());
@@ -52,6 +49,7 @@ public class PacketWorldBorder extends PacketCheck {
                 setAbsoluteMaxSize(packet.getPortalTeleportBoundary());
             }
         }
+
         if (event.getPacketType() == PacketType.Play.Server.INITIALIZE_WORLD_BORDER) {
             player.sendTransaction();
             WrapperPlayServerInitializeWorldBorder border = new WrapperPlayServerInitializeWorldBorder(event);
@@ -97,18 +95,12 @@ public class PacketWorldBorder extends PacketCheck {
         player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
             this.oldDiameter = oldDiameter;
             this.newDiameter = newDiameter;
-            this.startTime = System.currentTimeMillis();
-            this.endTime = this.startTime + length;
+            startTime = System.currentTimeMillis();
+            endTime = startTime + length;
         });
     }
 
     private void setAbsoluteMaxSize(double absoluteMaxSize) {
-        player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
-            this.absoluteMaxSize = absoluteMaxSize;
-        });
-    }
-
-    public double getAbsoluteMaxSize() {
-        return absoluteMaxSize;
+        player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> this.absoluteMaxSize = absoluteMaxSize);
     }
 }

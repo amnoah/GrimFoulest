@@ -13,7 +13,9 @@ public class MovementTickerHorse extends MovementTickerLivingVehicle {
 
         PacketEntityHorse horsePacket = (PacketEntityHorse) player.compensatedEntities.getSelf().getRiding();
 
-        if (!horsePacket.hasSaddle) return;
+        if (!horsePacket.hasSaddle) {
+            return;
+        }
 
         player.speed = horsePacket.movementSpeedAttribute;
 
@@ -25,13 +27,17 @@ public class MovementTickerHorse extends MovementTickerLivingVehicle {
             f1 *= 0.25F;
         }
 
-        this.movementInput = new Vector(f, 0, f1);
-        if (movementInput.lengthSquared() > 1) movementInput.normalize();
+        movementInput = new Vector(f, 0, f1);
+        if (movementInput.lengthSquared() > 1) {
+            movementInput.normalize();
+        }
     }
 
     @Override
     public void livingEntityAIStep() {
         super.livingEntityAIStep();
-        if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_17)) Collisions.handleInsideBlocks(player);
+        if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_17)) {
+            Collisions.handleInsideBlocks(player);
+        }
     }
 }

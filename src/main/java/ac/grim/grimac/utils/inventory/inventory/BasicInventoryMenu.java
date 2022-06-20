@@ -7,7 +7,7 @@ import ac.grim.grimac.utils.inventory.slot.Slot;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 
 public class BasicInventoryMenu extends AbstractContainerMenu {
-    int rows;
+    final int rows;
 
     public BasicInventoryMenu(GrimPlayer player, Inventory playerInventory, int rows) {
         super(player, playerInventory);
@@ -25,15 +25,15 @@ public class BasicInventoryMenu extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(int slotID) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotID);
+        Slot slot = slots.get(slotID);
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-            if (slotID < this.rows * 9) {
-                if (!this.moveItemStackTo(itemstack1, this.rows * 9, this.slots.size(), true)) {
+            if (slotID < rows * 9) {
+                if (!moveItemStackTo(itemstack1, rows * 9, slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(itemstack1, 0, this.rows * 9, false)) {
+            } else if (!moveItemStackTo(itemstack1, 0, rows * 9, false)) {
                 return ItemStack.EMPTY;
             }
 

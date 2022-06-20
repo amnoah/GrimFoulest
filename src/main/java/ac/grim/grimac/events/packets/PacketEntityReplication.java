@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PacketEntityReplication extends PacketCheck {
-    private boolean hasSentPreWavePacket = true;
     // Let's imagine the player is on a boat.
     // The player breaks this boat
     // If we were to despawn the boat without an extra transaction, then the boat would disappear before
@@ -45,6 +44,7 @@ public class PacketEntityReplication extends PacketCheck {
     //
     // Another valid solution is to simply spam more transactions, but let's not waste bandwidth.
     private final List<Integer> despawnedEntitiesThisTransaction = new ArrayList<>();
+    private boolean hasSentPreWavePacket = true;
 
     public PacketEntityReplication(GrimPlayer player) {
         super(player);
@@ -54,8 +54,9 @@ public class PacketEntityReplication extends PacketCheck {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             // Teleports don't interpolate, duplicate 1.17 packets don't interpolate
-            if (player.packetStateData.lastPacketWasTeleport || player.packetStateData.lastPacketWasOnePointSeventeenDuplicate)
+            if (player.packetStateData.lastPacketWasTeleport || player.packetStateData.lastPacketWasOnePointSeventeenDuplicate) {
                 return;
+            }
 
             boolean isTickingReliably = player.isTickingReliablyFor(3);
 
@@ -136,12 +137,15 @@ public class PacketEntityReplication extends PacketCheck {
                 return;
             }
 
-            if (isDirectlyAffectingPlayer(player, effect.getEntityId()))
+            if (isDirectlyAffectingPlayer(player, effect.getEntityId())) {
                 event.getPostTasks().add(player::sendTransaction);
+            }
 
             player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
                 PacketEntity entity = player.compensatedEntities.getEntity(effect.getEntityId());
-                if (entity == null) return;
+                if (entity == null) {
+                    return;
+                }
 
                 entity.addPotionEffect(type, effect.getEffectAmplifier());
             });
@@ -150,12 +154,15 @@ public class PacketEntityReplication extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Server.REMOVE_ENTITY_EFFECT) {
             WrapperPlayServerRemoveEntityEffect effect = new WrapperPlayServerRemoveEntityEffect(event);
 
-            if (isDirectlyAffectingPlayer(player, effect.getEntityId()))
+            if (isDirectlyAffectingPlayer(player, effect.getEntityId())) {
                 event.getPostTasks().add(player::sendTransaction);
+            }
 
             player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
                 PacketEntity entity = player.compensatedEntities.getEntity(effect.getEntityId());
-                if (entity == null) return;
+                if (entity == null) {
+                    return;
+                }
 
                 entity.removePotionEffect(effect.getPotionType());
             });
@@ -167,7 +174,9 @@ public class PacketEntityReplication extends PacketCheck {
             int entityID = attributes.getEntityId();
 
             // The attributes for this entity is active, currently
-            if (isDirectlyAffectingPlayer(player, entityID)) player.sendTransaction();
+            if (isDirectlyAffectingPlayer(player, entityID)) {
+                player.sendTransaction();
+            }
 
             player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(),
                     () -> player.compensatedEntities.updateAttributes(entityID, attributes.getProperties()));
@@ -180,12 +189,16 @@ public class PacketEntityReplication extends PacketCheck {
             if (status.getStatus() == 3) {
                 PacketEntity entity = player.compensatedEntities.getEntity(status.getEntityId());
 
-                if (entity == null) return;
+                if (entity == null) {
+                    return;
+                }
                 entity.isDead = true;
             }
 
             if (status.getStatus() == 9) {
-                if (status.getEntityId() != player.entityID) return;
+                if (status.getEntityId() != player.entityID) {
+                    return;
+                }
 
                 player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> player.packetStateData.slowedByUsingItem = false);
                 player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get() + 1, () -> player.packetStateData.slowedByUsingItem = false);
@@ -193,7 +206,9 @@ public class PacketEntityReplication extends PacketCheck {
 
             if (status.getStatus() == 31) {
                 PacketEntity hook = player.compensatedEntities.getEntity(status.getEntityId());
-                if (!(hook instanceof PacketEntityHook)) return;
+                if (!(hook instanceof PacketEntityHook)) {
+                    return;
+                }
 
                 PacketEntityHook hookEntity = (PacketEntityHook) hook;
                 if (hookEntity.attached == player.entityID) {
@@ -258,7 +273,9 @@ public class PacketEntityReplication extends PacketCheck {
             WrapperPlayServerAttachEntity attach = new WrapperPlayServerAttachEntity(event);
 
             // This packet was replaced by the mount packet on 1.9+ servers - to support multiple passengers on one vehicle
-            if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_9)) return;
+            if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_9)) {
+                return;
+            }
 
             // If this is mounting rather than leashing
             if (!attach.isLeash()) {
@@ -314,7 +331,9 @@ public class PacketEntityReplication extends PacketCheck {
 
         for (int passenger : passengers) {
             inThisVehicle = passenger == player.entityID;
-            if (inThisVehicle) break;
+            if (inThisVehicle) {
+                break;
+            }
         }
 
         if (inThisVehicle && !wasInVehicle) {
@@ -329,7 +348,9 @@ public class PacketEntityReplication extends PacketCheck {
             PacketEntity vehicle = player.compensatedEntities.getEntity(vehicleID);
 
             // Vanilla likes sending null vehicles, so we must ignore those like the client ignores them
-            if (vehicle == null) return;
+            if (vehicle == null) {
+                return;
+            }
 
             // Eject existing passengers for this vehicle
             for (PacketEntity passenger : new ArrayList<>(vehicle.passengers)) {
@@ -339,7 +360,9 @@ public class PacketEntityReplication extends PacketCheck {
             // Add the entities as vehicles
             for (int entityID : passengers) {
                 PacketEntity passenger = player.compensatedEntities.getEntity(entityID);
-                if (passenger == null) continue;
+                if (passenger == null) {
+                    continue;
+                }
                 passenger.mount(vehicle);
             }
         });
@@ -400,7 +423,9 @@ public class PacketEntityReplication extends PacketCheck {
 
         player.latencyUtils.addRealTimeTask(lastTrans, () -> {
             PacketEntity entity = player.compensatedEntities.getEntity(entityId);
-            if (entity == null) return;
+            if (entity == null) {
+                return;
+            }
             if (entity instanceof PacketEntityTrackXRot && yaw != null) {
                 PacketEntityTrackXRot xRotEntity = (PacketEntityTrackXRot) entity;
                 xRotEntity.packetYaw = yaw;
@@ -410,7 +435,9 @@ public class PacketEntityReplication extends PacketCheck {
         });
         player.latencyUtils.addRealTimeTask(lastTrans + 1, () -> {
             PacketEntity entity = player.compensatedEntities.getEntity(entityId);
-            if (entity == null) return;
+            if (entity == null) {
+                return;
+            }
             entity.onSecondTransaction();
         });
     }

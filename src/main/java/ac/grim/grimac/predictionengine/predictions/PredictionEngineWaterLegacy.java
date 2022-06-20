@@ -18,7 +18,7 @@ public class PredictionEngineWaterLegacy extends PredictionEngine {
         this.swimmingSpeed = swimmingSpeed;
         this.swimmingFriction = swimmingFriction;
         this.lastY = lastY;
-        super.guessBestMovement(swimmingSpeed, player);
+        guessBestMovement(swimmingSpeed, player);
     }
 
     // This is just the vanilla equation for legacy water movement

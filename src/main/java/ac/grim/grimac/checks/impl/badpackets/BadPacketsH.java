@@ -11,7 +11,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientIn
 public class BadPacketsH extends PacketCheck {
     private int hits;
 
-    public BadPacketsH(final GrimPlayer player) {
+    public BadPacketsH(GrimPlayer player) {
         super(player);
     }
 
@@ -20,7 +20,9 @@ public class BadPacketsH extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
             WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
 
-            if (packet.getAction() != WrapperPlayClientInteractEntity.InteractAction.ATTACK) return;
+            if (packet.getAction() != WrapperPlayClientInteractEntity.InteractAction.ATTACK) {
+                return;
+            }
 
             if (++hits > 2) {
                 flagAndAlert();

@@ -13,8 +13,10 @@ public class AimInvalidYaw extends RotationCheck {
     }
 
     @Override
-    public void process(final RotationUpdate rotationUpdate) {
-        if (player.packetStateData.lastPacketWasTeleport) return;
+    public void process(RotationUpdate rotationUpdate) {
+        if (player.packetStateData.lastPacketWasTeleport) {
+            return;
+        }
 
         boolean invalid = Math.abs(rotationUpdate.getDeltaPitch()) > 0.5 && Math.abs(rotationUpdate.getDeltaYaw()) < 0.001 && rotationUpdate.getDeltaYaw() != 0;
 

@@ -9,9 +9,9 @@ import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableClassToInstanceMap;
 
 public class InitManager {
-    ClassToInstanceMap<Initable> initializersOnLoad;
-    ClassToInstanceMap<Initable> initializersOnStart;
-    ClassToInstanceMap<Initable> initializersOnStop;
+    final ClassToInstanceMap<Initable> initializersOnLoad;
+    final ClassToInstanceMap<Initable> initializersOnStart;
+    final ClassToInstanceMap<Initable> initializersOnStop;
 
     public InitManager() {
         initializersOnLoad = new ImmutableClassToInstanceMap.Builder<Initable>()

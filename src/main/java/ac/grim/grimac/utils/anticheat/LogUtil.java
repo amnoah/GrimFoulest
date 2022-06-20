@@ -7,15 +7,15 @@ import java.util.logging.Logger;
 
 @UtilityClass
 public class LogUtil {
-    public void info(final String info) {
+    public void info(String info) {
         getLogger().info(info);
     }
 
-    public void warn(final String warn) {
+    public void warn(String warn) {
         getLogger().info(warn);
     }
 
-    public void error(final String error) {
+    public void error(String error) {
         getLogger().info(error);
     }
 

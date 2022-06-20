@@ -5,7 +5,6 @@ import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.util.Vector3d;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
 public class SetbackBlocker extends PacketCheck {
@@ -13,8 +12,10 @@ public class SetbackBlocker extends PacketCheck {
         super(playerData);
     }
 
-    public void onPacketReceive(final PacketReceiveEvent event) {
-        if (player.disableGrim) return;
+    public void onPacketReceive(PacketReceiveEvent event) {
+        if (player.disableGrim) {
+            return;
+        }
 
         if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
             if (player.getSetbackTeleportUtil().cheatVehicleInterpolationDelay > 0) {
@@ -23,7 +24,9 @@ public class SetbackBlocker extends PacketCheck {
         }
 
         // Don't block teleport packets
-        if (player.packetStateData.lastPacketWasTeleport) return;
+        if (player.packetStateData.lastPacketWasTeleport) {
+            return;
+        }
 
         if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             // The player must obey setbacks

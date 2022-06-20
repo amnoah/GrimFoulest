@@ -29,8 +29,10 @@ public class RotationPlace extends BlockPlaceCheck {
     }
 
     @Override
-    public void onBlockPlace(final BlockPlace place) {
-        if (place.getMaterial() == StateTypes.SCAFFOLDING) return;
+    public void onBlockPlace(BlockPlace place) {
+        if (place.getMaterial() == StateTypes.SCAFFOLDING) {
+            return;
+        }
         if (flagBuffer > 0 && !didRayTraceHit(place)) {
             // If the player hit and has flagged this check recently
             place.resync(); // Deny the block placement.
@@ -41,7 +43,9 @@ public class RotationPlace extends BlockPlaceCheck {
     // Use post flying because it has the correct rotation, and can't false easily.
     @Override
     public void onPostFlyingBlockPlace(BlockPlace place) {
-        if (place.getMaterial() == StateTypes.SCAFFOLDING) return;
+        if (place.getMaterial() == StateTypes.SCAFFOLDING) {
+            return;
+        }
         // Ray trace to try and hit the target block.
         boolean hit = didRayTraceHit(place);
         // This can false with rapidly moving yaw in 1.8+ clients
@@ -79,7 +83,9 @@ public class RotationPlace extends BlockPlaceCheck {
                 Ray trace = new Ray(player, starting.getX(), starting.getY(), starting.getZ(), lookDir.getX(), lookDir.getY());
                 Pair<Vector, BlockFace> intercept = ReachUtils.calculateIntercept(box, trace.getOrigin(), trace.getPointAtDistance(6));
 
-                if (intercept.getFirst() != null) return true;
+                if (intercept.getFirst() != null) {
+                    return true;
+                }
             }
         }
 

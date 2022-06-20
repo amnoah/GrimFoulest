@@ -46,9 +46,10 @@ public class DynamicFence extends DynamicConnecting implements CollisionFactory 
 
     @Override
     public boolean checkCanConnect(GrimPlayer player, WrappedBlockState state, StateType one, StateType two) {
-        if (BlockTags.FENCES.contains(one))
+        if (BlockTags.FENCES.contains(one)) {
             return !(one == StateTypes.NETHER_BRICK_FENCE) && !(two == StateTypes.NETHER_BRICK_FENCE);
-        else
+        } else {
             return BlockTags.FENCES.contains(one) || CollisionData.getData(one).getMovementCollisionBox(player, player.getClientVersion(), state, 0, 0, 0).isFullBlock();
+        }
     }
 }

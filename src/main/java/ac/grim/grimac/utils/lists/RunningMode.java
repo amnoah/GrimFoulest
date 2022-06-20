@@ -1,6 +1,8 @@
 package ac.grim.grimac.utils.lists;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 // This class is copyright DefineOutside licensed under MIT
@@ -8,12 +10,14 @@ import java.util.concurrent.ArrayBlockingQueue;
 // This class calculates the running mode of a list in best case o(1) worst case o(n) time.
 public class RunningMode<T> {
     Queue<T> addList;
-    Map<T, Integer> popularityMap = new HashMap<>();
+    final Map<T, Integer> popularityMap = new HashMap<>();
     int maxSize;
 
     public RunningMode(int maxSize) {
-        if (maxSize == 0) throw new IllegalArgumentException("There's no mode to a size 0 list!");
-        this.addList = new ArrayBlockingQueue<>(maxSize);
+        if (maxSize == 0) {
+            throw new IllegalArgumentException("There's no mode to a size 0 list!");
+        }
+        addList = new ArrayBlockingQueue<>(maxSize);
         this.maxSize = maxSize;
     }
 

@@ -7,8 +7,8 @@ import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableClassToInstanceMap;
 
 public class TickManager {
-    ClassToInstanceMap<Tickable> syncTick;
-    ClassToInstanceMap<Tickable> asyncTick;
+    final ClassToInstanceMap<Tickable> syncTick;
+    final ClassToInstanceMap<Tickable> asyncTick;
 
     public TickManager() {
         syncTick = new ImmutableClassToInstanceMap.Builder<Tickable>()

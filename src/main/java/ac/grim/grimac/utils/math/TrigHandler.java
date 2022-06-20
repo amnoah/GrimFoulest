@@ -6,7 +6,7 @@ import lombok.Getter;
 import org.bukkit.util.Vector;
 
 public class TrigHandler {
-    GrimPlayer player;
+    final GrimPlayer player;
     private double buffer = 0;
     @Getter
     private boolean isVanillaMath = true;
@@ -78,11 +78,11 @@ public class TrigHandler {
 
             boolean newVanilla = minCorrectHorizontal < minFastMathHorizontal;
 
-            buffer += newVanilla != this.isVanillaMath ? 1 : -0.25;
+            buffer += newVanilla != isVanillaMath ? 1 : -0.25;
 
             if (buffer > 5) {
                 buffer = 0;
-                this.isVanillaMath = !this.isVanillaMath;
+                isVanillaMath = !isVanillaMath;
             }
         }
     }

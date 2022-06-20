@@ -6,11 +6,11 @@ import ac.grim.grimac.utils.anticheat.update.RotationUpdate;
 
 public class RotationCheck extends Check<RotationUpdate> {
 
-    public RotationCheck(final GrimPlayer playerData) {
+    public RotationCheck(GrimPlayer playerData) {
         super(playerData);
     }
 
-    public void process(final RotationUpdate rotationUpdate) {
+    public void process(RotationUpdate rotationUpdate) {
 
     }
 }

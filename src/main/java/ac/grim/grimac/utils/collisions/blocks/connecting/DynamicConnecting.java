@@ -44,45 +44,59 @@ public class DynamicConnecting {
         StateType target = targetBlock.getType();
         StateType fence = currBlock.getType();
 
-        if (!BlockTags.FENCES.contains(target) && isBlacklisted(target))
+        if (!BlockTags.FENCES.contains(target) && isBlacklisted(target)) {
             return false;
+        }
 
         // 1.12+ clients can connect to TnT while previous versions can't
-        if (target == StateTypes.TNT)
+        if (target == StateTypes.TNT) {
             return v.isNewerThanOrEquals(ClientVersion.V_1_12);
+        }
 
         // 1.9-1.11 clients don't have BARRIER exemption
         // https://bugs.mojang.com/browse/MC-9565
-        if (target == StateTypes.BARRIER)
+        if (target == StateTypes.BARRIER) {
             return player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_7_10) ||
                     player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9) &&
                             player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_11_1);
+        }
 
         if (BlockTags.STAIRS.contains(target)) {
             // 1.12 clients generate their own data, 1.13 clients use the server's data
             // 1.11- versions don't allow fences to connect to the back sides of stairs
-            if (v.isOlderThan(ClientVersion.V_1_12) || (PacketEvents.getAPI().getServerManager().getVersion().isOlderThanOrEquals(ServerVersion.V_1_11) && v.isNewerThanOrEquals(ClientVersion.V_1_13)))
+            if (v.isOlderThan(ClientVersion.V_1_12) || (PacketEvents.getAPI().getServerManager().getVersion().isOlderThanOrEquals(ServerVersion.V_1_11) && v.isNewerThanOrEquals(ClientVersion.V_1_13))) {
                 return false;
+            }
             return targetBlock.getFacing().getOppositeFace() == direction;
         } else if (canConnectToGate() && BlockTags.FENCE_GATES.contains(target)) {
             // 1.4-1.11 clients don't check for fence gate direction
             // https://bugs.mojang.com/browse/MC-94016
-            if (v.isOlderThanOrEquals(ClientVersion.V_1_11_1)) return true;
+            if (v.isOlderThanOrEquals(ClientVersion.V_1_11_1)) {
+                return true;
+            }
 
             BlockFace f1 = targetBlock.getFacing();
             BlockFace f2 = f1.getOppositeFace();
             return direction != f1 && direction != f2;
         } else {
-            if (fence == target) return true;
+            if (fence == target) {
+                return true;
+            }
 
             return checkCanConnect(player, targetBlock, target, fence);
         }
     }
 
     boolean isBlacklisted(StateType m) {
-        if (BlockTags.LEAVES.contains(m)) return true;
-        if (BlockTags.SHULKER_BOXES.contains(m)) return true;
-        if (BlockTags.TRAPDOORS.contains(m)) return true;
+        if (BlockTags.LEAVES.contains(m)) {
+            return true;
+        }
+        if (BlockTags.SHULKER_BOXES.contains(m)) {
+            return true;
+        }
+        if (BlockTags.TRAPDOORS.contains(m)) {
+            return true;
+        }
 
         return m == StateTypes.CARVED_PUMPKIN || m == StateTypes.JACK_O_LANTERN || m == StateTypes.PUMPKIN || m == StateTypes.MELON ||
                 m == StateTypes.BEACON || BlockTags.CAULDRONS.contains(m) || m == StateTypes.GLOWSTONE || m == StateTypes.SEA_LANTERN || m == StateTypes.ICE

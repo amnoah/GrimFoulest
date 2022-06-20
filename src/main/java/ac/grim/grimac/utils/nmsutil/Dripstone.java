@@ -8,7 +8,7 @@ import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import org.bukkit.block.data.type.PointedDripstone;
 
 public class Dripstone {
-    public static WrappedBlockState update(GrimPlayer player, WrappedBlockState toPlace, int x, int y, int z, boolean secondaryUse) {
+    public static void update(GrimPlayer player, WrappedBlockState toPlace, int x, int y, int z, boolean secondaryUse) {
         VerticalDirection primaryDirection = toPlace.getVerticalDirection();
         VerticalDirection opposite = toPlace.getVerticalDirection() == VerticalDirection.UP ? VerticalDirection.DOWN : VerticalDirection.UP;
 
@@ -38,7 +38,6 @@ public class Dripstone {
                 }
             }
         }
-        return toPlace;
     }
 
     private static boolean isPointedDripstoneWithDirection(WrappedBlockState unknown, VerticalDirection direction) {

@@ -37,8 +37,9 @@ public class PredictionEngineElytra extends PredictionEngine {
         // However, this is wrong with elytra movement because players can control vertical movement after gravity is calculated
         // Yeah, slow falling needs a refactor in grim.
         double recalculatedGravity = 0.08;
-        if (player.clientVelocity.getY() <= 0 && player.compensatedEntities.getSlowFallingAmplifier() != null)
+        if (player.clientVelocity.getY() <= 0 && player.compensatedEntities.getSlowFallingAmplifier() != null) {
             recalculatedGravity = 0.01;
+        }
 
         vector.add(new Vector(0.0D, recalculatedGravity * (-1.0D + vertCosRotation * 0.75D), 0.0D));
         double d5;
@@ -51,7 +52,7 @@ public class PredictionEngineElytra extends PredictionEngine {
 
         // Handle accelerating the player when they are looking down
         if (yRotRadians < 0.0F && horizontalSqrt > 0.0D) {
-            d5 = horizontalLength * (double) (-player.trigHandler.sin(yRotRadians)) * 0.04D;
+            d5 = horizontalLength * (-player.trigHandler.sin(yRotRadians)) * 0.04D;
             vector.add(new Vector(-lookVector.getX() * d5 / horizontalSqrt, d5 * 3.2D, -lookVector.getZ() * d5 / horizontalSqrt));
         }
 

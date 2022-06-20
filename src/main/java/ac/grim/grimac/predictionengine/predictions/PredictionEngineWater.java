@@ -69,7 +69,7 @@ public class PredictionEngineWater extends PredictionEngine {
         this.swimmingSpeed = swimmingSpeed;
         this.swimmingFriction = swimmingFriction;
         this.lastY = lastY;
-        super.guessBestMovement(swimmingSpeed, player);
+        guessBestMovement(swimmingSpeed, player);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class PredictionEngineWater extends PredictionEngine {
 
             if (player.slightlyTouchingWater && player.lastOnGround && !player.onGround) {
                 Vector withJump = vector.vector.clone();
-                super.doJump(player, withJump);
+                doJump(player, withJump);
                 existingVelocities.add(new VectorData(withJump, vector, VectorData.VectorType.Jump));
             }
         }

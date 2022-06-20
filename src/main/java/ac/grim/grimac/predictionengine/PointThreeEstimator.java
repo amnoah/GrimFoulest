@@ -79,7 +79,8 @@ import java.util.Set;
  */
 public class PointThreeEstimator {
     private final GrimPlayer player;
-
+    // If the player was within 0.03 of water between now and the last movement
+    public boolean isNearFluid = false;
     // The one thing we don't need to store is if the player 0.03'd to the ground, as this sends a packet
     // seriously, why mojang.  You send the player touched the ground but not their pos.
     // Is the position not important to you?  Why do you throw this data out??? God-damn it Mojang!
@@ -87,8 +88,6 @@ public class PointThreeEstimator {
     // If a player is moving upwards and a block is within 0.03 of their head, then they can hit this block
     // This results in what appears to be too great of gravity
     private boolean headHitter = false;
-    // If the player was within 0.03 of water between now and the last movement
-    public boolean isNearFluid = false;
     // If a player places a ladder in a worldguard region etc.
     @Getter
     private boolean isNearClimbable = false;
@@ -258,8 +257,12 @@ public class PointThreeEstimator {
     }
 
     public boolean closeEnoughToGroundToStepWithPointThree(VectorData data, double originalY) {
-        if (player.compensatedEntities.getSelf().inVehicle()) return false; // No 0.03
-        if (!player.isPointThree()) return false; // No 0.03
+        if (player.compensatedEntities.getSelf().inVehicle()) {
+            return false; // No 0.03
+        }
+        if (!player.isPointThree()) {
+            return false; // No 0.03
+        }
 
         // This is intensive, only run it if we need it... compensate for stepping with 0.03
         //
@@ -344,7 +347,9 @@ public class PointThreeEstimator {
 
             minimum = Math.min(minimum, length);
 
-            if (minimum < player.getMovementThreshold()) break;
+            if (minimum < player.getMovementThreshold()) {
+                break;
+            }
         }
 
         // As long as we are mathematically correct here, this should be perfectly accurate
@@ -370,7 +375,9 @@ public class PointThreeEstimator {
     public double getAdditionalVerticalUncertainty(VectorData vector) {
         double fluidAddition = vector.isZeroPointZeroThree() ? 0.014 : 0;
 
-        if (player.compensatedEntities.getSelf().inVehicle()) return 0; // No 0.03
+        if (player.compensatedEntities.getSelf().inVehicle()) {
+            return 0; // No 0.03
+        }
 
         if (headHitter) {
             wasAlwaysCertain = false;
@@ -385,7 +392,9 @@ public class PointThreeEstimator {
         }
 
         // The player couldn't have skipped their Y tick here... no point to simulate (and stop a bypass)
-        if (!vector.isZeroPointZeroThree()) return 0;
+        if (!vector.isZeroPointZeroThree()) {
+            return 0;
+        }
 
         double minMovement = player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9) ? 0.003 : 0.005;
 
@@ -395,7 +404,9 @@ public class PointThreeEstimator {
         boolean first = true;
         do {
             // If less than minimum movement, then set to 0
-            if (Math.abs(yVel) < minMovement) yVel = 0;
+            if (Math.abs(yVel) < minMovement) {
+                yVel = 0;
+            }
 
             // Don't add the first vector to the movement.  We already counted it.
             if (!first) {
@@ -407,7 +418,9 @@ public class PointThreeEstimator {
             yVel = iterateGravity(player, yVel);
 
             // We aren't making progress, avoid infinite loop (This can be due to the player not having gravity)
-            if (yVel == 0) break;
+            if (yVel == 0) {
+                break;
+            }
         } while (Math.abs(maxYTraveled + vector.vector.getY()) < player.getMovementThreshold());
 
         if (maxYTraveled != 0) {

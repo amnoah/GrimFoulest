@@ -44,31 +44,31 @@ public class EnchantmentMenu extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(int slotID) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotID);
+        Slot slot = slots.get(slotID);
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             if (slotID == 0) {
-                if (!this.moveItemStackTo(itemstack1, 2, 38, true)) {
+                if (!moveItemStackTo(itemstack1, 2, 38, true)) {
                     return ItemStack.EMPTY;
                 }
             } else if (slotID == 1) {
-                if (!this.moveItemStackTo(itemstack1, 2, 38, true)) {
+                if (!moveItemStackTo(itemstack1, 2, 38, true)) {
                     return ItemStack.EMPTY;
                 }
             } else if (itemstack1.getType() == ItemTypes.LAPIS_LAZULI) {
-                if (!this.moveItemStackTo(itemstack1, 1, 2, true)) {
+                if (!moveItemStackTo(itemstack1, 1, 2, true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                if (this.slots.get(0).hasItem() || !this.slots.get(0).mayPlace(itemstack1)) {
+                if (slots.get(0).hasItem() || !slots.get(0).mayPlace(itemstack1)) {
                     return ItemStack.EMPTY;
                 }
 
                 ItemStack itemstack2 = itemstack1.copy();
                 itemstack2.setAmount(1);
                 itemstack1.shrink(1);
-                this.slots.get(0).set(itemstack2);
+                slots.get(0).set(itemstack2);
             }
 
             if (itemstack1.isEmpty()) {

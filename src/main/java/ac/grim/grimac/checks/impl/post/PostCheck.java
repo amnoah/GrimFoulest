@@ -30,11 +30,12 @@ public class PostCheck extends PacketCheck {
     }
 
     @Override
-    public void onPacketReceive(final PacketReceiveEvent event) {
+    public void onPacketReceive(PacketReceiveEvent event) {
         if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             // Don't count teleports or duplicates as movements
-            if (player.packetStateData.lastPacketWasTeleport || player.packetStateData.lastPacketWasOnePointSeventeenDuplicate)
+            if (player.packetStateData.lastPacketWasTeleport || player.packetStateData.lastPacketWasOnePointSeventeenDuplicate) {
                 return;
+            }
 
             if (!flags.isEmpty()) {
                 // Okay, the user might be cheating, let's double check
@@ -62,14 +63,20 @@ public class PostCheck extends PacketCheck {
             } else if (PLAYER_ABILITIES.equals(packetType)
                     || INTERACT_ENTITY.equals(packetType) || PLAYER_BLOCK_PLACEMENT.equals(packetType)
                     || USE_ITEM.equals(packetType) || PLAYER_DIGGING.equals(packetType)) {
-                if (sentFlying) post.add(event.getPacketType());
+                if (sentFlying) {
+                    post.add(event.getPacketType());
+                }
             } else if (CLICK_WINDOW.equals(packetType) && player.getClientVersion().isOlderThan(ClientVersion.V_1_15)) {
                 // Why do 1.15+ players send the click window packet whenever? This doesn't make sense.
-                if (sentFlying) post.add(event.getPacketType());
+                if (sentFlying) {
+                    post.add(event.getPacketType());
+                }
             } else if ((ENTITY_ACTION.equals(packetType) || ANIMATION.equals(packetType)) // ViaRewind sends START_FALL_FLYING packets async for 1.8 clients on 1.9+ servers
                     && (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9) // ViaVersion delays animations for 1.8 clients on 1.9+ servers
                     || PacketEvents.getAPI().getServerManager().getVersion().isOlderThanOrEquals(ServerVersion.V_1_8_8))) {
-                if (sentFlying) post.add(event.getPacketType());
+                if (sentFlying) {
+                    post.add(event.getPacketType());
+                }
             }
         }
     }

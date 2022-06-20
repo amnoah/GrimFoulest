@@ -11,8 +11,8 @@ public class PacketEntityTrackXRot extends PacketEntity {
 
     public PacketEntityTrackXRot(GrimPlayer player, EntityType type, double x, double y, double z, float xRot) {
         super(player, type, x, y, z);
-        this.packetYaw = xRot;
-        this.interpYaw = xRot;
+        packetYaw = xRot;
+        interpYaw = xRot;
     }
 
     @Override

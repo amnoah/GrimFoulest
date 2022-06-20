@@ -20,7 +20,7 @@ public class LastInstanceManager extends PostPredictionCheck {
     }
 
     @Override
-    public void onPredictionComplete(final PredictionComplete predictionComplete) {
+    public void onPredictionComplete(PredictionComplete predictionComplete) {
         for (LastInstance instance : instances) {
             instance.tick();
         }

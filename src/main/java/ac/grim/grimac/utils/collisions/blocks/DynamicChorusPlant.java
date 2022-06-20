@@ -35,7 +35,7 @@ public class DynamicChorusPlant implements CollisionFactory {
 
         for (int i = 0; i < directions.length; ++i) {
             BlockFace direction = directions[i];
-            avoxelshape[i] = new SimpleCollisionBox(0.5D + Math.min(-(float) 0.3125, (double) direction.getModX() * 0.5D), 0.5D + Math.min(-(float) 0.3125, (double) direction.getModY() * 0.5D), 0.5D + Math.min(-(float) 0.3125, (double) direction.getModZ() * 0.5D), 0.5D + Math.max((float) 0.3125, (double) direction.getModX() * 0.5D), 0.5D + Math.max((float) 0.3125, (double) direction.getModY() * 0.5D), 0.5D + Math.max((float) 0.3125, (double) direction.getModZ() * 0.5D), false);
+            avoxelshape[i] = new SimpleCollisionBox(0.5D + Math.min(-(float) 0.3125, direction.getModX() * 0.5D), 0.5D + Math.min(-(float) 0.3125, direction.getModY() * 0.5D), 0.5D + Math.min(-(float) 0.3125, direction.getModZ() * 0.5D), 0.5D + Math.max((float) 0.3125, direction.getModX() * 0.5D), 0.5D + Math.max((float) 0.3125, direction.getModY() * 0.5D), 0.5D + Math.max((float) 0.3125, direction.getModZ() * 0.5D), false);
         }
 
         CollisionBox[] avoxelshape1 = new CollisionBox[64];
@@ -58,8 +58,9 @@ public class DynamicChorusPlant implements CollisionFactory {
     @Override
     public CollisionBox fetch(GrimPlayer player, ClientVersion version, WrappedBlockState block, int x, int y, int z) {
         // ViaVersion replacement block (Purple wool)
-        if (version.isOlderThanOrEquals(ClientVersion.V_1_8))
+        if (version.isOlderThanOrEquals(ClientVersion.V_1_8)) {
             return new SimpleCollisionBox(0, 0, 0, 1, 1, 1, true);
+        }
 
         // Player is 1.12- on 1.13 server
         // Player is 1.12 on 1.12 server
@@ -72,12 +73,24 @@ public class DynamicChorusPlant implements CollisionFactory {
         if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_13)) {
             // Player is 1.13 on 1.13 server
             directions = new HashSet<>();
-            if (block.getWest() == West.TRUE) directions.add(BlockFace.WEST);
-            if (block.getEast() == East.TRUE) directions.add(BlockFace.EAST);
-            if (block.getNorth() == North.TRUE) directions.add(BlockFace.NORTH);
-            if (block.getSouth() == South.TRUE) directions.add(BlockFace.SOUTH);
-            if (block.isUp()) directions.add(BlockFace.UP);
-            if (block.isDown()) directions.add(BlockFace.DOWN);
+            if (block.getWest() == West.TRUE) {
+                directions.add(BlockFace.WEST);
+            }
+            if (block.getEast() == East.TRUE) {
+                directions.add(BlockFace.EAST);
+            }
+            if (block.getNorth() == North.TRUE) {
+                directions.add(BlockFace.NORTH);
+            }
+            if (block.getSouth() == South.TRUE) {
+                directions.add(BlockFace.SOUTH);
+            }
+            if (block.isUp()) {
+                directions.add(BlockFace.UP);
+            }
+            if (block.isDown()) {
+                directions.add(BlockFace.DOWN);
+            }
         } else {
             // Player is 1.13 on 1.12 server
             directions = getLegacyStates(player, version, x, y, z);

@@ -42,13 +42,15 @@ public class MovementTicker {
                     // Players can only push living entities
                     // Players can also push boats or minecarts
                     // The one exemption to a living entity is an armor stand
-                    if (!entity.isLivingEntity() && !EntityTypes.isTypeInstanceOf(entity.type, EntityTypes.BOAT) && !entity.isMinecart() || entity.type == EntityTypes.ARMOR_STAND)
+                    if (!entity.isLivingEntity() && !EntityTypes.isTypeInstanceOf(entity.type, EntityTypes.BOAT) && !entity.isMinecart() || entity.type == EntityTypes.ARMOR_STAND) {
                         continue;
+                    }
 
                     SimpleCollisionBox entityBox = entity.getPossibleCollisionBoxes();
 
-                    if (expandedPlayerBox.isCollided(entityBox))
+                    if (expandedPlayerBox.isCollided(entityBox)) {
                         possibleCollidingEntities++;
+                    }
                 }
             }
 
@@ -88,8 +90,9 @@ public class MovementTicker {
         boolean calculatedOnGround = (player.verticalCollision && inputVel.getY() < 0.0D);
 
         // If the player is on the ground with a y velocity of 0, let the player decide (too close to call)
-        if (inputVel.getY() == -SimpleCollisionBox.COLLISION_EPSILON && collide.getY() > -SimpleCollisionBox.COLLISION_EPSILON && collide.getY() <= 0 && !player.compensatedEntities.getSelf().inVehicle())
+        if (inputVel.getY() == -SimpleCollisionBox.COLLISION_EPSILON && collide.getY() > -SimpleCollisionBox.COLLISION_EPSILON && collide.getY() <= 0 && !player.compensatedEntities.getSelf().inVehicle()) {
             calculatedOnGround = player.onGround;
+        }
         player.clientClaimsLastOnGround = player.onGround;
 
         // Fix step movement inside of water
@@ -173,8 +176,9 @@ public class MovementTicker {
         player.stuckSpeedMultiplier = new Vector(1, 1, 1);
 
         // 1.15 and older clients use the handleInsideBlocks method for lava
-        if (player.getClientVersion().isOlderThan(ClientVersion.V_1_16))
+        if (player.getClientVersion().isOlderThan(ClientVersion.V_1_16)) {
             player.wasTouchingLava = false;
+        }
 
         Collisions.handleInsideBlocks(player);
 
@@ -225,7 +229,9 @@ public class MovementTicker {
 
         // Work around a bug introduced in 1.14 where a player colliding with an X and Z wall maintains X momentum
         if (player.getClientVersion().isOlderThan(ClientVersion.V_1_14) || player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_18_2)) // 1.18.2 fixes this.
+        {
             return;
+        }
 
         // YXZ or YZX collision order
         // Except 0.03 causing apparent XZY or ZXY collision order
@@ -323,8 +329,9 @@ public class MovementTicker {
         float swimFriction;
 
         double lavaLevel = 0;
-        if (canStandOnLava())
+        if (canStandOnLava()) {
             lavaLevel = player.compensatedWorld.getLavaFluidLevelAt(GrimMath.floor(player.lastX), GrimMath.floor(player.lastY), GrimMath.floor(player.lastZ));
+        }
 
         if (player.wasTouchingWater && !player.isFlying) {
             // 0.8F seems hardcoded in
@@ -375,14 +382,16 @@ public class MovementTicker {
                     player.clientVelocity.multiply(0.5D);
                 }
 
-                if (player.hasGravity)
+                if (player.hasGravity) {
                     player.clientVelocity.add(new Vector(0.0D, -playerGravity / 4.0D, 0.0D));
+                }
 
             } else if (player.isGliding) {
                 player.friction = 0.99F; // Not vanilla, just useful for other grim stuff
                 // Set fall distance to 1 if the player’s y velocity is greater than -0.5 when falling
-                if (player.clientVelocity.getY() > -0.5)
+                if (player.clientVelocity.getY() > -0.5) {
                     player.fallDistance = 1;
+                }
 
                 new PredictionEngineElytra().guessBestMovement(0, player);
 

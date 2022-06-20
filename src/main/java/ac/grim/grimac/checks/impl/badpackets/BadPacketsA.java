@@ -12,7 +12,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientHe
 public class BadPacketsA extends PacketCheck {
     int lastSlot = -1;
 
-    public BadPacketsA(final GrimPlayer player) {
+    public BadPacketsA(GrimPlayer player) {
         super(player);
     }
 

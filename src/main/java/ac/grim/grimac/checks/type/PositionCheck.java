@@ -6,11 +6,11 @@ import ac.grim.grimac.utils.anticheat.update.PositionUpdate;
 
 public class PositionCheck extends Check<PositionUpdate> {
 
-    public PositionCheck(final GrimPlayer playerData) {
+    public PositionCheck(GrimPlayer playerData) {
         super(playerData);
     }
 
-    public void onPositionUpdate(final PositionUpdate positionUpdate) {
+    public void onPositionUpdate(PositionUpdate positionUpdate) {
 
     }
 }

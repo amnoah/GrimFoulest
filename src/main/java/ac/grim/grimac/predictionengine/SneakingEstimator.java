@@ -48,11 +48,17 @@ public class SneakingEstimator extends PostPredictionCheck {
     }
 
     @Override
-    public void onPredictionComplete(final PredictionComplete predictionComplete) {
+    public void onPredictionComplete(PredictionComplete predictionComplete) {
         double trueFriction = player.lastOnGround ? player.friction * 0.91 : 0.91;
-        if (player.wasTouchingLava) trueFriction = 0.5;
-        if (player.wasTouchingWater) trueFriction = 0.96;
-        if (player.isGliding) trueFriction = 0.99;
+        if (player.wasTouchingLava) {
+            trueFriction = 0.5;
+        }
+        if (player.wasTouchingWater) {
+            trueFriction = 0.96;
+        }
+        if (player.isGliding) {
+            trueFriction = 0.99;
+        }
 
         // START HACKERY
 

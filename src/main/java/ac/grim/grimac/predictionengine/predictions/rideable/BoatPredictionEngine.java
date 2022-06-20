@@ -94,7 +94,7 @@ public class BoatPredictionEngine extends PredictionEngine {
                     if (level > 0) {
                         float f = (float) ((float) l1 + level);
                         grimPlayer.vehicleData.waterLevel = Math.max(f, grimPlayer.vehicleData.waterLevel);
-                        flag |= axisalignedbb.minY < (double) f;
+                        flag |= axisalignedbb.minY < f;
                     }
                 }
             }
@@ -135,7 +135,7 @@ public class BoatPredictionEngine extends PredictionEngine {
             }
         }
 
-        return f / (float) k1;
+        return f / k1;
     }
 
     @Override
@@ -244,11 +244,11 @@ public class BoatPredictionEngine extends PredictionEngine {
             }
 
             if (f < 1.0F) {
-                return (float) k1 + f;
+                return k1 + f;
             }
         }
 
-        return (float) (l + 1);
+        return (l + 1);
     }
 
     private void controlBoat(GrimPlayer player, Vector vector) {

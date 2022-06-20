@@ -14,7 +14,7 @@ import java.util.BitSet;
 
 public class PacketWorldReaderEight extends BasePacketWorldReader {
     @Override
-    public void handleMapChunkBulk(final GrimPlayer player, final PacketSendEvent event) {
+    public void handleMapChunkBulk(GrimPlayer player, PacketSendEvent event) {
         PacketWrapper wrapper = new PacketWrapper(event);
         ByteBuf buffer = (ByteBuf) wrapper.getBuffer();
 
@@ -46,25 +46,25 @@ public class PacketWorldReaderEight extends BasePacketWorldReader {
     }
 
     @Override
-    public void handleMapChunk(final GrimPlayer player, final PacketSendEvent event) {
+    public void handleMapChunk(GrimPlayer player, PacketSendEvent event) {
         PacketWrapper wrapper = new PacketWrapper(event);
 
-        final int chunkX = wrapper.readInt();
-        final int chunkZ = wrapper.readInt();
+        int chunkX = wrapper.readInt();
+        int chunkZ = wrapper.readInt();
         boolean groundUp = wrapper.readBoolean();
 
-        BitSet mask = BitSet.valueOf(new long[]{(long) wrapper.readUnsignedShort()});
+        BitSet mask = BitSet.valueOf(new long[]{wrapper.readUnsignedShort()});
         int size = wrapper.readVarInt(); // Ignore size
 
-        final Chunk_v1_9[] chunks = new Chunk_v1_9[16];
-        this.readChunk((ByteBuf) event.getByteBuf(), chunks, mask);
+        Chunk_v1_9[] chunks = new Chunk_v1_9[16];
+        readChunk((ByteBuf) event.getByteBuf(), chunks, mask);
 
-        this.addChunkToCache(event, player, chunks, groundUp, chunkX, chunkZ);
+        addChunkToCache(event, player, chunks, groundUp, chunkX, chunkZ);
 
         event.setLastUsedWrapper(null); // Make sure this incomplete packet isn't sent
     }
 
-    private void readChunk(final ByteBuf buf, final Chunk_v1_9[] chunks, final BitSet set) {
+    private void readChunk(ByteBuf buf, Chunk_v1_9[] chunks, BitSet set) {
         for (int ind = 0; ind < 16; ++ind) {
             if (set.get(ind)) {
                 chunks[ind] = readChunk(buf);
@@ -72,7 +72,7 @@ public class PacketWorldReaderEight extends BasePacketWorldReader {
         }
     }
 
-    public Chunk_v1_9 readChunk(final ByteBuf in) {
+    public Chunk_v1_9 readChunk(ByteBuf in) {
         ListPalette palette = new ListPalette(4);
         BitStorage storage = new BitStorage(4, 4096);
         DataPalette dataPalette = new DataPalette(palette, storage, PaletteType.CHUNK);

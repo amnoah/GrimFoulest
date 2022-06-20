@@ -6,11 +6,11 @@ public class LegacyFastMath {
 
     static {
         for (int i = 0; i < 4096; ++i) {
-            SIN_TABLE_FAST[i] = (float) Math.sin(((float) i + 0.5F) / 4096.0F * ((float) Math.PI * 2F));
+            SIN_TABLE_FAST[i] = (float) Math.sin((i + 0.5F) / 4096.0F * ((float) Math.PI * 2F));
         }
 
         for (int i = 0; i < 360; i += 90) {
-            SIN_TABLE_FAST[(int) ((float) i * 11.377778F) & 4095] = (float) Math.sin((float) i * 0.017453292F);
+            SIN_TABLE_FAST[(int) (i * 11.377778F) & 4095] = (float) Math.sin(i * 0.017453292F);
         }
     }
 

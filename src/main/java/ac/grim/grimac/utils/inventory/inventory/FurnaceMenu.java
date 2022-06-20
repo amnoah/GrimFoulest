@@ -28,12 +28,12 @@ public class FurnaceMenu extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(int slotID) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotID);
+        Slot slot = slots.get(slotID);
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             if (slotID == 2) {
-                if (!this.moveItemStackTo(itemstack1, 3, 39, true)) {
+                if (!moveItemStackTo(itemstack1, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
             } else if (slotID != 1 && slotID != 0) {
@@ -42,21 +42,21 @@ public class FurnaceMenu extends AbstractContainerMenu {
                 // TODO: Smelting recipes (Sent to the player but still painful)
 
                 if (canSmelt.get()) {
-                    if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
+                    if (!moveItemStackTo(itemstack1, 0, 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (itemstack1.getType().getAttributes().contains(ItemTypes.ItemAttribute.FUEL)) {
-                    if (!this.moveItemStackTo(itemstack1, 1, 2, false)) {
+                    if (!moveItemStackTo(itemstack1, 1, 2, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (slotID >= 3 && slotID < 30) {
-                    if (!this.moveItemStackTo(itemstack1, 30, 39, false)) {
+                } else if (slotID < 30) {
+                    if (!moveItemStackTo(itemstack1, 30, 39, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (slotID >= 30 && slotID < 39 && !this.moveItemStackTo(itemstack1, 3, 30, false)) {
+                } else if (slotID < 39 && !moveItemStackTo(itemstack1, 3, 30, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(itemstack1, 3, 39, false)) {
+            } else if (!moveItemStackTo(itemstack1, 3, 39, false)) {
                 return ItemStack.EMPTY;
             }
 

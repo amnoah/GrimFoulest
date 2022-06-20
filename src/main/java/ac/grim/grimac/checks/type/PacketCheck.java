@@ -8,17 +8,17 @@ import com.github.retrooper.packetevents.event.PacketSendEvent;
 
 public abstract class PacketCheck extends Check<Object> {
 
-    public PacketCheck(final GrimPlayer playerData) {
+    public PacketCheck(GrimPlayer playerData) {
         super(playerData);
     }
 
-    public void onPacketReceive(final PacketReceiveEvent event) {
+    public void onPacketReceive(PacketReceiveEvent event) {
     }
 
-    public void onPacketSend(final PacketSendEvent event) {
+    public void onPacketSend(PacketSendEvent event) {
     }
 
-    public void onPositionUpdate(final PositionUpdate positionUpdate) {
+    public void onPositionUpdate(PositionUpdate positionUpdate) {
 
     }
 }

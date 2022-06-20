@@ -14,8 +14,8 @@ import org.bukkit.Bukkit;
 import java.util.*;
 
 public class PunishmentManager {
-    GrimPlayer player;
-    List<PunishGroup> groups = new ArrayList<>();
+    final GrimPlayer player;
+    final List<PunishGroup> groups = new ArrayList<>();
 
     public PunishmentManager(GrimPlayer player) {
         this.player = player;
@@ -86,7 +86,7 @@ public class PunishmentManager {
                             String cmd = command.getCommand();
 
                             // Streams are slow but this isn't a hot path... it's fine.
-                            String vl = group.violations.values().stream().filter((e) -> e == check).count() + "";
+                            String vl = String.valueOf(group.violations.values().stream().filter((e) -> e == check).count());
 
                             cmd = cmd.replace("[alert]", alertString);
                             cmd = cmd.replace("%check_name%", check.getCheckName());
@@ -95,7 +95,9 @@ public class PunishmentManager {
 
                             CommandExecuteEvent executeEvent = new CommandExecuteEvent(check, cmd);
                             Bukkit.getPluginManager().callEvent(executeEvent);
-                            if (executeEvent.isCancelled()) continue;
+                            if (executeEvent.isCancelled()) {
+                                continue;
+                            }
 
                             if (cmd.equals("[webhook]")) {
                                 GrimAPI.INSTANCE.getDiscordManager().sendAlert(player, verbose, check.getCheckName(), vl);

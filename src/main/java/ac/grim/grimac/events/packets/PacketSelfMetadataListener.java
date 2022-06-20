@@ -31,10 +31,11 @@ public class PacketSelfMetadataListener extends PacketListenerAbstract {
     public void onPacketSend(PacketSendEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) {
             WrapperPlayServerEntityMetadata entityMetadata = new WrapperPlayServerEntityMetadata(event);
-
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null)
+
+            if (player == null) {
                 return;
+            }
 
             if (entityMetadata.getEntityId() == player.entityID) {
                 // If we send multiple transactions, we are very likely to split them
@@ -80,7 +81,7 @@ public class PacketSelfMetadataListener extends PacketListenerAbstract {
                         boolean isSwimming = (field & 0x10) == 0x10;
                         boolean isSprinting = (field & 0x8) == 0x8;
 
-                        if (!hasSendTransaction) player.sendTransaction();
+                        player.sendTransaction();
                         hasSendTransaction = true;
 
                         player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
@@ -102,7 +103,9 @@ public class PacketSelfMetadataListener extends PacketListenerAbstract {
                         Object gravityObject = gravity.getValue();
 
                         if (gravityObject instanceof Boolean) {
-                            if (!hasSendTransaction) player.sendTransaction();
+                            if (!hasSendTransaction) {
+                                player.sendTransaction();
+                            }
                             hasSendTransaction = true;
 
                             player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
@@ -118,11 +121,11 @@ public class PacketSelfMetadataListener extends PacketListenerAbstract {
                     EntityData frozen = WatchableIndexUtil.getIndex(entityMetadata.getEntityMetadata(), 7);
 
                     if (frozen != null) {
-                        if (!hasSendTransaction) player.sendTransaction();
+                        if (!hasSendTransaction) {
+                            player.sendTransaction();
+                        }
                         hasSendTransaction = true;
-                        player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
-                            player.powderSnowFrozenTicks = (int) frozen.getValue();
-                        });
+                        player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> player.powderSnowFrozenTicks = (int) frozen.getValue());
                     }
                 }
 
@@ -139,7 +142,9 @@ public class PacketSelfMetadataListener extends PacketListenerAbstract {
 
                     EntityData bedObject = WatchableIndexUtil.getIndex(entityMetadata.getEntityMetadata(), id);
                     if (bedObject != null) {
-                        if (!hasSendTransaction) player.sendTransaction();
+                        if (!hasSendTransaction) {
+                            player.sendTransaction();
+                        }
                         hasSendTransaction = true;
 
                         player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
@@ -163,12 +168,11 @@ public class PacketSelfMetadataListener extends PacketListenerAbstract {
                     if (riptide != null && riptide.getValue() instanceof Byte) {
                         boolean isRiptiding = (((byte) riptide.getValue()) & 0x04) == 0x04;
 
-                        if (!hasSendTransaction) player.sendTransaction();
-                        hasSendTransaction = true;
+                        if (!hasSendTransaction) {
+                            player.sendTransaction();
+                        }
 
-                        player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
-                            player.isRiptidePose = isRiptiding;
-                        });
+                        player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> player.isRiptidePose = isRiptiding);
 
                         // 1.9 eating:
                         // - Client: I am starting to eat

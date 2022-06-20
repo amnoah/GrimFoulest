@@ -15,9 +15,11 @@ public class FabricatedPlace extends BlockPlaceCheck {
     }
 
     @Override
-    public void onBlockPlace(final BlockPlace place) {
+    public void onBlockPlace(BlockPlace place) {
         Vector3f cursor = place.getCursor();
-        if (cursor == null) return;
+        if (cursor == null) {
+            return;
+        }
 
         double allowed = Materials.isShapeExceedsCube(place.getPlacedAgainstMaterial()) || place.getPlacedAgainstMaterial() == StateTypes.LECTERN ? 1.5 : 1;
         double minAllowed = 1 - allowed;

@@ -4,6 +4,7 @@ import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.manager.init.Initable;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfo;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -38,7 +39,9 @@ public class SpectateManager implements Initable {
     }
 
     public boolean enable(Player player) {
-        if (spectatingPlayers.containsKey(player.getUniqueId())) return false;
+        if (spectatingPlayers.containsKey(player.getUniqueId())) {
+            return false;
+        }
         spectatingPlayers.put(player.getUniqueId(), new PreviousState(player.getGameMode(), player.getLocation()));
         return true;
     }
@@ -66,13 +69,12 @@ public class SpectateManager implements Initable {
     }
 
     private static class PreviousState {
-        public PreviousState(org.bukkit.GameMode gameMode, Location location) {
+        private final GameMode gameMode;
+        private final Location location;
+        public PreviousState(GameMode gameMode, Location location) {
             this.gameMode = gameMode;
             this.location = location;
         }
-
-        private final org.bukkit.GameMode gameMode;
-        private final Location location;
     }
 
 }

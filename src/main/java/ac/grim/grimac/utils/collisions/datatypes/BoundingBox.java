@@ -4,7 +4,12 @@ import org.bukkit.util.Vector;
 
 public class BoundingBox {
 
-    public float minX, minY, minZ, maxX, maxY, maxZ;
+    public final float minX;
+    public final float minY;
+    public final float minZ;
+    public final float maxX;
+    public final float maxY;
+    public final float maxZ;
 
     public BoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
         this.minX = minX;
@@ -16,21 +21,21 @@ public class BoundingBox {
     }
 
     public BoundingBox(Vector min, Vector max) {
-        this.minX = (float) Math.min(min.getX(), max.getX());
-        this.minY = (float) Math.min(min.getY(), max.getY());
-        this.minZ = (float) Math.min(min.getZ(), max.getZ());
-        this.maxX = (float) Math.max(min.getX(), max.getX());
-        this.maxY = (float) Math.max(min.getY(), max.getY());
-        this.maxZ = (float) Math.max(min.getZ(), max.getZ());
+        minX = (float) Math.min(min.getX(), max.getX());
+        minY = (float) Math.min(min.getY(), max.getY());
+        minZ = (float) Math.min(min.getZ(), max.getZ());
+        maxX = (float) Math.max(min.getX(), max.getX());
+        maxY = (float) Math.max(min.getY(), max.getY());
+        maxZ = (float) Math.max(min.getZ(), max.getZ());
     }
 
     public BoundingBox(BoundingBox one, BoundingBox two) {
-        this.minX = Math.min(one.minX, two.minX);
-        this.minY = Math.min(one.minY, two.minY);
-        this.minZ = Math.min(one.minZ, two.minZ);
-        this.maxX = Math.max(one.maxX, two.maxX);
-        this.maxY = Math.max(one.maxY, two.maxY);
-        this.maxZ = Math.max(one.maxZ, two.maxZ);
+        minX = Math.min(one.minX, two.minX);
+        minY = Math.min(one.minY, two.minY);
+        minZ = Math.min(one.minZ, two.minZ);
+        maxX = Math.max(one.maxX, two.maxX);
+        maxY = Math.max(one.maxY, two.maxY);
+        maxZ = Math.max(one.maxZ, two.maxZ);
     }
 
     public BoundingBox add(float x, float y, float z) {
@@ -88,7 +93,7 @@ public class BoundingBox {
     }
 
     public boolean intersectsWithBox(Vector vector) {
-        return (vector.getX() > this.minX && vector.getX() < this.maxX) && ((vector.getY() > this.minY && vector.getY() < this.maxY) && (vector.getZ() > this.minZ && vector.getZ() < this.maxZ));
+        return (vector.getX() > minX && vector.getX() < maxX) && ((vector.getY() > minY && vector.getY() < maxY) && (vector.getZ() > minZ && vector.getZ() < maxZ));
     }
 
     public Vector getMinimum() {
@@ -100,15 +105,15 @@ public class BoundingBox {
     }
 
     public boolean collides(Vector vector) {
-        return (vector.getX() >= this.minX && vector.getX() <= this.maxX) && ((vector.getY() >= this.minY && vector.getY() <= this.maxY) && (vector.getZ() >= this.minZ && vector.getZ() <= this.maxZ));
+        return (vector.getX() >= minX && vector.getX() <= maxX) && ((vector.getY() >= minY && vector.getY() <= maxY) && (vector.getZ() >= minZ && vector.getZ() <= maxZ));
     }
 
     public boolean collidesHorizontally(Vector vector) {
-        return (vector.getX() >= this.minX && vector.getX() <= this.maxX) && ((vector.getY() > this.minY && vector.getY() < this.maxY) && (vector.getZ() >= this.minZ && vector.getZ() <= this.maxZ));
+        return (vector.getX() >= minX && vector.getX() <= maxX) && ((vector.getY() > minY && vector.getY() < maxY) && (vector.getZ() >= minZ && vector.getZ() <= maxZ));
     }
 
     public boolean collidesVertically(Vector vector) {
-        return (vector.getX() > this.minX && vector.getX() < this.maxX) && ((vector.getY() >= this.minY && vector.getY() <= this.maxY) && (vector.getZ() > this.minZ && vector.getZ() < this.maxZ));
+        return (vector.getX() > minX && vector.getX() < maxX) && ((vector.getY() >= minY && vector.getY() <= maxY) && (vector.getZ() > minZ && vector.getZ() < maxZ));
     }
 
     /**
@@ -117,25 +122,23 @@ public class BoundingBox {
      * calculated offset.  Otherwise return the calculated offset.
      */
     public double calculateXOffset(BoundingBox other, double offsetX) {
-        if (other.maxY > this.minY && other.minY < this.maxY && other.maxZ > this.minZ && other.minZ < this.maxZ) {
-            if (offsetX > 0.0D && other.maxX <= this.minX) {
-                double d1 = this.minX - other.maxX;
+        if (other.maxY > minY && other.minY < maxY && other.maxZ > minZ && other.minZ < maxZ) {
+            if (offsetX > 0.0D && other.maxX <= minX) {
+                double d1 = minX - other.maxX;
 
                 if (d1 < offsetX) {
                     offsetX = d1;
                 }
-            } else if (offsetX < 0.0D && other.minX >= this.maxX) {
-                double d0 = this.maxX - other.minX;
+            } else if (offsetX < 0.0D && other.minX >= maxX) {
+                double d0 = maxX - other.minX;
 
                 if (d0 > offsetX) {
                     offsetX = d0;
                 }
             }
 
-            return offsetX;
-        } else {
-            return offsetX;
         }
+        return offsetX;
     }
 
     /**
@@ -144,25 +147,23 @@ public class BoundingBox {
      * calculated offset.  Otherwise return the calculated offset.
      */
     public double calculateYOffset(BoundingBox other, double offsetY) {
-        if (other.maxX > this.minX && other.minX < this.maxX && other.maxZ > this.minZ && other.minZ < this.maxZ) {
-            if (offsetY > 0.0D && other.maxY <= this.minY) {
-                double d1 = this.minY - other.maxY;
+        if (other.maxX > minX && other.minX < maxX && other.maxZ > minZ && other.minZ < maxZ) {
+            if (offsetY > 0.0D && other.maxY <= minY) {
+                double d1 = minY - other.maxY;
 
                 if (d1 < offsetY) {
                     offsetY = d1;
                 }
-            } else if (offsetY < 0.0D && other.minY >= this.maxY) {
-                double d0 = this.maxY - other.minY;
+            } else if (offsetY < 0.0D && other.minY >= maxY) {
+                double d0 = maxY - other.minY;
 
                 if (d0 > offsetY) {
                     offsetY = d0;
                 }
             }
 
-            return offsetY;
-        } else {
-            return offsetY;
         }
+        return offsetY;
     }
 
     /**
@@ -171,34 +172,32 @@ public class BoundingBox {
      * calculated offset.  Otherwise return the calculated offset.
      */
     public double calculateZOffset(BoundingBox other, double offsetZ) {
-        if (other.maxX > this.minX && other.minX < this.maxX && other.maxY > this.minY && other.minY < this.maxY) {
-            if (offsetZ > 0.0D && other.maxZ <= this.minZ) {
-                double d1 = this.minZ - other.maxZ;
+        if (other.maxX > minX && other.minX < maxX && other.maxY > minY && other.minY < maxY) {
+            if (offsetZ > 0.0D && other.maxZ <= minZ) {
+                double d1 = minZ - other.maxZ;
 
                 if (d1 < offsetZ) {
                     offsetZ = d1;
                 }
-            } else if (offsetZ < 0.0D && other.minZ >= this.maxZ) {
-                double d0 = this.maxZ - other.minZ;
+            } else if (offsetZ < 0.0D && other.minZ >= maxZ) {
+                double d0 = maxZ - other.minZ;
 
                 if (d0 > offsetZ) {
                     offsetZ = d0;
                 }
             }
 
-            return offsetZ;
-        } else {
-            return offsetZ;
         }
+        return offsetZ;
     }
 
     public BoundingBox addCoord(float x, float y, float z) {
-        float d0 = this.minX;
-        float d1 = this.minY;
-        float d2 = this.minZ;
-        float d3 = this.maxX;
-        float d4 = this.maxY;
-        float d5 = this.maxZ;
+        float d0 = minX;
+        float d1 = minY;
+        float d2 = minZ;
+        float d3 = maxX;
+        float d4 = maxY;
+        float d5 = maxZ;
 
         if (x < 0.0D) {
             d0 += x;

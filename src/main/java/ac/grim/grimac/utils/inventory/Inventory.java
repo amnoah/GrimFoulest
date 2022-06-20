@@ -27,8 +27,8 @@ public class Inventory extends AbstractContainerMenu {
     public Inventory(GrimPlayer player, InventoryStorage inventoryStorage) {
         this.inventoryStorage = inventoryStorage;
 
-        super.setPlayer(player);
-        super.setPlayerInventory(this);
+        setPlayer(player);
+        setPlayerInventory(this);
 
         // Result slot
         addSlot(new ResultSlot(inventoryStorage, 0));
@@ -89,7 +89,7 @@ public class Inventory extends AbstractContainerMenu {
     }
 
     public boolean add(ItemStack p_36055_) {
-        return this.add(-1, p_36055_);
+        return add(-1, p_36055_);
     }
 
     public int getFreeSlot() {
@@ -103,13 +103,13 @@ public class Inventory extends AbstractContainerMenu {
     }
 
     public int getSlotWithRemainingSpace(ItemStack toAdd) {
-        if (this.hasRemainingSpaceForItem(getHeldItem(), toAdd)) {
-            return this.selected;
-        } else if (this.hasRemainingSpaceForItem(getOffhandItem(), toAdd)) {
+        if (hasRemainingSpaceForItem(getHeldItem(), toAdd)) {
+            return selected;
+        } else if (hasRemainingSpaceForItem(getOffhandItem(), toAdd)) {
             return 40;
         } else {
             for (int i = ITEMS_START; i <= ITEMS_END; ++i) {
-                if (this.hasRemainingSpaceForItem(inventoryStorage.getItem(i), toAdd)) {
+                if (hasRemainingSpaceForItem(inventoryStorage.getItem(i), toAdd)) {
                     return i;
                 }
             }
@@ -119,16 +119,16 @@ public class Inventory extends AbstractContainerMenu {
     }
 
     private boolean hasRemainingSpaceForItem(ItemStack one, ItemStack two) {
-        return !one.isEmpty() && ItemStack.isSameItemSameTags(one, two) && one.getAmount() < one.getMaxStackSize() && one.getAmount() < this.getMaxStackSize();
+        return !one.isEmpty() && ItemStack.isSameItemSameTags(one, two) && one.getAmount() < one.getMaxStackSize() && one.getAmount() < getMaxStackSize();
     }
 
     private int addResource(ItemStack resource) {
-        int i = this.getSlotWithRemainingSpace(resource);
+        int i = getSlotWithRemainingSpace(resource);
         if (i == -1) {
-            i = this.getFreeSlot();
+            i = getFreeSlot();
         }
 
-        return i == -1 ? resource.getAmount() : this.addResource(i, resource);
+        return i == -1 ? resource.getAmount() : addResource(i, resource);
     }
 
     private int addResource(int slot, ItemStack stack) {
@@ -141,22 +141,17 @@ public class Inventory extends AbstractContainerMenu {
             inventoryStorage.setItem(slot, itemstack);
         }
 
-        int j = i;
-        if (i > itemstack.getMaxStackSize() - itemstack.getAmount()) {
-            j = itemstack.getMaxStackSize() - itemstack.getAmount();
+        int j = Math.min(i, itemstack.getMaxStackSize() - itemstack.getAmount());
+
+        if (j > getMaxStackSize() - itemstack.getAmount()) {
+            j = getMaxStackSize() - itemstack.getAmount();
         }
 
-        if (j > this.getMaxStackSize() - itemstack.getAmount()) {
-            j = this.getMaxStackSize() - itemstack.getAmount();
-        }
-
-        if (j == 0) {
-            return i;
-        } else {
+        if (j != 0) {
             i = i - j;
             itemstack.grow(j);
-            return i;
         }
+        return i;
     }
 
     public boolean add(int p_36041_, ItemStack p_36042_) {
@@ -165,7 +160,7 @@ public class Inventory extends AbstractContainerMenu {
         } else {
             if (p_36042_.isDamaged()) {
                 if (p_36041_ == -1) {
-                    p_36041_ = this.getFreeSlot();
+                    p_36041_ = getFreeSlot();
                 }
 
                 if (p_36041_ >= 0) {
@@ -183,9 +178,9 @@ public class Inventory extends AbstractContainerMenu {
                 do {
                     i = p_36042_.getAmount();
                     if (p_36041_ == -1) {
-                        p_36042_.setAmount(this.addResource(p_36042_));
+                        p_36042_.setAmount(addResource(p_36042_));
                     } else {
-                        p_36042_.setAmount(this.addResource(p_36041_, p_36042_));
+                        p_36042_.setAmount(addResource(p_36041_, p_36042_));
                     }
                 } while (!p_36042_.isEmpty() && p_36042_.getAmount() < i);
 
@@ -209,35 +204,35 @@ public class Inventory extends AbstractContainerMenu {
             original = toMove.copy();
             EquipmentType equipmentslot = EquipmentType.getEquipmentSlotForItem(original);
             if (slotID == 0) {
-                if (!this.moveItemStackTo(toMove, 9, 45, true)) {
+                if (!moveItemStackTo(toMove, 9, 45, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (slotID >= 1 && slotID < 5) {
-                if (!this.moveItemStackTo(toMove, 9, 45, false)) {
+            } else if (slotID < 5) {
+                if (!moveItemStackTo(toMove, 9, 45, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (slotID >= 5 && slotID < 9) {
-                if (!this.moveItemStackTo(toMove, 9, 45, false)) {
+            } else if (slotID < 9) {
+                if (!moveItemStackTo(toMove, 9, 45, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (equipmentslot.isArmor() && !getSlots().get(8 - equipmentslot.getIndex()).hasItem()) {
                 int i = 8 - equipmentslot.getIndex();
-                if (!this.moveItemStackTo(toMove, i, i + 1, false)) {
+                if (!moveItemStackTo(toMove, i, i + 1, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (equipmentslot == EquipmentType.OFFHAND && !getSlots().get(45).hasItem()) {
-                if (!this.moveItemStackTo(toMove, 45, 46, false)) {
+                if (!moveItemStackTo(toMove, 45, 46, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (slotID >= 9 && slotID < 36) {
-                if (!this.moveItemStackTo(toMove, 36, 45, false)) {
+            } else if (slotID < 36) {
+                if (!moveItemStackTo(toMove, 36, 45, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (slotID >= 36 && slotID < 45) {
-                if (!this.moveItemStackTo(toMove, 9, 36, false)) {
+            } else if (slotID < 45) {
+                if (!moveItemStackTo(toMove, 9, 36, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(toMove, 9, 45, false)) {
+            } else if (!moveItemStackTo(toMove, 9, 45, false)) {
                 return ItemStack.EMPTY;
             }
 

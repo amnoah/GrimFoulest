@@ -20,7 +20,9 @@ import com.github.retrooper.packetevents.util.Vector3d;
 public class BoundingBoxSize {
     public static float getWidth(GrimPlayer player, PacketEntity packetEntity) {
         // Turtles are the only baby animal that don't follow the * 0.5 rule
-        if (packetEntity.type == EntityTypes.TURTLE && packetEntity.isBaby) return 0.36f;
+        if (packetEntity.type == EntityTypes.TURTLE && packetEntity.isBaby) {
+            return 0.36f;
+        }
         return getWidthMinusBaby(player, packetEntity) * (packetEntity.isBaby ? 0.5f : 1f);
     }
 
@@ -133,16 +135,16 @@ public class BoundingBoxSize {
 
                 Vector3d vec3 = (new Vector3d(f, 0.0D, 0.0D));
                 vec3 = yRot(-xRotEntity.interpYaw * ((float) Math.PI / 180F) - ((float) Math.PI / 2F), vec3);
-                return new Vector3d(x + vec3.x, y + (double) f1, z + vec3.z);
+                return new Vector3d(x + vec3.x, y + f1, z + vec3.z);
             } else if (entity.type == EntityTypes.LLAMA) {
                 float f = player.trigHandler.cos(xRotEntity.interpYaw * ((float) Math.PI / 180F));
                 float f1 = player.trigHandler.sin(xRotEntity.interpYaw * ((float) Math.PI / 180F));
-                return new Vector3d(x + (double) (0.3F * f1), y + getPassengerRidingOffset(player, entity) - 0.35f, z + (double) (0.3F * f));
+                return new Vector3d(x + (0.3F * f1), y + getPassengerRidingOffset(player, entity) - 0.35f, z + (0.3F * f));
             } else if (entity.type == EntityTypes.CHICKEN) {
                 float f = player.trigHandler.sin(xRotEntity.interpYaw * ((float) Math.PI / 180F));
                 float f1 = player.trigHandler.cos(xRotEntity.interpYaw * ((float) Math.PI / 180F));
                 y = y + (getHeight(player, entity) * 0.5f);
-                return new Vector3d(x + (double) (0.1F * f), y - 0.35f, z - (double) (0.1F * f1));
+                return new Vector3d(x + (0.1F * f), y - 0.35f, z - (0.1F * f1));
             }
         }
 
@@ -152,15 +154,17 @@ public class BoundingBoxSize {
     private static Vector3d yRot(float p_82525_, Vector3d start) {
         float f = (float) Math.cos(p_82525_);
         float f1 = (float) Math.sin(p_82525_);
-        double d0 = start.getX() * (double) f + start.getZ() * (double) f1;
+        double d0 = start.getX() * f + start.getZ() * f1;
         double d1 = start.getY();
-        double d2 = start.getZ() * (double) f - start.getX() * (double) f1;
+        double d2 = start.getZ() * f - start.getX() * f1;
         return new Vector3d(d0, d1, d2);
     }
 
     public static float getHeight(GrimPlayer player, PacketEntity packetEntity) {
         // Turtles are the only baby animal that don't follow the * 0.5 rule
-        if (packetEntity.type == EntityTypes.TURTLE && packetEntity.isBaby) return 0.12f;
+        if (packetEntity.type == EntityTypes.TURTLE && packetEntity.isBaby) {
+            return 0.12f;
+        }
         return getHeightMinusBaby(player, packetEntity) * (packetEntity.isBaby ? 0.5f : 1f);
     }
 
@@ -185,8 +189,9 @@ public class BoundingBoxSize {
     }
 
     public static double getPassengerRidingOffset(GrimPlayer player, PacketEntity packetEntity) {
-        if (packetEntity instanceof PacketEntityHorse)
+        if (packetEntity instanceof PacketEntityHorse) {
             return (getHeight(player, packetEntity) * 0.75) - 0.25;
+        }
 
         if (EntityTypes.isTypeInstanceOf(packetEntity.type, EntityTypes.MINECART_ABSTRACT)) {
             return 0;

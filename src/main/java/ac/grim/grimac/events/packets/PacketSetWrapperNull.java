@@ -10,7 +10,6 @@ import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.GameMode;
-import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfo;
@@ -34,7 +33,9 @@ public class PacketSetWrapperNull extends PacketListenerAbstract {
             }
         } else if (event.getPacketType() == PacketType.Play.Server.PLAYER_INFO) {
             //iterate through players and fake their game mode if they are spectating via grim spectate
-            if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThanOrEquals(ServerVersion.V_1_12_2)) return;
+            if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThanOrEquals(ServerVersion.V_1_12_2)) {
+                return;
+            }
 
             GrimPlayer receiver = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
 
@@ -51,7 +52,9 @@ public class PacketSetWrapperNull extends PacketListenerAbstract {
                 for (WrapperPlayServerPlayerInfo.PlayerData playerData : nmsPlayerInfoDataList) {
                     if (GrimAPI.INSTANCE.getSpectateManager().shouldHidePlayer(receiver, playerData)) {
                         hideCount++;
-                        if (playerData.getGameMode() == GameMode.SPECTATOR) playerData.setGameMode(GameMode.SURVIVAL);
+                        if (playerData.getGameMode() == GameMode.SPECTATOR) {
+                            playerData.setGameMode(GameMode.SURVIVAL);
+                        }
                     }
                 }
 
@@ -69,6 +72,8 @@ public class PacketSetWrapperNull extends PacketListenerAbstract {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (!WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) event.setLastUsedWrapper(null);
+        if (!WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            event.setLastUsedWrapper(null);
+        }
     }
 }

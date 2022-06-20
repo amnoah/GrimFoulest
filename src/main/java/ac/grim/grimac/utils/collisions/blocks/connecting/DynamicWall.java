@@ -28,17 +28,22 @@ public class DynamicWall extends DynamicConnecting implements CollisionFactory {
         if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThan(ServerVersion.V_1_12_2)) {
             boolean sixteen = PacketEvents.getAPI().getServerManager().getVersion().isNewerThan(ServerVersion.V_1_16);
 
-            if (state.getNorth() != North.NONE)
+            if (state.getNorth() != North.NONE) {
                 north += state.getNorth() == North.LOW || sixteen ? 1 : 2;
-            if (state.getEast() != East.NONE)
+            }
+            if (state.getEast() != East.NONE) {
                 east += state.getEast() == East.LOW || sixteen ? 1 : 2;
-            if (state.getSouth() != South.NONE)
+            }
+            if (state.getSouth() != South.NONE) {
                 south += state.getSouth() == South.LOW || sixteen ? 1 : 2;
-            if (state.getWest() != West.NONE)
+            }
+            if (state.getWest() != West.NONE) {
                 west += state.getWest() == West.LOW || sixteen ? 1 : 2;
+            }
 
-            if (state.isUp())
+            if (state.isUp()) {
                 up = 1;
+            }
         } else {
             north = connectsTo(player, version, x, y, z, BlockFace.NORTH) ? 1 : 0;
             south = connectsTo(player, version, x, y, z, BlockFace.SOUTH) ? 1 : 0;

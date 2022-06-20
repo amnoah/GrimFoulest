@@ -29,7 +29,7 @@ public enum AxisUtil {
         return box;
     });
 
-    AxisSelect select;
+    final AxisSelect select;
 
     AxisUtil(AxisSelect select) {
         this.select = select;

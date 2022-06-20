@@ -18,7 +18,7 @@ import org.bukkit.block.data.BlockData;
 import java.util.HashMap;
 
 public class ResyncWorldUtil {
-    static HashMap<BlockData, Integer> blockDataToId = new HashMap<>();
+    static final HashMap<BlockData, Integer> blockDataToId = new HashMap<>();
 
     public static void resyncPositions(GrimPlayer player, SimpleCollisionBox box) {
         resyncPositions(player, GrimMath.floor(box.minX), GrimMath.floor(box.minY), GrimMath.floor(box.minZ),
@@ -31,20 +31,25 @@ public class ResyncWorldUtil {
         Bukkit.getScheduler().runTask(GrimAPI.INSTANCE.getPlugin(), () -> {
             boolean flat = PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_13);
 
-            if (player.bukkitPlayer == null) return;
+            if (player.bukkitPlayer == null) {
+                return;
+            }
             // Player hasn't spawned, don't spam packets
-            if (!player.getSetbackTeleportUtil().hasAcceptedSpawnTeleport) return;
+            if (!player.getSetbackTeleportUtil().hasAcceptedSpawnTeleport) {
+                return;
+            }
 
             // Check the 4 corners of the BB for loaded chunks, don't freeze main thread to load chunks.
             if (!player.bukkitPlayer.getWorld().isChunkLoaded(minBlockX >> 4, minBlockZ >> 4) || !player.bukkitPlayer.getWorld().isChunkLoaded(minBlockX >> 4, maxBlockZ >> 4)
-                    || !player.bukkitPlayer.getWorld().isChunkLoaded(maxBlockX >> 4, minBlockZ >> 4) || !player.bukkitPlayer.getWorld().isChunkLoaded(maxBlockX >> 4, maxBlockZ >> 4))
+                    || !player.bukkitPlayer.getWorld().isChunkLoaded(maxBlockX >> 4, minBlockZ >> 4) || !player.bukkitPlayer.getWorld().isChunkLoaded(maxBlockX >> 4, maxBlockZ >> 4)) {
                 return;
+            }
 
             // This is based on Tuinity's code, thanks leaf. Now merged into paper.
             // I have no idea how I could possibly get this more efficient...
-            final int minSection = player.compensatedWorld.getMinHeight() >> 4;
-            final int minBlock = minSection << 4;
-            final int maxBlock = player.compensatedWorld.getMaxHeight() - 1;
+            int minSection = player.compensatedWorld.getMinHeight() >> 4;
+            int minBlock = minSection << 4;
+            int maxBlock = player.compensatedWorld.getMaxHeight() - 1;
 
             int minBlockY = Math.max(minBlock, mY);
             int maxBlockY = Math.min(maxBlock, mxY);

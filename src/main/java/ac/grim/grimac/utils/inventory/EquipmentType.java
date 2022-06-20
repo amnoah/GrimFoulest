@@ -66,11 +66,9 @@ public enum EquipmentType {
     public int getIndex() {
         switch (this) {
             case MAINHAND:
-                return 0;
-            case OFFHAND:
-                return 1;
             case FEET:
                 return 0;
+            case OFFHAND:
             case LEGS:
                 return 1;
             case CHEST:

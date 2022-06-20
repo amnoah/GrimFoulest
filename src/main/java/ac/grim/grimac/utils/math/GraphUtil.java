@@ -16,8 +16,9 @@ public class GraphUtil {
         double largest = 0;
 
         for (double value : values) {
-            if (value > largest)
+            if (value > largest) {
                 largest = value;
+            }
         }
 
         int GRAPH_HEIGHT = 2;
@@ -48,8 +49,9 @@ public class GraphUtil {
         double largest = 0;
 
         for (double value : values) {
-            if (value > largest)
+            if (value > largest) {
                 largest = value;
+            }
         }
 
         int GRAPH_HEIGHT = 2;

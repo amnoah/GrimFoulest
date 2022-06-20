@@ -18,7 +18,7 @@ public class BadPacketsI extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_ABILITIES) {
             WrapperPlayClientPlayerAbilities packet = new WrapperPlayClientPlayerAbilities(event);
 
-            if (packet.isFlying() && !player.canFly) {
+            if (packet.isFlying() && !player.isFlightAllowed) {
                 flagAndAlert();
             }
         }

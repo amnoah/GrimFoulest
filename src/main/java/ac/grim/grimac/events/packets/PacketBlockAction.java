@@ -27,7 +27,9 @@ public class PacketBlockAction extends PacketListenerAbstract {
     public void onPacketSend(PacketSendEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.BLOCK_ACTION) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             WrapperPlayServerBlockAction blockAction = new WrapperPlayServerBlockAction(event);
             Vector3i blockPos = blockAction.getBlockPosition();

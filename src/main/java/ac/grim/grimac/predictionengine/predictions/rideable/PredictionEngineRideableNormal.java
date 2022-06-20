@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class PredictionEngineRideableNormal extends PredictionEngineNormal {
 
-    Vector movementVector;
+    final Vector movementVector;
 
     public PredictionEngineRideableNormal(Vector movementVector) {
         this.movementVector = movementVector;

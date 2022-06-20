@@ -10,6 +10,6 @@ public class PostPredictionCheck extends Check<PredictionComplete> {
         super(player);
     }
 
-    public void onPredictionComplete(final PredictionComplete predictionComplete) {
+    public void onPredictionComplete(PredictionComplete predictionComplete) {
     }
 }

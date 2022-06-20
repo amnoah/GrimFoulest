@@ -42,16 +42,16 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
     // Resetting velocity can be abused to "fly"
     // Therefore, only allow one setback position every half second to patch this flight exploit
     public int setbackConfirmTicksAgo = 0;
-    // This required setback data is the head of the teleport.
-    // It is set by both bukkit and netty due to going on the bukkit thread to setback players
-    SetBackData requiredSetBack = null;
-    // Sync to netty to stop excessive resync's
-    long lastWorldResync = 0;
     // A legal place to setback the player to
     public SetbackLocationVelocity safeTeleportPosition;
     // Are we currently sending setback stuff?
     public boolean isSendingSetback = false;
     public int cheatVehicleInterpolationDelay = 0;
+    // This required setback data is the head of the teleport.
+    // It is set by both bukkit and netty due to going on the bukkit thread to setback players
+    SetBackData requiredSetBack = null;
+    // Sync to netty to stop excessive resync's
+    long lastWorldResync = 0;
 
     public SetbackTeleportUtil(GrimPlayer player) {
         super(player);
@@ -63,14 +63,16 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
      * 2021-10-9 This method seems to be safe and doesn't allow bypasses
      */
     @Override
-    public void onPredictionComplete(final PredictionComplete predictionComplete) {
+    public void onPredictionComplete(PredictionComplete predictionComplete) {
         // We must first check if the player has accepted their setback
         // If the setback isn't complete, then this position is illegitimate
         if (predictionComplete.getData().getSetback() != null) {
             // The player did indeed accept the setback, and there are no new setbacks past now!
             setbackConfirmTicksAgo = 0;
             // The player needs to now wait for their vehicle to go into the right place before getting back in
-            if (cheatVehicleInterpolationDelay > 0) cheatVehicleInterpolationDelay = 3;
+            if (cheatVehicleInterpolationDelay > 0) {
+                cheatVehicleInterpolationDelay = 3;
+            }
             // Teleport, let velocity be reset
             safeTeleportPosition = new SetbackLocationVelocity(new Vector3d(player.x, player.y, player.z));
             blockOffsets = false;
@@ -86,14 +88,20 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
     }
 
     public void executeForceResync() {
-        if (player.gamemode == GameMode.SPECTATOR || player.disableGrim) return; // We don't care about spectators, they don't flag
+        if (player.gamemode == GameMode.SPECTATOR || player.disableGrim) {
+            return; // We don't care about spectators, they don't flag
+        }
         blockOffsets = true;
-        if (safeTeleportPosition == null) return; // Player hasn't spawned yet
+        if (safeTeleportPosition == null) {
+            return; // Player hasn't spawned yet
+        }
         blockMovementsUntilResync(safeTeleportPosition.position);
     }
 
     public boolean executeViolationSetback() {
-        if (isExempt()) return false;
+        if (isExempt()) {
+            return false;
+        }
         blockMovementsUntilResync(safeTeleportPosition.position);
         return true;
     }
@@ -101,12 +109,15 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
     private boolean isExempt() {
         // Not exempting spectators here because timer check for spectators is actually valid.
         // Player hasn't spawned yet
-        if (safeTeleportPosition == null) return true;
+        if (safeTeleportPosition == null) {
+            return true;
+        }
         // Setbacks aren't allowed
-        if (player.disableGrim) return true;
+        if (player.disableGrim) {
+            return true;
+        }
         // Player has permission to cheat, permission not given to OP by default.
-        if (player.bukkitPlayer != null && player.bukkitPlayer.hasPermission("grim.nosetback")) return true;
-        return false;
+        return player.bukkitPlayer != null && player.bukkitPlayer.hasPermission("grim.nosetback");
     }
 
     public void blockMovementsUntilResync(Location position) {
@@ -118,10 +129,13 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
     }
 
     public void blockMovementsUntilResync(Location position, boolean force, boolean simulateNextTickPosition) {
-        if (requiredSetBack == null || player.bukkitPlayer == null)
+        if (requiredSetBack == null || player.bukkitPlayer == null) {
             return; // Player hasn't gotten a single teleport yet.
+        }
         requiredSetBack.setPlugin(false); // The player has illegal movement, block from vanilla ac override
-        if (!force && isPendingSetback()) return; // Don't spam setbacks
+        if (!force && isPendingSetback()) {
+            return; // Don't spam setbacks
+        }
 
         // Only let us full resync once every five seconds to prevent unneeded bukkit load
         if (System.currentTimeMillis() - lastWorldResync > 5 * 1000) {
@@ -183,7 +197,9 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
 
         player.boundingBox = oldBB; // reset back to the new bounding box
 
-        if (!hasAcceptedSpawnTeleport) clientVel = null; // if the player hasn't spawned... don't force kb
+        if (!hasAcceptedSpawnTeleport) {
+            clientVel = null; // if the player hasn't spawned... don't force kb
+        }
 
         // Don't let people get new velocities on demand
         if (player.checkManager.getKnockbackHandler().isPendingKb() ||
@@ -260,7 +276,9 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
 
         while (true) {
             TeleportData teleportPos = teleports.peek();
-            if (teleportPos == null) break;
+            if (teleportPos == null) {
+                break;
+            }
 
             double trueTeleportX = (requiredSetBack.getTeleportData().isRelativeX() ? player.x : 0) + requiredSetBack.getTeleportData().getLocation().getX();
             double trueTeleportY = (requiredSetBack.getTeleportData().isRelativeY() ? player.y : 0) + requiredSetBack.getTeleportData().getLocation().getY();
@@ -324,7 +342,9 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
 
         while (true) {
             Pair<Integer, Vector3d> teleportPos = player.vehicleData.vehicleTeleports.peek();
-            if (teleportPos == null) break;
+            if (teleportPos == null) {
+                break;
+            }
             if (lastTransaction < teleportPos.getFirst()) {
                 break;
             }
@@ -390,7 +410,7 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
      * @param position A safe setback location
      */
     public void setSafeSetbackLocation(Vector3d position) {
-        this.safeTeleportPosition = new SetbackLocationVelocity(position);
+        safeTeleportPosition = new SetbackLocationVelocity(position);
     }
 
     /**

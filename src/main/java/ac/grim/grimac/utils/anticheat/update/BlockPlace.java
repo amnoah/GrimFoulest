@@ -40,15 +40,15 @@ import java.util.List;
 
 public class BlockPlace {
     protected static final BlockFace[] UPDATE_SHAPE_ORDER = new BlockFace[]{BlockFace.WEST, BlockFace.EAST, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.DOWN, BlockFace.UP};
-    private static final BlockFace[] BY_2D = new BlockFace[]{BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST};
     static final BlockFace[] BY_3D = new BlockFace[]{BlockFace.DOWN, BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
+    private static final BlockFace[] BY_2D = new BlockFace[]{BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST};
     @Setter
     Vector3i blockPosition;
     @Getter
     @Setter
     boolean replaceClicked;
     boolean isCancelled = false;
-    GrimPlayer player;
+    final GrimPlayer player;
     @Getter
     ItemStack itemStack;
     @Getter
@@ -69,11 +69,11 @@ public class BlockPlace {
         this.blockPosition = blockPosition;
         this.face = face;
         this.itemStack = itemStack;
-        this.material = itemStack.getType().getPlacedType() == null ? StateTypes.FIRE : itemStack.getType().getPlacedType();
+        material = itemStack.getType().getPlacedType() == null ? StateTypes.FIRE : itemStack.getType().getPlacedType();
         this.hitData = hitData;
 
         WrappedBlockState state = player.compensatedWorld.getWrappedBlockStateAt(getPlacedAgainstBlockLocation());
-        this.replaceClicked = canBeReplaced(this.material, state);
+        replaceClicked = canBeReplaced(material, state);
     }
 
     public Vector3i getPlacedAgainstBlockLocation() {
@@ -129,18 +129,30 @@ public class BlockPlace {
             if (heldItem != StateTypes.GLOW_LICHEN) {
                 return true;
             }
-            if (!state.isUp()) return true;
-            if (!state.isDown()) return true;
-            if (state.getNorth() == North.FALSE) return true;
-            if (state.getSouth() == South.FALSE) return true;
-            if (state.getEast() == East.FALSE) return true;
+            if (!state.isUp()) {
+                return true;
+            }
+            if (!state.isDown()) {
+                return true;
+            }
+            if (state.getNorth() == North.FALSE) {
+                return true;
+            }
+            if (state.getSouth() == South.FALSE) {
+                return true;
+            }
+            if (state.getEast() == East.FALSE) {
+                return true;
+            }
             return state.getWest() == West.FALSE;
         }
         if (state.getType() == StateTypes.SCAFFOLDING) {
             return heldItem == StateTypes.SCAFFOLDING;
         }
         if (BlockTags.SLABS.contains(state.getType())) {
-            if (state.getTypeData() == Type.DOUBLE || state.getType() != heldItem) return false;
+            if (state.getTypeData() == Type.DOUBLE || state.getType() != heldItem) {
+                return false;
+            }
 
             // Here vanilla refers from
             // Set check can replace -> get block -> call block canBeReplaced -> check can replace boolean (default true)
@@ -163,12 +175,24 @@ public class BlockPlace {
             }
         }
         if (state.getType() == StateTypes.VINE) {
-            if (baseReplaceable) return true;
-            if (heldItem != state.getType()) return false;
-            if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_13) && !state.isUp()) return true;
-            if (state.getNorth() == North.FALSE) return true;
-            if (state.getSouth() == South.FALSE) return true;
-            if (state.getEast() == East.FALSE) return true;
+            if (baseReplaceable) {
+                return true;
+            }
+            if (heldItem != state.getType()) {
+                return false;
+            }
+            if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_13) && !state.isUp()) {
+                return true;
+            }
+            if (state.getNorth() == North.FALSE) {
+                return true;
+            }
+            if (state.getSouth() == South.FALSE) {
+                return true;
+            }
+            if (state.getEast() == East.FALSE) {
+                return true;
+            }
             return state.getWest() == West.FALSE;
         }
 
@@ -179,10 +203,18 @@ public class BlockPlace {
         WrappedBlockState data = getDirectionalState(facing);
         CollisionBox box = CollisionData.getData(data.getType()).getMovementCollisionBox(player, player.getClientVersion(), data);
 
-        if (box.isNull()) return false;
-        if (isFullFace(facing)) return true;
-        if (BlockTags.LEAVES.contains(data.getType())) return false;
-        if (BlockTags.FENCE_GATES.contains(data.getType())) return false;
+        if (box.isNull()) {
+            return false;
+        }
+        if (isFullFace(facing)) {
+            return true;
+        }
+        if (BlockTags.LEAVES.contains(data.getType())) {
+            return false;
+        }
+        if (BlockTags.FENCE_GATES.contains(data.getType())) {
+            return false;
+        }
 
         List<SimpleCollisionBox> collisions = new ArrayList<>();
         box.downCast(collisions);
@@ -205,9 +237,15 @@ public class BlockPlace {
         WrappedBlockState data = getDirectionalState(facing);
         CollisionBox box = CollisionData.getData(data.getType()).getMovementCollisionBox(player, player.getClientVersion(), data);
 
-        if (box.isNull()) return false;
-        if (isFullFace(facing)) return true;
-        if (BlockTags.LEAVES.contains(data.getType())) return false;
+        if (box.isNull()) {
+            return false;
+        }
+        if (isFullFace(facing)) {
+            return true;
+        }
+        if (BlockTags.LEAVES.contains(data.getType())) {
+            return false;
+        }
 
         List<SimpleCollisionBox> collisions = new ArrayList<>();
         box.downCast(collisions);
@@ -275,7 +313,9 @@ public class BlockPlace {
         box.downCast(collisions);
 
         for (SimpleCollisionBox simpleBox : collisions) {
-            if (axis.modify(simpleBox).isFullBlockNoCache()) return true;
+            if (axis.modify(simpleBox).isFullBlockNoCache()) {
+                return true;
+            }
         }
 
         // Not an explicit edge case and is complicated, so isn't a full face
@@ -286,7 +326,9 @@ public class BlockPlace {
         Vector3i pos = getPlacedBlockPos();
         pos = pos.add(facing.getModX(), facing.getModY(), facing.getModZ());
         // You can't build above height limit.
-        if (pos.getY() >= player.compensatedWorld.getMaxHeight()) return false;
+        if (pos.getY() >= player.compensatedWorld.getMaxHeight()) {
+            return false;
+        }
 
         return player.compensatedWorld.getWrappedBlockStateAt(pos).getType().isReplaceable();
     }
@@ -296,9 +338,15 @@ public class BlockPlace {
         WrappedBlockState data = getDirectionalState(facing);
         CollisionBox box = CollisionData.getData(data.getType()).getMovementCollisionBox(player, player.getClientVersion(), data);
 
-        if (box.isNull()) return false;
-        if (isFullFace(facing)) return true;
-        if (BlockTags.LEAVES.contains(data.getType())) return false;
+        if (box.isNull()) {
+            return false;
+        }
+        if (isFullFace(facing)) {
+            return true;
+        }
+        if (BlockTags.LEAVES.contains(data.getType())) {
+            return false;
+        }
 
         List<SimpleCollisionBox> collisions = new ArrayList<>();
         box.downCast(collisions);
@@ -310,22 +358,34 @@ public class BlockPlace {
             // If all sides to the box have width, there is collision.
             switch (facing) {
                 case NORTH:
-                    if (simpleBox.minZ == 0) return false;
+                    if (simpleBox.minZ == 0) {
+                        return false;
+                    }
                     break;
                 case SOUTH:
-                    if (simpleBox.maxZ == 1) return false;
+                    if (simpleBox.maxZ == 1) {
+                        return false;
+                    }
                     break;
                 case EAST:
-                    if (simpleBox.maxX == 1) return false;
+                    if (simpleBox.maxX == 1) {
+                        return false;
+                    }
                     break;
                 case WEST:
-                    if (simpleBox.minX == 0) return false;
+                    if (simpleBox.minX == 0) {
+                        return false;
+                    }
                     break;
                 case UP:
-                    if (simpleBox.maxY == 1) return false;
+                    if (simpleBox.maxY == 1) {
+                        return false;
+                    }
                     break;
                 case DOWN:
-                    if (simpleBox.minY == 0) return false;
+                    if (simpleBox.minY == 0) {
+                        return false;
+                    }
                     break;
             }
         }
@@ -500,7 +560,9 @@ public class BlockPlace {
     }
 
     public Vector3i getPlacedBlockPos() {
-        if (replaceClicked) return blockPosition;
+        if (replaceClicked) {
+            return blockPosition;
+        }
 
         int x = blockPosition.getX() + getNormalBlockFace().getX();
         int y = blockPosition.getY() + getNormalBlockFace().getY();
@@ -605,7 +667,9 @@ public class BlockPlace {
 
     // We need to now run block
     public void tryCascadeBlockUpdates(Vector3i pos) {
-        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_12_2)) return;
+        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_12_2)) {
+            return;
+        }
 
         cascadeBlockUpdates(pos);
     }
@@ -643,7 +707,9 @@ public class BlockPlace {
 
         // Bring this back to relative to the block
         // The player didn't even click the block... (we should force resync BEFORE we get here!)
-        if (intercept == null) return new Vector();
+        if (intercept == null) {
+            return new Vector();
+        }
 
         intercept.setX(intercept.getX() - box.minX);
         intercept.setY(intercept.getY() - box.minY);

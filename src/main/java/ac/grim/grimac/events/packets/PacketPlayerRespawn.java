@@ -34,7 +34,9 @@ public class PacketPlayerRespawn extends PacketListenerAbstract {
             WrapperPlayServerUpdateHealth health = new WrapperPlayServerUpdateHealth(event);
 
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             player.sendTransaction();
 
@@ -57,14 +59,18 @@ public class PacketPlayerRespawn extends PacketListenerAbstract {
 
         if (event.getPacketType() == PacketType.Play.Server.JOIN_GAME) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             WrapperPlayServerJoinGame joinGame = new WrapperPlayServerJoinGame(event);
             player.gamemode = joinGame.getGameMode();
             player.entityID = joinGame.getEntityId();
             player.dimension = joinGame.getDimension();
 
-            if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_17)) return;
+            if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_17)) {
+                return;
+            }
             player.compensatedWorld.setDimension(joinGame.getDimension().getDimensionName(), event.getUser());
         }
 
@@ -72,7 +78,9 @@ public class PacketPlayerRespawn extends PacketListenerAbstract {
             WrapperPlayServerRespawn respawn = new WrapperPlayServerRespawn(event);
 
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             List<Runnable> tasks = event.getPostTasks();
             tasks.add(player::sendTransaction);
@@ -103,7 +111,7 @@ public class PacketPlayerRespawn extends PacketListenerAbstract {
 
                 if (player.getClientVersion().isOlderThan(ClientVersion.V_1_14)) { // 1.14+ players send a packet for this, listen for it instead
                     player.isSprinting = false;
-                    ((BadPacketsF) player.checkManager.getPacketCheck(BadPacketsF.class)).lastSprinting = false; // Pre 1.14 clients set this to false when creating new entity
+                    player.checkManager.getPacketCheck(BadPacketsF.class).lastSprinting = false; // Pre 1.14 clients set this to false when creating new entity
                     // TODO: What the fuck viaversion, why do you throw out keep all metadata?
                     // The server doesn't even use it... what do we do?
                     player.compensatedEntities.hasSprintingAttributeEnabled = false;

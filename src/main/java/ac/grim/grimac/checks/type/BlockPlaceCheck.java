@@ -18,18 +18,6 @@ public class BlockPlaceCheck extends Check<BlockPlace> {
     private static final List<StateType> weirdBoxes = new ArrayList<>();
     private static final List<StateType> buggyBoxes = new ArrayList<>();
 
-    public BlockPlaceCheck(GrimPlayer player) {
-        super(player);
-    }
-
-    // Method called immediately after a block is placed, before forwarding block place to server
-    public void onBlockPlace(final BlockPlace place) {
-    }
-
-    // Method called the flying packet after the block place
-    public void onPostFlyingBlockPlace(BlockPlace place) {
-    }
-
     static {
         // Fences and walls aren't worth checking.
         weirdBoxes.addAll(new ArrayList<>(BlockTags.FENCES.getStates()));
@@ -52,7 +40,19 @@ public class BlockPlaceCheck extends Check<BlockPlace> {
         buggyBoxes.add(StateTypes.REDSTONE_WIRE);
     }
 
-    protected SimpleCollisionBox getCombinedBox(final BlockPlace place) {
+    public BlockPlaceCheck(GrimPlayer player) {
+        super(player);
+    }
+
+    // Method called immediately after a block is placed, before forwarding block place to server
+    public void onBlockPlace(BlockPlace place) {
+    }
+
+    // Method called the flying packet after the block place
+    public void onPostFlyingBlockPlace(BlockPlace place) {
+    }
+
+    protected SimpleCollisionBox getCombinedBox(BlockPlace place) {
         // Alright, instead of skidding AACAdditionsPro, let's just use bounding boxes
         Vector3i clicked = place.getPlacedAgainstBlockLocation();
         CollisionBox placedOn = HitboxData.getBlockHitbox(player, place.getMaterial(), player.getClientVersion(), player.compensatedWorld.getWrappedBlockStateAt(clicked), clicked.getX(), clicked.getY(), clicked.getZ());

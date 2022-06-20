@@ -23,13 +23,15 @@ public class OffsetHandler extends PostPredictionCheck {
         super(player);
     }
 
-    public void onPredictionComplete(final PredictionComplete predictionComplete) {
+    public void onPredictionComplete(PredictionComplete predictionComplete) {
         double offset = predictionComplete.getOffset();
 
         CompletePredictionEvent completePredictionEvent = new CompletePredictionEvent(getPlayer(), predictionComplete.getOffset());
         Bukkit.getPluginManager().callEvent(completePredictionEvent);
 
-        if (completePredictionEvent.isCancelled()) return;
+        if (completePredictionEvent.isCancelled()) {
+            return;
+        }
 
         if (offset >= threshold || offset >= immediateSetbackThreshold) {
             flag();
@@ -80,8 +82,12 @@ public class OffsetHandler extends PostPredictionCheck {
         maxAdvantage = getConfig().getDoubleElse("Simulation.max-advantage", 1);
         maxCeiling = getConfig().getDoubleElse("Simulation.max-ceiling", 4);
 
-        if (maxAdvantage == -1) maxAdvantage = Double.MAX_VALUE;
-        if (immediateSetbackThreshold == -1) immediateSetbackThreshold = Double.MAX_VALUE;
+        if (maxAdvantage == -1) {
+            maxAdvantage = Double.MAX_VALUE;
+        }
+        if (immediateSetbackThreshold == -1) {
+            immediateSetbackThreshold = Double.MAX_VALUE;
+        }
     }
 
     public boolean doesOffsetFlag(double offset) {

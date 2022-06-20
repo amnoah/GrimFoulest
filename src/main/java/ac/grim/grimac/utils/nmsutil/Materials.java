@@ -200,20 +200,27 @@ public class Materials {
     }
 
     public static boolean isWaterlogged(ClientVersion clientVersion, WrappedBlockState state) {
-        if (clientVersion.isOlderThanOrEquals(ClientVersion.V_1_12_2)) return false;
-        if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_13)) return false;
+        if (clientVersion.isOlderThanOrEquals(ClientVersion.V_1_12_2)) {
+            return false;
+        }
+        if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_13)) {
+            return false;
+        }
 
         StateType type = state.getType();
 
         // Waterlogged lanterns were added in 1.16.2
-        if (clientVersion.isOlderThan(ClientVersion.V_1_16_2) && (type == StateTypes.LANTERN || type == StateTypes.SOUL_LANTERN))
+        if (clientVersion.isOlderThan(ClientVersion.V_1_16_2) && (type == StateTypes.LANTERN || type == StateTypes.SOUL_LANTERN)) {
             return false;
+        }
         // ViaVersion small dripleaf -> fern (not waterlogged)
-        if (clientVersion.isOlderThan(ClientVersion.V_1_17) && type == StateTypes.SMALL_DRIPLEAF)
+        if (clientVersion.isOlderThan(ClientVersion.V_1_17) && type == StateTypes.SMALL_DRIPLEAF) {
             return false;
+        }
         // Waterlogged rails were added in 1.17
-        if (clientVersion.isOlderThan(ClientVersion.V_1_17) && BlockTags.RAILS.contains(type))
+        if (clientVersion.isOlderThan(ClientVersion.V_1_17) && BlockTags.RAILS.contains(type)) {
             return false;
+        }
         // Nice check to see if waterlogged :)
         return (boolean) state.getInternalData().getOrDefault(StateValue.WATERLOGGED, false);
     }
@@ -225,8 +232,12 @@ public class Materials {
     }
 
     public static StateType transformBucketMaterial(ItemType mat) {
-        if (mat == ItemTypes.LAVA_BUCKET) return StateTypes.LAVA;
-        if (isPlaceableWaterBucket(mat)) return StateTypes.WATER;
+        if (mat == ItemTypes.LAVA_BUCKET) {
+            return StateTypes.LAVA;
+        }
+        if (isPlaceableWaterBucket(mat)) {
+            return StateTypes.WATER;
+        }
         return null;
     }
 
@@ -242,11 +253,14 @@ public class Materials {
         // What I do is look at 1.8, 1.12, and 1.17 source code, and when I see a difference, I find the version
         // that added it.  I could have missed something if something was added to the blacklist in 1.9 but
         // was removed from it in 1.10 (although this is unlikely as the blacklist rarely changes)
-        if (!mat.isBlocking()) return true;
+        if (!mat.isBlocking()) {
+            return true;
+        }
 
         // 1.13-1.15 had banners on the blacklist - removed in 1.16, not implemented in 1.12 and below
-        if (BlockTags.BANNERS.contains(mat))
+        if (BlockTags.BANNERS.contains(mat)) {
             return ver.isNewerThanOrEquals(ClientVersion.V_1_13) && ver.isOlderThan(ClientVersion.V_1_16);
+        }
 
         return false;
     }
@@ -264,7 +278,9 @@ public class Materials {
     }
 
     public static boolean isWaterIgnoringWaterlogged(ClientVersion clientVersion, WrappedBlockState state) {
-        if (clientVersion.isNewerThanOrEquals(ClientVersion.V_1_13)) return isWaterModern(state.getType());
+        if (clientVersion.isNewerThanOrEquals(ClientVersion.V_1_13)) {
+            return isWaterModern(state.getType());
+        }
         return isWaterLegacy(state.getType());
     }
 

@@ -30,12 +30,14 @@ public class LatencyUtils {
                 Pair<Integer, Runnable> pair = iterator.next();
 
                 // We are at most a tick ahead when running tasks based on transactions, meaning this is too far
-                if (transaction + 1 < pair.getFirst())
+                if (transaction + 1 < pair.getFirst()) {
                     return;
+                }
 
                 // This is at most tick ahead of what we want
-                if (transaction == pair.getFirst() - 1)
+                if (transaction == pair.getFirst() - 1) {
                     continue;
+                }
 
 
                 try {

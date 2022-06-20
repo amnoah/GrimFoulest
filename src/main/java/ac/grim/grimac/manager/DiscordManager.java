@@ -20,7 +20,9 @@ public class DiscordManager implements Initable {
     @Override
     public void start() {
         try {
-            if (!GrimAPI.INSTANCE.getConfigManager().getConfig().getBooleanElse("enabled", false)) return;
+            if (!GrimAPI.INSTANCE.getConfigManager().getConfig().getBooleanElse("enabled", false)) {
+                return;
+            }
 
             client = WebhookClient.withUrl(GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("webhook", ""));
             if (client.getUrl().isEmpty()) {
@@ -40,7 +42,7 @@ public class DiscordManager implements Initable {
         if (client != null) {
             String tps = String.format("%.2f", SpigotReflectionUtil.getTPS());
             String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String formattedPing = "" + GrimMath.floor(player.getTransactionPing() / 1e6);
+            String formattedPing = String.valueOf(GrimMath.floor(player.getTransactionPing() / 1e6));
             String formattedVer = player.getClientVersion().getReleaseName();
 
             String content = "**Player**\n" + (player.bukkitPlayer != null ? player.bukkitPlayer.getName() : player.user.getProfile().getName())

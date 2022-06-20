@@ -33,11 +33,6 @@ public class Collisions {
     private static final double COLLISION_EPSILON = 1.0E-7;
 
     private static final boolean IS_FOURTEEN; // Optimization for chunks with empty block count
-
-    static {
-        IS_FOURTEEN = PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_14);
-    }
-
     private static final List<List<Axis>> allAxisCombinations = Arrays.asList(
             Arrays.asList(Axis.Y, Axis.X, Axis.Z),
             Arrays.asList(Axis.Y, Axis.Z, Axis.X),
@@ -47,19 +42,22 @@ public class Collisions {
 
             Arrays.asList(Axis.Z, Axis.X, Axis.Y),
             Arrays.asList(Axis.Z, Axis.Y, Axis.X));
-
     private static final List<List<Axis>> nonStupidityCombinations = Arrays.asList(
             Arrays.asList(Axis.Y, Axis.X, Axis.Z),
             Arrays.asList(Axis.Y, Axis.Z, Axis.X));
+
+    static {
+        IS_FOURTEEN = PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_14);
+    }
 
     public static boolean slowCouldPointThreeHitGround(GrimPlayer player, double x, double y, double z) {
         SimpleCollisionBox oldBB = player.boundingBox;
         player.boundingBox = GetBoundingBox.getBoundingBoxFromPosAndSize(x, y, z, 0.6f, 0.06f);
 
-        double posXZ = Collisions.collide(player, 0.03, -0.03, 0.03).getY();
-        double negXNegZ = Collisions.collide(player, -0.03, -0.03, -0.03).getY();
-        double posXNegZ = Collisions.collide(player, 0.03, -0.03, -0.03).getY();
-        double posZNegX = Collisions.collide(player, -0.03, -0.03, 0.03).getY();
+        double posXZ = collide(player, 0.03, -0.03, 0.03).getY();
+        double negXNegZ = collide(player, -0.03, -0.03, -0.03).getY();
+        double posXNegZ = collide(player, 0.03, -0.03, -0.03).getY();
+        double posZNegX = collide(player, -0.03, -0.03, 0.03).getY();
 
         player.boundingBox = oldBB;
         return negXNegZ != -0.03 || posXNegZ != -0.03 || posXZ != -0.03 || posZNegX != -0.03;
@@ -71,7 +69,9 @@ public class Collisions {
     }
 
     public static Vector collide(GrimPlayer player, double desiredX, double desiredY, double desiredZ, double clientVelY, VectorData data) {
-        if (desiredX == 0 && desiredY == 0 && desiredZ == 0) return new Vector();
+        if (desiredX == 0 && desiredY == 0 && desiredZ == 0) {
+            return new Vector();
+        }
 
         SimpleCollisionBox grabBoxesBB = player.boundingBox.copy();
         double stepUpHeight = player.getMaxUpStep();
@@ -144,8 +144,12 @@ public class Collisions {
             if (resultAccuracy < bestInput) {
                 bestOrderResult = collisionResult;
                 bestInput = resultAccuracy;
-                if (resultAccuracy < 0.00001 * 0.00001) break;
-                if (zeroCount >= 2) break;
+                if (resultAccuracy < 0.00001 * 0.00001) {
+                    break;
+                }
+                if (zeroCount >= 2) {
+                    break;
+                }
             }
 
         }
@@ -188,7 +192,9 @@ public class Collisions {
             // If the player's is within 16 blocks of the worldborder, add the worldborder to the collisions (optimization)
             if (distanceToBorder < 16) {
                 if (distanceToBorder < maxWorldBorderSize * 2.0D && player.lastX > minX - maxWorldBorderSize && player.lastX < maxX + maxWorldBorderSize && player.lastZ > minZ - maxWorldBorderSize && player.lastZ < maxZ + maxWorldBorderSize) {
-                    if (listOfBlocks == null) listOfBlocks = new ArrayList<>();
+                    if (listOfBlocks == null) {
+                        listOfBlocks = new ArrayList<>();
+                    }
 
                     // South border
                     listOfBlocks.add(new SimpleCollisionBox(minX - 10, Double.NEGATIVE_INFINITY, maxZ, maxX + 10, Double.POSITIVE_INFINITY, maxZ, false));
@@ -201,7 +207,9 @@ public class Collisions {
 
                     if (onlyCheckCollide) {
                         for (SimpleCollisionBox box : listOfBlocks) {
-                            if (box.isIntersected(wantedBB)) return true;
+                            if (box.isIntersected(wantedBB)) {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -215,9 +223,9 @@ public class Collisions {
         int minBlockZ = (int) Math.floor(expandedBB.minZ - COLLISION_EPSILON) - 1;
         int maxBlockZ = (int) Math.floor(expandedBB.maxZ + COLLISION_EPSILON) + 1;
 
-        final int minSection = player.compensatedWorld.getMinHeight() >> 4;
-        final int minBlock = minSection << 4;
-        final int maxBlock = player.compensatedWorld.getMaxHeight() - 1;
+        int minSection = player.compensatedWorld.getMinHeight() >> 4;
+        int minBlock = minSection << 4;
+        int maxBlock = player.compensatedWorld.getMaxHeight() - 1;
 
         int minChunkX = minBlockX >> 4;
         int maxChunkX = maxBlockX >> 4;
@@ -240,7 +248,9 @@ public class Collisions {
                 int chunkZGlobalPos = currChunkZ << 4;
 
                 Column chunk = player.compensatedWorld.getChunk(currChunkX, currChunkZ);
-                if (chunk == null) continue;
+                if (chunk == null) {
+                    continue;
+                }
 
                 BaseChunk[] sections = chunk.getChunks();
 
@@ -264,7 +274,9 @@ public class Collisions {
                             WrappedBlockState data = section.get(CompensatedWorld.blockVersion, x & 0xF, y & 0xF, z & 0xF);
 
                             // Works on both legacy and modern!  Faster than checking for material types, most common case
-                            if (data.getGlobalId() == 0) continue;
+                            if (data.getGlobalId() == 0) {
+                                continue;
+                            }
                             // Thanks SpottedLeaf for this optimization, I took edgeCount from Tuinity
                             int edgeCount = ((x == minBlockX || x == maxBlockX) ? 1 : 0) +
                                     ((y == minBlockY || y == maxBlockY) ? 1 : 0) +
@@ -387,8 +399,9 @@ public class Collisions {
         Location blockPos = new Location(null, aABB.minX, aABB.minY, aABB.minZ);
         Location blockPos2 = new Location(null, aABB.maxX, aABB.maxY, aABB.maxZ);
 
-        if (CheckIfChunksLoaded.isChunksUnloadedAt(player, blockPos.getBlockX(), blockPos.getBlockY(), blockPos.getBlockZ(), blockPos2.getBlockX(), blockPos2.getBlockY(), blockPos2.getBlockZ()))
+        if (CheckIfChunksLoaded.isChunksUnloadedAt(player, blockPos.getBlockX(), blockPos.getBlockY(), blockPos.getBlockZ(), blockPos2.getBlockX(), blockPos2.getBlockY(), blockPos2.getBlockZ())) {
             return;
+        }
 
         for (int i = blockPos.getBlockX(); i <= blockPos2.getBlockX(); ++i) {
             for (int j = blockPos.getBlockY(); j <= blockPos2.getBlockY(); ++j) {
@@ -499,8 +512,9 @@ public class Collisions {
         Location blockPos = new Location(null, aABB.minX, aABB.minY, aABB.minZ);
         Location blockPos2 = new Location(null, aABB.maxX, aABB.maxY, aABB.maxZ);
 
-        if (CheckIfChunksLoaded.isChunksUnloadedAt(player, blockPos.getBlockX(), blockPos.getBlockY(), blockPos.getBlockZ(), blockPos2.getBlockX(), blockPos2.getBlockY(), blockPos2.getBlockZ()))
+        if (CheckIfChunksLoaded.isChunksUnloadedAt(player, blockPos.getBlockX(), blockPos.getBlockY(), blockPos.getBlockZ(), blockPos2.getBlockX(), blockPos2.getBlockY(), blockPos2.getBlockZ())) {
             return false;
+        }
 
         for (int i = blockPos.getBlockX(); i <= blockPos2.getBlockX(); ++i) {
             for (int j = blockPos.getBlockY(); j <= blockPos2.getBlockY(); ++j) {
@@ -538,7 +552,9 @@ public class Collisions {
                             WrappedBlockState data = player.compensatedWorld.getWrappedBlockStateAt(x, y, z);
                             CollisionBox box = CollisionData.getData(data.getType()).getMovementCollisionBox(player, player.getClientVersion(), data, x, y, z);
 
-                            if (!box.isIntersected(playerBB)) continue;
+                            if (!box.isIntersected(playerBB)) {
+                                continue;
+                            }
                         }
 
                         return true;
@@ -555,34 +571,51 @@ public class Collisions {
         StateType mat = data.getType();
 
         // Optimization - all blocks that can suffocate must have a hitbox
-        if (!mat.isSolid()) return false;
+        if (!mat.isSolid()) {
+            return false;
+        }
 
         // 1.13- players can not be pushed by blocks that can emit power, for some reason, while 1.14+ players can
-        if (mat == StateTypes.OBSERVER || mat == StateTypes.REDSTONE_BLOCK)
+        if (mat == StateTypes.OBSERVER || mat == StateTypes.REDSTONE_BLOCK) {
             return player.getClientVersion().isNewerThan(ClientVersion.V_1_13_2);
+        }
         // Tnt only pushes on 1.14+ clients
-        if (mat == StateTypes.TNT) return player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_14);
-        // Farmland only pushes on 1.16+ clients
-        if (mat == StateTypes.FARMLAND) return player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16);
-        // 1.14-1.15 doesn't push with soul sand, the rest of the versions do
-        if (mat == StateTypes.SOUL_SAND)
-            return player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16) || player.getClientVersion().isOlderThan(ClientVersion.V_1_14);
-        // 1.13 and below exempt piston bases, while 1.14+ look to see if they are a full block or not
-        if ((mat == StateTypes.PISTON || mat == StateTypes.STICKY_PISTON) && player.getClientVersion().isOlderThan(ClientVersion.V_1_14))
-            return false;
-        // 1.13 and below exempt ICE and FROSTED_ICE, 1.14 have them push
-        if (mat == StateTypes.ICE || mat == StateTypes.FROSTED_ICE)
+        if (mat == StateTypes.TNT) {
             return player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_14);
+        }
+        // Farmland only pushes on 1.16+ clients
+        if (mat == StateTypes.FARMLAND) {
+            return player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16);
+        }
+        // 1.14-1.15 doesn't push with soul sand, the rest of the versions do
+        if (mat == StateTypes.SOUL_SAND) {
+            return player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16) || player.getClientVersion().isOlderThan(ClientVersion.V_1_14);
+        }
+        // 1.13 and below exempt piston bases, while 1.14+ look to see if they are a full block or not
+        if ((mat == StateTypes.PISTON || mat == StateTypes.STICKY_PISTON) && player.getClientVersion().isOlderThan(ClientVersion.V_1_14)) {
+            return false;
+        }
+        // 1.13 and below exempt ICE and FROSTED_ICE, 1.14 have them push
+        if (mat == StateTypes.ICE || mat == StateTypes.FROSTED_ICE) {
+            return player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_14);
+        }
         // I believe leaves and glass are consistently exempted across all versions
-        if (BlockTags.LEAVES.contains(mat) || BlockTags.GLASS_BLOCKS.contains(mat)) return false;
+        if (BlockTags.LEAVES.contains(mat) || BlockTags.GLASS_BLOCKS.contains(mat)) {
+            return false;
+        }
         // 1.16 players are pushed by dirt paths, 1.8 players don't have this block, so it gets converted to a full block
-        if (mat == StateTypes.DIRT_PATH)
+        if (mat == StateTypes.DIRT_PATH) {
             return player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16) || player.getClientVersion().isOlderThan(ClientVersion.V_1_9);
+        }
         // Only 1.14+ players are pushed by beacons
-        if (mat == StateTypes.BEACON) return player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_14);
+        if (mat == StateTypes.BEACON) {
+            return player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_14);
+        }
 
         // Thank god I already have the solid blocking blacklist written, but all these are exempt
-        if (Materials.isSolidBlockingBlacklist(mat, player.getClientVersion())) return false;
+        if (Materials.isSolidBlockingBlacklist(mat, player.getClientVersion())) {
+            return false;
+        }
 
         CollisionBox box = CollisionData.getData(mat).getMovementCollisionBox(player, player.getClientVersion(), data, x, y, z);
         return box.isFullBlock();
@@ -597,9 +630,9 @@ public class Collisions {
         int minBlockZ = (int) Math.floor(checkBox.minZ);
         int maxBlockZ = (int) Math.floor(checkBox.maxZ);
 
-        final int minSection = player.compensatedWorld.getMinHeight() >> 4;
-        final int minBlock = minSection << 4;
-        final int maxBlock = player.compensatedWorld.getMaxHeight() - 1;
+        int minSection = player.compensatedWorld.getMinHeight() >> 4;
+        int minBlock = minSection << 4;
+        int maxBlock = player.compensatedWorld.getMaxHeight() - 1;
 
         int minChunkX = minBlockX >> 4;
         int maxChunkX = maxBlockX >> 4;
@@ -623,7 +656,9 @@ public class Collisions {
 
                 Column chunk = player.compensatedWorld.getChunk(currChunkX, currChunkZ);
 
-                if (chunk == null) continue;
+                if (chunk == null) {
+                    continue;
+                }
                 BaseChunk[] sections = chunk.getChunks();
 
                 for (int y = minYIterate; y <= maxYIterate; ++y) {
@@ -643,7 +678,9 @@ public class Collisions {
 
                             WrappedBlockState data = section.get(CompensatedWorld.blockVersion, x & 0xF, y & 0xF, z & 0xF);
 
-                            if (searchingFor.test(new Pair<>(data, new Vector3d(x, y, z)))) return true;
+                            if (searchingFor.test(new Pair<>(data, new Vector3d(x, y, z)))) {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -669,9 +706,13 @@ public class Collisions {
     }
 
     public static boolean trapdoorUsableAsLadder(GrimPlayer player, double x, double y, double z, WrappedBlockState blockData) {
-        if (!BlockTags.TRAPDOORS.contains(blockData.getType())) return false;
+        if (!BlockTags.TRAPDOORS.contains(blockData.getType())) {
+            return false;
+        }
         // Feature implemented in 1.9
-        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_8)) return false;
+        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_8)) {
+            return false;
+        }
 
         if (blockData.isOpen()) {
             WrappedBlockState blockBelow = player.compensatedWorld.getWrappedBlockStateAt(x, y - 1, z);

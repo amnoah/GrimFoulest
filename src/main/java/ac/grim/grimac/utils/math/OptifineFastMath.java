@@ -42,7 +42,7 @@ public class OptifineFastMath {
 
     static {
         for (int j = 0; j < SIN_TABLE_FAST.length; ++j) {
-            SIN_TABLE_FAST[j] = roundToFloat(StrictMath.sin((double) j * Math.PI * 2.0D / 4096.0D));
+            SIN_TABLE_FAST[j] = roundToFloat(StrictMath.sin(j * Math.PI * 2.0D / 4096.0D));
         }
     }
 
@@ -55,6 +55,6 @@ public class OptifineFastMath {
     }
 
     public static float roundToFloat(double d) {
-        return (float) ((double) Math.round(d * 1.0E8D) / 1.0E8D);
+        return (float) (Math.round(d * 1.0E8D) / 1.0E8D);
     }
 }

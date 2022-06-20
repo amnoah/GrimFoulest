@@ -36,7 +36,6 @@ import com.github.retrooper.packetevents.protocol.player.GameMode;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.protocol.world.states.defaulttags.BlockTags;
 import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
-import org.bukkit.Bukkit;
 import org.bukkit.util.Vector;
 
 public class MovementCheckRunner extends PositionCheck {
@@ -55,10 +54,14 @@ public class MovementCheckRunner extends PositionCheck {
         // This teleport wasn't valid as the player STILL hasn't loaded this damn chunk.
         // Keep re-teleporting until they load the chunk!
         if (player.getSetbackTeleportUtil().insideUnloadedChunk()) {
-            if (player.compensatedEntities.getSelf().inVehicle()) return;
+            if (player.compensatedEntities.getSelf().inVehicle()) {
+                return;
+            }
 
             player.lastOnGround = player.clientClaimsLastOnGround; // Stop a false on join
-            if (player.getSetbackTeleportUtil().getRequiredSetBack() == null) return; // Not spawned yet
+            if (player.getSetbackTeleportUtil().getRequiredSetBack() == null) {
+                return; // Not spawned yet
+            }
             if (!data.isTeleport()) {
                 // Teleport the player back to avoid players being able to simply ignore transactions
                 player.getSetbackTeleportUtil().executeForceResync();
@@ -153,10 +156,18 @@ public class MovementCheckRunner extends PositionCheck {
             boolean isNorth = NE.getZ() != negZ || NW.getZ() != negZ;
             boolean isSouth = SE.getZ() != posZ || SW.getZ() != posZ;
 
-            if (isEast) player.uncertaintyHandler.lastStuckEast.reset();
-            if (isWest) player.uncertaintyHandler.lastStuckWest.reset();
-            if (isNorth) player.uncertaintyHandler.lastStuckNorth.reset();
-            if (isSouth) player.uncertaintyHandler.lastStuckSouth.reset();
+            if (isEast) {
+                player.uncertaintyHandler.lastStuckEast.reset();
+            }
+            if (isWest) {
+                player.uncertaintyHandler.lastStuckWest.reset();
+            }
+            if (isNorth) {
+                player.uncertaintyHandler.lastStuckNorth.reset();
+            }
+            if (isSouth) {
+                player.uncertaintyHandler.lastStuckSouth.reset();
+            }
 
             if (isEast || isWest || isSouth || isNorth) {
                 player.uncertaintyHandler.stuckOnEdge.reset();
@@ -236,7 +247,9 @@ public class MovementCheckRunner extends PositionCheck {
         player.lastInBed = player.isInBed;
 
         // Don't check sleeping players
-        if (player.isInBed) return;
+        if (player.isInBed) {
+            return;
+        }
 
         if (!player.compensatedEntities.getSelf().inVehicle()) {
             player.speed = player.compensatedEntities.getPlayerMovementSpeed();
@@ -275,7 +288,7 @@ public class MovementCheckRunner extends PositionCheck {
 
             // For whatever reason the vehicle move packet occurs AFTER the player changes slots...
             if (player.compensatedEntities.getSelf().getRiding() instanceof PacketEntityRideable) {
-                EntityControl control = ((EntityControl) player.checkManager.getPostPredictionCheck(EntityControl.class));
+                EntityControl control = player.checkManager.getPostPredictionCheck(EntityControl.class);
 
                 ItemType requiredItem = player.compensatedEntities.getSelf().getRiding().type == EntityTypes.PIG ? ItemTypes.CARROT_ON_A_STICK : ItemTypes.WARPED_FUNGUS_ON_A_STICK;
                 ItemStack mainHand = player.getInventory().getHeldItem();
@@ -385,8 +398,9 @@ public class MovementCheckRunner extends PositionCheck {
         SimpleCollisionBox expandedBB = GetBoundingBox.getBoundingBoxFromPosAndSize(player.lastX, player.lastY, player.lastZ, 0.001f, 0.001f);
 
         // Don't expand if the player moved more than 50 blocks this tick (stop netty crash exploit)
-        if (player.actualMovement.lengthSquared() < 2500)
+        if (player.actualMovement.lengthSquared() < 2500) {
             expandedBB.expandToAbsoluteCoordinates(player.x, player.y, player.z);
+        }
 
         expandedBB.expand(Pose.STANDING.width / 2, 0, Pose.STANDING.width / 2);
         expandedBB.expandMax(0, Pose.STANDING.height, 0);
@@ -404,7 +418,9 @@ public class MovementCheckRunner extends PositionCheck {
         player.uncertaintyHandler.isOrWasNearGlitchyBlock = isGlitchy || player.uncertaintyHandler.isNearGlitchyBlock;
         player.uncertaintyHandler.checkForHardCollision();
 
-        if (player.isFlying != player.wasFlying) player.uncertaintyHandler.lastFlyingStatusChange.reset();
+        if (player.isFlying != player.wasFlying) {
+            player.uncertaintyHandler.lastFlyingStatusChange.reset();
+        }
 
         if (!player.compensatedEntities.getSelf().inVehicle() && (Math.abs(player.x) == 2.9999999E7D || Math.abs(player.z) == 2.9999999E7D)) {
             player.uncertaintyHandler.lastThirtyMillionHardBorder.reset();
@@ -520,8 +536,9 @@ public class MovementCheckRunner extends PositionCheck {
         offset = player.uncertaintyHandler.reduceOffset(offset);
 
         // Let's hope this doesn't desync :)
-        if (player.getSetbackTeleportUtil().blockOffsets)
+        if (player.getSetbackTeleportUtil().blockOffsets) {
             offset = 0;
+        }
 
         if (wasChecked || player.disableGrim) {
             // We shouldn't attempt to send this prediction analysis into checks if we didn't predict anything
@@ -571,8 +588,9 @@ public class MovementCheckRunner extends PositionCheck {
         }
 
         player.riptideSpinAttackTicks--;
-        if (player.predictedVelocity.isTrident())
+        if (player.predictedVelocity.isTrident()) {
             player.riptideSpinAttackTicks = 20;
+        }
 
         player.uncertaintyHandler.lastMovementWasZeroPointZeroThree = !player.compensatedEntities.getSelf().inVehicle() && player.skippedTickInActualMovement;
         player.uncertaintyHandler.lastMovementWasUnknown003VectorReset = !player.compensatedEntities.getSelf().inVehicle() && player.couldSkipTick && player.predictedVelocity.isKnockback();

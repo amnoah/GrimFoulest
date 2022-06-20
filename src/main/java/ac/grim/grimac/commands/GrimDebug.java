@@ -17,10 +17,14 @@ public class GrimDebug extends BaseCommand {
     @CommandCompletion("@players")
     public void onDebug(CommandSender sender, @Optional OnlinePlayer target) {
         Player player = null;
-        if (sender instanceof Player) player = (Player) sender;
+        if (sender instanceof Player) {
+            player = (Player) sender;
+        }
 
         GrimPlayer grimPlayer = parseTarget(sender, player, target);
-        if (grimPlayer == null) return;
+        if (grimPlayer == null) {
+            return;
+        }
 
         if (sender instanceof ConsoleCommandSender) { // Just debug to console to reduce complexity...
             grimPlayer.checkManager.getDebugHandler().toggleConsoleOutput();
@@ -37,7 +41,9 @@ public class GrimDebug extends BaseCommand {
         }
 
         GrimPlayer grimPlayer = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(targetPlayer);
-        if (grimPlayer == null) sender.sendMessage(ChatColor.RED + "This player is exempt from all checks!");
+        if (grimPlayer == null) {
+            sender.sendMessage(ChatColor.RED + "This player is exempt from all checks!");
+        }
 
         return grimPlayer;
     }
@@ -47,10 +53,14 @@ public class GrimDebug extends BaseCommand {
     @CommandCompletion("@players")
     public void onConsoleDebug(CommandSender sender, @Optional OnlinePlayer target) {
         Player player = null;
-        if (sender instanceof Player) player = (Player) sender;
+        if (sender instanceof Player) {
+            player = (Player) sender;
+        }
 
         GrimPlayer grimPlayer = parseTarget(sender, player, target);
-        if (grimPlayer == null) return;
+        if (grimPlayer == null) {
+            return;
+        }
 
         boolean isOutput = grimPlayer.checkManager.getDebugHandler().toggleConsoleOutput();
 

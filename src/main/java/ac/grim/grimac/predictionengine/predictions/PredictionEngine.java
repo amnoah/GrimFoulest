@@ -131,14 +131,16 @@ public class PredictionEngine {
 
         VectorData clientVelAfterInput = possibleVelocities.get(0);
 
-        for (int i = 0; i < possibleVelocities.size();) {
+        for (int i = 0; i < possibleVelocities.size(); ) {
             Vector primaryPushMovement = handleStartingVelocityUncertainty(player, clientVelAfterInput, player.actualMovement);
 
             Vector bestTheoreticalCollisionResult = VectorUtils.cutBoxToVector(player.actualMovement, new SimpleCollisionBox(0, Math.min(0, primaryPushMovement.getY()), 0, primaryPushMovement.getX(), Math.max(0.6, primaryPushMovement.getY()), primaryPushMovement.getZ()).sort());
             // Check if this vector could ever possible beat the last vector in terms of accuracy
             // This is quite a good optimization :)
             if (bestTheoreticalCollisionResult.distanceSquared(player.actualMovement) > bestInput && !clientVelAfterInput.isKnockback() && !clientVelAfterInput.isExplosion()) {
-                if (++i < possibleVelocities.size()) clientVelAfterInput = possibleVelocities.get(i);
+                if (++i < possibleVelocities.size()) {
+                    clientVelAfterInput = possibleVelocities.get(i);
+                }
                 continue;
             }
 
@@ -149,7 +151,7 @@ public class PredictionEngine {
             }
 
             Vector outputVel = doSeekingWallCollisions(player, primaryPushMovement, originalClientVel, clientVelAfterInput);
-            outputVel =  clampMovementToHardBorder(player, outputVel, outputVel);
+            outputVel = clampMovementToHardBorder(player, outputVel, outputVel);
 
             double resultAccuracy = outputVel.distanceSquared(player.actualMovement);
 
@@ -196,8 +198,9 @@ public class PredictionEngine {
                 beforeCollisionMovement = primaryPushMovement;
 
                 // We basically want to avoid falsing ground spoof, try to find a vector that works
-                if (player.wouldCollisionResultFlagGroundSpoof(primaryPushMovement.getY(), bestCollisionVel.vector.getY()))
+                if (player.wouldCollisionResultFlagGroundSpoof(primaryPushMovement.getY(), bestCollisionVel.vector.getY())) {
                     resultAccuracy += 0.0001 * 0.0001;
+                }
 
                 bestInput = resultAccuracy;
             }
@@ -215,7 +218,7 @@ public class PredictionEngine {
                 // as we must try knockback possibilities before non-knockback possibilities
                 clientVelAfterInput = clientVelAfterInput.returnNewModified(clientVelAfterInput.vector, VectorData.VectorType.ZeroPointZeroThree);
             } else if (++i < possibleVelocities.size()) {
-                 clientVelAfterInput = possibleVelocities.get(i);
+                clientVelAfterInput = possibleVelocities.get(i);
             }
 
         }
@@ -370,7 +373,9 @@ public class PredictionEngine {
     }
 
     private void addNonEffectiveAI(GrimPlayer player, Set<VectorData> data) {
-        if (!player.compensatedEntities.getSelf().inVehicle()) return;
+        if (!player.compensatedEntities.getSelf().inVehicle()) {
+            return;
+        }
 
         for (VectorData vectorData : data) {
             vectorData.vector = vectorData.vector.clone().multiply(0.98);
@@ -428,39 +433,50 @@ public class PredictionEngine {
 
         // Put explosions and knockback first so they are applied to the player
         // Otherwise the anticheat can't handle minor knockback and explosions without knowing if the player took the kb
-        if (a.isExplosion())
+        if (a.isExplosion()) {
             aScore -= 5;
+        }
 
-        if (a.isKnockback())
+        if (a.isKnockback()) {
             aScore -= 5;
+        }
 
-        if (b.isExplosion())
+        if (b.isExplosion()) {
             bScore -= 5;
+        }
 
-        if (b.isKnockback())
+        if (b.isKnockback()) {
             bScore -= 5;
+        }
 
-        if (a.isFlipItem())
+        if (a.isFlipItem()) {
             aScore += 3;
+        }
 
-        if (b.isFlipItem())
+        if (b.isFlipItem()) {
             bScore += 3;
+        }
 
-        if (a.isZeroPointZeroThree())
+        if (a.isZeroPointZeroThree()) {
             aScore -= 1;
+        }
 
-        if (b.isZeroPointZeroThree())
+        if (b.isZeroPointZeroThree()) {
             bScore -= 1;
+        }
 
         // If the player is on the ground but the vector leads the player off the ground
-        if ((player.compensatedEntities.getSelf().inVehicle() ? player.clientControlledVerticalCollision : player.onGround) && a.vector.getY() >= 0)
+        if ((player.compensatedEntities.getSelf().inVehicle() ? player.clientControlledVerticalCollision : player.onGround) && a.vector.getY() >= 0) {
             aScore += 2;
+        }
 
-        if ((player.compensatedEntities.getSelf().inVehicle() ? player.clientControlledVerticalCollision : player.onGround) && b.vector.getY() >= 0)
+        if ((player.compensatedEntities.getSelf().inVehicle() ? player.clientControlledVerticalCollision : player.onGround) && b.vector.getY() >= 0) {
             bScore += 2;
+        }
 
-        if (aScore != bScore)
+        if (aScore != bScore) {
             return Integer.compare(aScore, bScore);
+        }
 
         return Double.compare(a.vector.distanceSquared(player.actualMovement), b.vector.distanceSquared(player.actualMovement));
     }
@@ -557,7 +573,9 @@ public class PredictionEngine {
                 if (player.uncertaintyHandler.thisTickSlimeBlockUncertainty > maxVector.getY()) {
                     maxVector.setY(player.uncertaintyHandler.thisTickSlimeBlockUncertainty);
                 }
-                if (minVector.getY() > 0) minVector.setY(0);
+                if (minVector.getY() > 0) {
+                    minVector.setY(0);
+                }
             }
         }
 
@@ -640,8 +658,12 @@ public class PredictionEngine {
         // Handle missing a tick with friction in vehicles
         if (player.uncertaintyHandler.lastVehicleSwitch.hasOccurredSince(1) && !player.uncertaintyHandler.lastVehicleSwitch.hasOccurredSince(0)) {
             double trueFriction = player.lastOnGround ? player.friction * 0.91 : 0.91;
-            if (player.wasTouchingLava) trueFriction = 0.5;
-            if (player.wasTouchingWater) trueFriction = 0.96;
+            if (player.wasTouchingLava) {
+                trueFriction = 0.5;
+            }
+            if (player.wasTouchingWater) {
+                trueFriction = 0.96;
+            }
 
             double maxY = Math.max(box.maxY, box.maxY + ((box.maxY - player.gravity) * 0.91));
             double minY = Math.min(box.minY, box.minY + ((box.minY - player.gravity) * 0.91));
@@ -707,15 +729,18 @@ public class PredictionEngine {
             for (int loopUsingItem = 0; loopUsingItem <= 1; loopUsingItem++) {
                 for (VectorData possibleLastTickOutput : possibleVectors) {
                     // Only do this when there is tick skipping
-                    if (loopSlowed == 1 && !possibleLastTickOutput.isZeroPointZeroThree()) continue;
+                    if (loopSlowed == 1 && !possibleLastTickOutput.isZeroPointZeroThree()) {
+                        continue;
+                    }
                     for (int x = -1; x <= 1; x++) {
                         for (int z = zMin; z <= 1; z++) {
                             VectorData result = new VectorData(possibleLastTickOutput.vector.clone().add(getMovementResultFromInput(player, transformInputsToVector(player, new Vector(x, 0, z)), speed, player.xRot)), possibleLastTickOutput, VectorData.VectorType.InputResult);
                             result = result.returnNewModified(result.vector.clone().multiply(player.stuckSpeedMultiplier), VectorData.VectorType.StuckMultiplier);
                             result = result.returnNewModified(handleOnClimbable(result.vector.clone(), player), VectorData.VectorType.Climbable);
                             // Signal that we need to flip sneaking bounding box
-                            if (loopUsingItem == 1)
+                            if (loopUsingItem == 1) {
                                 result = result.returnNewModified(result.vector, VectorData.VectorType.Flip_Use_Item);
+                            }
                             returnVectors.add(result);
                         }
                     }
@@ -732,8 +757,9 @@ public class PredictionEngine {
 
     public boolean canSwimHop(GrimPlayer player) {
         // Boats cannot swim hop, all other living entities should be able to.
-        if (player.compensatedEntities.getSelf().getRiding() != null && EntityTypes.isTypeInstanceOf(player.compensatedEntities.getSelf().getRiding().type, EntityTypes.BOAT))
+        if (player.compensatedEntities.getSelf().getRiding() != null && EntityTypes.isTypeInstanceOf(player.compensatedEntities.getSelf().getRiding().type, EntityTypes.BOAT)) {
             return false;
+        }
 
         // Vanilla system ->
         // Requirement 1 - The player must be in water or lava
@@ -760,7 +786,9 @@ public class PredictionEngine {
         SimpleCollisionBox oldBox = player.compensatedEntities.getSelf().inVehicle() ? GetBoundingBox.getCollisionBoxForPlayer(player, player.lastX, player.lastY, player.lastZ) :
                 GetBoundingBox.getBoundingBoxFromPosAndSize(player.lastX, player.lastY, player.lastZ, 0.6f, 1.8f);
 
-        if (!player.compensatedWorld.containsLiquid(oldBox.expand(0.1, 0.1, 0.1))) return false;
+        if (!player.compensatedWorld.containsLiquid(oldBox.expand(0.1, 0.1, 0.1))) {
+            return false;
+        }
 
         SimpleCollisionBox oldBB = player.boundingBox;
         player.boundingBox = player.boundingBox.copy().expand(-0.03, 0, -0.03);
@@ -792,8 +820,9 @@ public class PredictionEngine {
     }
 
     public void doJump(GrimPlayer player, Vector vector) {
-        if (!player.lastOnGround || player.onGround)
+        if (!player.lastOnGround || player.onGround) {
             return;
+        }
 
         JumpPower.jumpFromGround(player, vector);
     }

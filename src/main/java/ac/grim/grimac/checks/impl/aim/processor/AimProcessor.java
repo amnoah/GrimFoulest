@@ -16,7 +16,7 @@ public class AimProcessor extends RotationCheck {
     public double sensitivityX, sensitivityY, deltaX, deltaY;
     private float lastDeltaYaw, lastDeltaPitch;
 
-    public AimProcessor(final GrimPlayer playerData) {
+    public AimProcessor(GrimPlayer playerData) {
         super(playerData);
     }
 
@@ -44,20 +44,20 @@ public class AimProcessor extends RotationCheck {
     }
 
     @Override
-    public void process(final RotationUpdate rotationUpdate) {
+    public void process(RotationUpdate rotationUpdate) {
         rotationUpdate.setProcessor(this);
 
-        final HeadRotation from = rotationUpdate.getFrom();
-        final HeadRotation to = rotationUpdate.getTo();
+        HeadRotation from = rotationUpdate.getFrom();
+        HeadRotation to = rotationUpdate.getTo();
 
-        final float deltaYaw = Math.abs(to.getYaw() - from.getYaw());
-        final float deltaPitch = Math.abs(to.getPitch() - from.getPitch());
+        float deltaYaw = Math.abs(to.getYaw() - from.getYaw());
+        float deltaPitch = Math.abs(to.getPitch() - from.getPitch());
 
-        final double gcdYaw = GrimMath.getGcd((long) (deltaYaw * GrimMath.EXPANDER), (long) (lastDeltaYaw * GrimMath.EXPANDER));
-        final double gcdPitch = GrimMath.getGcd((long) (deltaPitch * GrimMath.EXPANDER), (long) (lastDeltaPitch * GrimMath.EXPANDER));
+        double gcdYaw = GrimMath.getGcd((long) (deltaYaw * GrimMath.EXPANDER), (long) (lastDeltaYaw * GrimMath.EXPANDER));
+        double gcdPitch = GrimMath.getGcd((long) (deltaPitch * GrimMath.EXPANDER), (long) (lastDeltaPitch * GrimMath.EXPANDER));
 
-        final double dividedYawGcd = gcdYaw / GrimMath.EXPANDER;
-        final double dividedPitchGcd = gcdPitch / GrimMath.EXPANDER;
+        double dividedYawGcd = gcdYaw / GrimMath.EXPANDER;
+        double dividedPitchGcd = gcdPitch / GrimMath.EXPANDER;
 
         if (gcdYaw > 90000 && gcdYaw < 2E7 && dividedYawGcd > 0.01f && deltaYaw < 8) {
             yawSamples.add(dividedYawGcd);
@@ -75,11 +75,11 @@ public class AimProcessor extends RotationCheck {
             modePitch = pitchSamples.getMode();
         }
 
-        final double deltaX = deltaYaw / modeYaw;
-        final double deltaY = deltaPitch / modePitch;
+        double deltaX = deltaYaw / modeYaw;
+        double deltaY = deltaPitch / modePitch;
 
-        final double sensitivityX = getSensitivityFromYawGCD(modeYaw);
-        final double sensitivityY = getSensitivityFromPitchGCD(modePitch);
+        double sensitivityX = getSensitivityFromYawGCD(modeYaw);
+        double sensitivityY = getSensitivityFromPitchGCD(modePitch);
 
         rotationUpdate.setSensitivityX(sensitivityX);
         rotationUpdate.setSensitivityY(sensitivityY);
@@ -88,7 +88,7 @@ public class AimProcessor extends RotationCheck {
         this.deltaY = deltaY;
         this.sensitivityX = sensitivityX;
         this.sensitivityY = sensitivityY;
-        this.lastDeltaYaw = deltaYaw;
-        this.lastDeltaPitch = deltaPitch;
+        lastDeltaYaw = deltaYaw;
+        lastDeltaPitch = deltaPitch;
     }
 }

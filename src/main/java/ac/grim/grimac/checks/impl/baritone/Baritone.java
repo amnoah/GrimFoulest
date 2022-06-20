@@ -9,24 +9,23 @@ import ac.grim.grimac.utils.math.GrimMath;
 
 @CheckData(name = "Baritone")
 public class Baritone extends RotationCheck {
+    private float lastPitchDifference;
+    private int verbose;
+
     public Baritone(GrimPlayer playerData) {
         super(playerData);
     }
 
-    private float lastPitchDifference;
-
-    private int verbose;
-
     @Override
-    public void process(final RotationUpdate rotationUpdate) {
-        final HeadRotation from = rotationUpdate.getFrom();
-        final HeadRotation to = rotationUpdate.getTo();
+    public void process(RotationUpdate rotationUpdate) {
+        HeadRotation from = rotationUpdate.getFrom();
+        HeadRotation to = rotationUpdate.getTo();
 
-        final float deltaPitch = Math.abs(to.getPitch() - from.getPitch());
+        float deltaPitch = Math.abs(to.getPitch() - from.getPitch());
 
         // Baritone works with small degrees, limit to 1 degrees to pick up on baritone slightly moving aim to bypass anticheats
         if (rotationUpdate.getDeltaYaw() == 0 && deltaPitch > 0 && deltaPitch < 1 && Math.abs(to.getPitch()) != 90.0f) {
-            final long gcd = GrimMath.getGcd((long) (deltaPitch * GrimMath.EXPANDER), (long) (this.lastPitchDifference * GrimMath.EXPANDER));
+            long gcd = GrimMath.getGcd((long) (deltaPitch * GrimMath.EXPANDER), (long) (lastPitchDifference * GrimMath.EXPANDER));
 
             if (gcd < 131072L) {
                 verbose = Math.min(verbose + 1, 20);
@@ -39,6 +38,6 @@ public class Baritone extends RotationCheck {
             }
         }
 
-        this.lastPitchDifference = deltaPitch;
+        lastPitchDifference = deltaPitch;
     }
 }

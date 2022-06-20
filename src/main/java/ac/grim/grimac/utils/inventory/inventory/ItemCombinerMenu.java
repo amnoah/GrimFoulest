@@ -22,24 +22,24 @@ public class ItemCombinerMenu extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(int p_39793_) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(p_39793_);
+        Slot slot = slots.get(p_39793_);
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             if (p_39793_ == 2) {
-                if (!this.moveItemStackTo(itemstack1, 3, 39, true)) {
+                if (!moveItemStackTo(itemstack1, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
 
                 //slot.onQuickCraft(itemstack1, itemstack);
             } else if (p_39793_ != 0 && p_39793_ != 1) {
-                if (p_39793_ >= 3 && p_39793_ < 39) {
-                    int i = this.shouldQuickMoveToAdditionalSlot(itemstack) ? 1 : 0;
-                    if (!this.moveItemStackTo(itemstack1, i, 2, false)) {
+                if (p_39793_ < 39) {
+                    int i = shouldQuickMoveToAdditionalSlot(itemstack) ? 1 : 0;
+                    if (!moveItemStackTo(itemstack1, i, 2, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
-            } else if (!this.moveItemStackTo(itemstack1, 3, 39, false)) {
+            } else if (!moveItemStackTo(itemstack1, 3, 39, false)) {
                 return ItemStack.EMPTY;
             }
 

@@ -15,7 +15,9 @@ public class BadPacketsD extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (player.packetStateData.lastPacketWasTeleport) return;
+        if (player.packetStateData.lastPacketWasTeleport) {
+            return;
+        }
 
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_ROTATION || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
             WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);

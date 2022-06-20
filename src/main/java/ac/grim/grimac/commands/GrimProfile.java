@@ -22,7 +22,9 @@ public class GrimProfile extends BaseCommand {
     @CommandCompletion("@players")
     public void onConsoleDebug(CommandSender sender, OnlinePlayer target) {
         Player player = null;
-        if (sender instanceof Player) player = (Player) sender;
+        if (sender instanceof Player) {
+            player = (Player) sender;
+        }
 
         if (MultiLib.isExternalPlayer(target.getPlayer())) {
             String alertString = GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("player-not-this-server", "%prefix% &cPlayer isn't on this server!");
@@ -36,17 +38,17 @@ public class GrimProfile extends BaseCommand {
             return;
         }
 
-        ClientBrand brand = (ClientBrand) grimPlayer.checkManager.getPacketCheck(ClientBrand.class);
-        AimProcessor aimProcessor = (AimProcessor) grimPlayer.checkManager.getRotationCheck(AimProcessor.class);
+        ClientBrand brand = grimPlayer.checkManager.getPacketCheck(ClientBrand.class);
+        AimProcessor aimProcessor = grimPlayer.checkManager.getRotationCheck(AimProcessor.class);
 
 
-        String hSens = ((int) Math.round(aimProcessor.sensitivityX * 200)) + "";
-        String vSens = ((int) Math.round(aimProcessor.sensitivityY * 200)) + "";
-        String fastMath = !grimPlayer.trigHandler.isVanillaMath() + "";
+        String hSens = String.valueOf((int) Math.round(aimProcessor.sensitivityX * 200));
+        String vSens = String.valueOf((int) Math.round(aimProcessor.sensitivityY * 200));
+        String fastMath = String.valueOf(!grimPlayer.trigHandler.isVanillaMath());
 
         for (String message : GrimAPI.INSTANCE.getConfigManager().getConfig().getStringList("profile")) {
             message = MessageUtil.format(message);
-            message = message.replace("%ping%", (grimPlayer.getTransactionPing() / 1000000) + "");
+            message = message.replace("%ping%", String.valueOf(grimPlayer.getTransactionPing() / 1000000));
             message = message.replace("%player%", target.getPlayer().getName());
             message = message.replace("%version%", grimPlayer.getClientVersion().getReleaseName());
             message = message.replace("%brand%", brand.getBrand());

@@ -8,15 +8,15 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 public class CompensatedFireworks extends PostPredictionCheck {
     // As this is sync to one player, this does not have to be concurrent
-    IntList activeFireworks = new IntArrayList();
-    IntList fireworksToRemoveNextTick = new IntArrayList();
+    final IntList activeFireworks = new IntArrayList();
+    final IntList fireworksToRemoveNextTick = new IntArrayList();
 
     public CompensatedFireworks(GrimPlayer player) {
         super(player);
     }
 
     @Override
-    public void onPredictionComplete(final PredictionComplete predictionComplete) {
+    public void onPredictionComplete(PredictionComplete predictionComplete) {
         // Remove all the fireworks that were removed in the last tick
         // Remember to remove with an int not an Integer
         activeFireworks.removeAll(fireworksToRemoveNextTick);

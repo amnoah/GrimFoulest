@@ -23,7 +23,9 @@ public class PacketEntityAction extends PacketListenerAbstract {
             WrapperPlayClientEntityAction action = new WrapperPlayClientEntityAction(event);
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
 
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             switch (action.getAction()) {
                 case START_SPRINTING:
@@ -40,7 +42,9 @@ public class PacketEntityAction extends PacketListenerAbstract {
                     break;
                 case START_FLYING_WITH_ELYTRA:
                     // Starting fall flying is server sided on 1.14 and below
-                    if (player.getClientVersion().isOlderThan(ClientVersion.V_1_15)) return;
+                    if (player.getClientVersion().isOlderThan(ClientVersion.V_1_15)) {
+                        return;
+                    }
                     ItemStack chestPlate = player.getInventory().getChestplate();
 
                     // This shouldn't be needed with latency compensated inventories

@@ -34,7 +34,7 @@ public class ReachInterpolationData {
 
     public ReachInterpolationData(GrimPlayer player, SimpleCollisionBox startingLocation, double x, double y, double z, boolean isPointNine, PacketEntity entity) {
         this.startingLocation = startingLocation;
-        this.targetLocation = GetBoundingBox.getBoundingBoxFromPosAndSize(x, y, z, BoundingBoxSize.getWidth(player, entity), BoundingBoxSize.getHeight(player, entity));
+        targetLocation = GetBoundingBox.getBoundingBoxFromPosAndSize(x, y, z, BoundingBoxSize.getWidth(player, entity), BoundingBoxSize.getHeight(player, entity));
 
         // 1.9 -> 1.8 precision loss in packets
         // (ViaVersion is doing some stuff that makes this code difficult)
@@ -42,20 +42,18 @@ public class ReachInterpolationData {
             targetLocation.expand(0.03125);
         }
 
-        this.isBoat = EntityTypes.isTypeInstanceOf(entity.type, EntityTypes.BOAT);
-        if (isPointNine) interpolationStepsHighBound = getInterpolationSteps();
+        isBoat = EntityTypes.isTypeInstanceOf(entity.type, EntityTypes.BOAT);
+        if (isPointNine) {
+            interpolationStepsHighBound = getInterpolationSteps();
+        }
     }
 
     // While riding entities, there is no interpolation.
     public ReachInterpolationData(SimpleCollisionBox finishedLoc) {
-        this.startingLocation = finishedLoc;
-        this.targetLocation = finishedLoc;
+        startingLocation = finishedLoc;
+        targetLocation = finishedLoc;
         interpolationStepsLowBound = getInterpolationSteps();
         interpolationStepsHighBound = getInterpolationSteps();
-    }
-
-    private int getInterpolationSteps() {
-        return isBoat ? 10 : 3;
     }
 
     public static SimpleCollisionBox combineCollisionBox(SimpleCollisionBox one, SimpleCollisionBox two) {
@@ -67,6 +65,10 @@ public class ReachInterpolationData {
         double maxZ = Math.max(one.maxZ, two.maxZ);
 
         return new SimpleCollisionBox(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    private int getInterpolationSteps() {
+        return isBoat ? 10 : 3;
     }
 
     // To avoid huge branching when bruteforcing interpolation -
@@ -106,15 +108,18 @@ public class ReachInterpolationData {
 
     public void updatePossibleStartingLocation(SimpleCollisionBox possibleLocationCombined) {
         //GrimAC.staticGetLogger().info(ChatColor.BLUE + "Updated new starting location as second trans hasn't arrived " + startingLocation);
-        this.startingLocation = combineCollisionBox(startingLocation, possibleLocationCombined);
+        startingLocation = combineCollisionBox(startingLocation, possibleLocationCombined);
         //GrimAC.staticGetLogger().info(ChatColor.BLUE + "Finished updating new starting location as second trans hasn't arrived " + startingLocation);
     }
 
     public void tickMovement(boolean incrementLowBound, boolean tickingReliably) {
-        if (!tickingReliably) this.interpolationStepsHighBound = getInterpolationSteps();
-        if (incrementLowBound)
-            this.interpolationStepsLowBound = Math.min(interpolationStepsLowBound + 1, getInterpolationSteps());
-        this.interpolationStepsHighBound = Math.min(interpolationStepsHighBound + 1, getInterpolationSteps());
+        if (!tickingReliably) {
+            interpolationStepsHighBound = getInterpolationSteps();
+        }
+        if (incrementLowBound) {
+            interpolationStepsLowBound = Math.min(interpolationStepsLowBound + 1, getInterpolationSteps());
+        }
+        interpolationStepsHighBound = Math.min(interpolationStepsHighBound + 1, getInterpolationSteps());
     }
 
     @Override

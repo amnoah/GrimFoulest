@@ -18,28 +18,32 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @CheckData(name = "Prediction (Debug)")
 public class DebugHandler extends PostPredictionCheck {
 
-    Set<Player> listeners = new CopyOnWriteArraySet<>(new HashSet<>());
+    final Set<Player> listeners = new CopyOnWriteArraySet<>(new HashSet<>());
     boolean outputToConsole = false;
 
-    boolean enabledFlags = false;
+    final boolean enabledFlags = false;
     boolean lastMovementIsFlag = false;
 
-    List<String> predicted = new EvictingList<>(5);
-    List<String> actually = new EvictingList<>(5);
-    List<String> offset = new EvictingList<>(5);
+    final List<String> predicted = new EvictingList<>(5);
+    final List<String> actually = new EvictingList<>(5);
+    final List<String> offset = new EvictingList<>(5);
 
     public DebugHandler(GrimPlayer player) {
         super(player);
     }
 
     @Override
-    public void onPredictionComplete(final PredictionComplete predictionComplete) {
+    public void onPredictionComplete(PredictionComplete predictionComplete) {
         double offset = predictionComplete.getOffset();
 
         // No one is listening to this debug
-        if (listeners.isEmpty() && !outputToConsole) return;
+        if (listeners.isEmpty() && !outputToConsole) {
+            return;
+        }
         // This is pointless debug!
-        if (player.predictedVelocity.vector.lengthSquared() == 0 && offset == 0) return;
+        if (player.predictedVelocity.vector.lengthSquared() == 0 && offset == 0) {
+            return;
+        }
 
         ChatColor color = pickColor(offset, offset);
 
@@ -54,7 +58,7 @@ public class DebugHandler extends PostPredictionCheck {
         String a = color + "A: " + xColor + actually.getX() + " " + yColor + actually.getY() + " " + zColor + actually.getZ();
         String canSkipTick = (player.couldSkipTick + " ").substring(0, 1);
         String actualMovementSkip = (player.skippedTickInActualMovement + " ").substring(0, 1);
-        String o = ChatColor.GRAY + "" + canSkipTick + "→0.03→" + actualMovementSkip + color + " O: " + offset;
+        String o = ChatColor.GRAY + canSkipTick + "→0.03→" + actualMovementSkip + color + " O: " + offset;
 
         String prefix = player.bukkitPlayer == null ? "null" : player.bukkitPlayer.getName() + " ";
 
@@ -100,7 +104,9 @@ public class DebugHandler extends PostPredictionCheck {
     }
 
     private ChatColor pickColor(double offset, double totalOffset) {
-        if (player.getSetbackTeleportUtil().blockOffsets) return ChatColor.GRAY;
+        if (player.getSetbackTeleportUtil().blockOffsets) {
+            return ChatColor.GRAY;
+        }
         if (offset <= 0 || totalOffset <= 0) { // If exempt don't bother coloring, so I stop getting false false reports
             return ChatColor.GRAY;
         } else if (offset < 0.0001) {
@@ -114,11 +120,13 @@ public class DebugHandler extends PostPredictionCheck {
 
     public void toggleListener(Player player) {
         // Toggle, if already added, remove.  If not added, then add
-        if (!listeners.remove(player)) listeners.add(player);
+        if (!listeners.remove(player)) {
+            listeners.add(player);
+        }
     }
 
     public boolean toggleConsoleOutput() {
-        this.outputToConsole = !outputToConsole;
-        return this.outputToConsole;
+        outputToConsole = !outputToConsole;
+        return outputToConsole;
     }
 }

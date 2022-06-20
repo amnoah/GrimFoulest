@@ -29,7 +29,9 @@ public class PacketPingListener extends PacketListenerAbstract {
             // Vanilla always uses an ID starting from 1
             if (id <= 0) {
                 GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-                if (player == null) return;
+                if (player == null) {
+                    return;
+                }
 
                 // Check if we sent this packet before cancelling it
                 if (player.addTransactionResponse(id)) {
@@ -46,7 +48,9 @@ public class PacketPingListener extends PacketListenerAbstract {
             // If it wasn't in short range, it wasn't us either
             if (id == (short) id) {
                 GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-                if (player == null) return;
+                if (player == null) {
+                    return;
+                }
                 if (player.addTransactionResponse((short) id)) {
                     // Not needed for vanilla as vanilla ignores this packet, needed for packet limiters
                     event.setCancelled(true);
@@ -64,7 +68,9 @@ public class PacketPingListener extends PacketListenerAbstract {
             // Vanilla always uses an ID starting from 1
             if (id <= 0) {
                 GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-                if (player == null) return;
+                if (player == null) {
+                    return;
+                }
 
                 if (player.didWeSendThatTrans.remove((Short) id)) {
                     player.transactionsSent.add(new Pair<>(id, System.nanoTime()));
@@ -80,7 +86,9 @@ public class PacketPingListener extends PacketListenerAbstract {
             // Check if in the short range, we only use short range
             if (id == (short) id) {
                 GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-                if (player == null) return;
+                if (player == null) {
+                    return;
+                }
                 // Cast ID twice so we can use the list
                 Short shortID = ((short) id);
                 if (player.didWeSendThatTrans.remove(shortID)) {

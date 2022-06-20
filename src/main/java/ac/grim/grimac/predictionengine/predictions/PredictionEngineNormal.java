@@ -43,8 +43,9 @@ public class PredictionEngineNormal extends PredictionEngine {
                 // If the player didn't try to jump
                 // And 0.03 didn't affect onGround status
                 // The player cannot jump
-                if (((player.compensatedEntities.getJumpAmplifier() == null || player.compensatedEntities.getJumpAmplifier() >= 0) && player.onGround) || !player.lastOnGround)
+                if (((player.compensatedEntities.getJumpAmplifier() == null || player.compensatedEntities.getJumpAmplifier() >= 0) && player.onGround) || !player.lastOnGround) {
                     return;
+                }
 
                 JumpPower.jumpFromGround(player, jump);
             } else {

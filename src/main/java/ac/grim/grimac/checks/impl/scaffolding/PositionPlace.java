@@ -18,8 +18,10 @@ public class PositionPlace extends BlockPlaceCheck {
     }
 
     @Override
-    public void onBlockPlace(final BlockPlace place) {
-        if (place.getMaterial() == StateTypes.SCAFFOLDING) return;
+    public void onBlockPlace(BlockPlace place) {
+        if (place.getMaterial() == StateTypes.SCAFFOLDING) {
+            return;
+        }
 
         SimpleCollisionBox combined = getCombinedBox(place);
 

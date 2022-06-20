@@ -154,8 +154,8 @@ public class ReachUtils {
     // Look vector accounting for optifine FastMath, and client version differences
     public static Vector getLook(GrimPlayer player, float yaw, float pitch) {
         if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_12_2)) {
-            float f = player.trigHandler.cos(-yaw * 0.017453292F - (float)Math.PI);
-            float f1 = player.trigHandler.sin(-yaw * 0.017453292F - (float)Math.PI);
+            float f = player.trigHandler.cos(-yaw * 0.017453292F - (float) Math.PI);
+            float f1 = player.trigHandler.sin(-yaw * 0.017453292F - (float) Math.PI);
             float f2 = -player.trigHandler.cos(-pitch * 0.017453292F);
             float f3 = player.trigHandler.sin(-pitch * 0.017453292F);
             return new Vector(f1 * f2, f3, f * f2);

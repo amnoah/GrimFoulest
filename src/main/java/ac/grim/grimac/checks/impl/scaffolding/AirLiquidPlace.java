@@ -15,7 +15,7 @@ public class AirLiquidPlace extends BlockPlaceCheck {
     }
 
     @Override
-    public void onBlockPlace(final BlockPlace place) {
+    public void onBlockPlace(BlockPlace place) {
         Vector3i blockPos = place.getPlacedAgainstBlockLocation();
         StateType placeAgainst = player.compensatedWorld.getStateTypeAt(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 

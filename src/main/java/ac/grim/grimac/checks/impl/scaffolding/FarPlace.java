@@ -18,10 +18,12 @@ public class FarPlace extends BlockPlaceCheck {
     }
 
     @Override
-    public void onBlockPlace(final BlockPlace place) {
+    public void onBlockPlace(BlockPlace place) {
         Vector3i blockPos = place.getPlacedAgainstBlockLocation();
 
-        if (place.getMaterial() == StateTypes.SCAFFOLDING) return;
+        if (place.getMaterial() == StateTypes.SCAFFOLDING) {
+            return;
+        }
 
         double min = Double.MAX_VALUE;
         for (double d : player.getPossibleEyeHeights()) {
@@ -35,7 +37,7 @@ public class FarPlace extends BlockPlaceCheck {
         double maxReach = player.gamemode == GameMode.CREATIVE ? 6.0 : 4.5D;
         double threshold = player.getMovementThreshold();
         maxReach += Math.hypot(threshold, threshold);
-        
+
 
         if (min > maxReach * maxReach) { // fail
             flagAndAlert();

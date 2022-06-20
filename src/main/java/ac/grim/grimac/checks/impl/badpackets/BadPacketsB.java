@@ -14,7 +14,7 @@ public class BadPacketsB extends PacketCheck {
     }
 
     @Override
-    public void onPacketReceive(final PacketReceiveEvent event) {
+    public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.STEER_VEHICLE) {
             WrapperPlayClientSteerVehicle packet = new WrapperPlayClientSteerVehicle(event);
 

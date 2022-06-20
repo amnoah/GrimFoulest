@@ -26,10 +26,9 @@ public class ConfigManager {
     private final File discordFile = new File(GrimAPI.INSTANCE.getPlugin().getDataFolder(), "discord.yml");
     @Getter
     private final File punishFile = new File(GrimAPI.INSTANCE.getPlugin().getDataFolder(), "punishments.yml");
+    private final List<Pattern> ignoredClientPatterns = new ArrayList<>();
     @Getter
     private int maxPingTransaction = 120; // This is just a really hot variable so cache it.
-
-    private final List<Pattern> ignoredClientPatterns = new ArrayList<>();
 
     public ConfigManager() {
         upgrade();
@@ -85,7 +84,9 @@ public class ConfigManager {
 
     public boolean isIgnoredClient(String brand) {
         for (Pattern pattern : ignoredClientPatterns) {
-            if (pattern.matcher(brand).find()) return true;
+            if (pattern.matcher(brand).find()) {
+                return true;
+            }
         }
         return false;
     }

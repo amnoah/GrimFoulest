@@ -42,8 +42,9 @@ public enum HitboxData {
     }, StateTypes.SCAFFOLDING),
 
     DRIPLEAF((player, item, version, data, x, y, z) -> {
-        if (version.isOlderThanOrEquals(ClientVersion.V_1_16_4))
+        if (version.isOlderThanOrEquals(ClientVersion.V_1_16_4)) {
             return new SimpleCollisionBox(0, 0, 0, 1, 1, 1, true);
+        }
 
         ComplexCollisionBox box = new ComplexCollisionBox();
 
@@ -115,9 +116,7 @@ public enum HitboxData {
 
     CACTUS(new HexCollisionBox(1.0D, 0.0D, 1.0D, 15.0D, 16.0D, 15.0D), StateTypes.CACTUS),
 
-    SNOW((player, item, version, data, x, y, z) -> {
-        return new SimpleCollisionBox(0, 0, 0, 1, data.getLayers() * 0.125, 1);
-    }, StateTypes.SNOW),
+    SNOW((player, item, version, data, x, y, z) -> new SimpleCollisionBox(0, 0, 0, 1, data.getLayers() * 0.125, 1), StateTypes.SNOW),
 
     LECTERN_BLOCK((player, item, version, data, x, y, z) -> {
         ComplexCollisionBox common = new ComplexCollisionBox(new HexCollisionBox(0.0D, 0.0D, 0.0D, 16.0D, 2.0D, 16.0D),
@@ -147,7 +146,7 @@ public enum HitboxData {
     private static final Map<StateType, HitboxData> lookup = new HashMap<>();
 
     static {
-        for (HitboxData data : HitboxData.values()) {
+        for (HitboxData data : values()) {
             for (StateType type : data.materials) {
                 lookup.put(type, data);
             }
@@ -185,10 +184,11 @@ public enum HitboxData {
         }
 
         // Simple collision box to override
-        if (data.box != null)
+        if (data.box != null) {
             return data.box.copy().offset(x, y, z);
+        }
 
         // Allow this class to override collision boxes when they aren't the same as regular boxes
-        return HitboxData.getData(block.getType()).dynamic.fetch(player, heldItem, version, block, x, y, z).offset(x, y, z);
+        return getData(block.getType()).dynamic.fetch(player, heldItem, version, block, x, y, z).offset(x, y, z);
     }
 }

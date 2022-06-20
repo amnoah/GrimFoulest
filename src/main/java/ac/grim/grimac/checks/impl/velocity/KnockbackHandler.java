@@ -16,9 +16,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 // We are making a velocity sandwich between two pieces of transaction packets (bread)
 @CheckData(name = "AntiKB", alternativeName = "AntiKnockback", configName = "Knockback", setback = 10, decay = 0.025)
 public class KnockbackHandler extends PacketCheck {
-    ConcurrentLinkedQueue<VelocityData> firstBreadMap = new ConcurrentLinkedQueue<>();
+    final ConcurrentLinkedQueue<VelocityData> firstBreadMap = new ConcurrentLinkedQueue<>();
 
-    ConcurrentLinkedQueue<VelocityData> lastKnockbackKnownTaken = new ConcurrentLinkedQueue<>();
+    final ConcurrentLinkedQueue<VelocityData> lastKnockbackKnownTaken = new ConcurrentLinkedQueue<>();
     VelocityData firstBreadOnlyKnockback = null;
 
     boolean wasExplosionZeroPointZeroThree = false;
@@ -35,13 +35,15 @@ public class KnockbackHandler extends PacketCheck {
     }
 
     @Override
-    public void onPacketSend(final PacketSendEvent event) {
+    public void onPacketSend(PacketSendEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.ENTITY_VELOCITY) {
             WrapperPlayServerEntityVelocity velocity = new WrapperPlayServerEntityVelocity(event);
             int entityId = velocity.getEntityId();
 
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             // Detect whether this knockback packet affects the player or if it is useless
             // Mojang sends extra useless knockback packets for no apparent reason
@@ -72,8 +74,9 @@ public class KnockbackHandler extends PacketCheck {
 
         VelocityData returnLastKB = null;
         for (VelocityData data : lastKnockbackKnownTaken) {
-            if (data.entityID == entityID)
+            if (data.entityID == entityID) {
                 returnLastKB = data;
+            }
         }
 
         lastKnockbackKnownTaken.clear();
@@ -90,9 +93,11 @@ public class KnockbackHandler extends PacketCheck {
                 break; // All knockback after this will have not been applied
             } else if (data.transaction < transactionID) { // This kb has 100% arrived to the player
                 if (firstBreadOnlyKnockback != null) // Don't require kb twice
+                {
                     lastKnockbackKnownTaken.add(new VelocityData(data.entityID, data.transaction, data.vector, data.isSetback, data.offset));
-                else
+                } else {
                     lastKnockbackKnownTaken.add(new VelocityData(data.entityID, data.transaction, data.isSetback, data.vector));
+                }
                 firstBreadOnlyKnockback = null;
                 firstBreadMap.poll();
                 data = firstBreadMap.peek();
@@ -190,8 +195,9 @@ public class KnockbackHandler extends PacketCheck {
 
     public VelocityData calculateFirstBreadKnockback(int entityID, int transaction) {
         tickKnockback(transaction);
-        if (firstBreadOnlyKnockback != null && firstBreadOnlyKnockback.entityID == entityID)
+        if (firstBreadOnlyKnockback != null && firstBreadOnlyKnockback.entityID == entityID) {
             return firstBreadOnlyKnockback;
+        }
         return null;
     }
 
@@ -201,6 +207,8 @@ public class KnockbackHandler extends PacketCheck {
         offsetToFlag = getConfig().getDoubleElse("Knockback.threshold", 0.00001);
         setbackVL = getConfig().getDoubleElse("Knockback.setbackvl", 10);
 
-        if (setbackVL == -1) setbackVL = Double.MAX_VALUE;
+        if (setbackVL == -1) {
+            setbackVL = Double.MAX_VALUE;
+        }
     }
 }

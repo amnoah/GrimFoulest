@@ -10,9 +10,8 @@ import lombok.Setter;
 import java.util.ArrayList;
 
 public class PacketEntitySelf extends PacketEntity {
-    public WrapperPlayServerEntityProperties.Property playerSpeed = new WrapperPlayServerEntityProperties.Property("MOVEMENT_SPEED", 0.1f, new ArrayList<>());
-
     private final GrimPlayer player;
+    public WrapperPlayServerEntityProperties.Property playerSpeed = new WrapperPlayServerEntityProperties.Property("MOVEMENT_SPEED", 0.1f, new ArrayList<>());
     @Getter
     @Setter
     int opLevel;

@@ -22,22 +22,20 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.*;
 
 public class CompensatedEntities {
-    private static final UUID SPRINTING_MODIFIER_UUID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
     public static final UUID SNOW_MODIFIER_UUID = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
+    private static final UUID SPRINTING_MODIFIER_UUID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
     public final Int2ObjectOpenHashMap<PacketEntity> entityMap = new Int2ObjectOpenHashMap<>(40, 0.7f);
     public final Int2ObjectOpenHashMap<TrackerData> serverPositionsMap = new Int2ObjectOpenHashMap<>(40, 0.7f);
     public Integer serverPlayerVehicle = null;
     public boolean hasSprintingAttributeEnabled = false;
-
-    GrimPlayer player;
-
     public TrackerData selfTrackedEntity;
     public PacketEntitySelf playerEntity;
+    final GrimPlayer player;
 
     public CompensatedEntities(GrimPlayer player) {
         this.player = player;
-        this.playerEntity = new PacketEntitySelf(player);
-        this.selfTrackedEntity = new TrackerData(0, 0, 0, 0, 0, EntityTypes.PLAYER, player.lastTransactionSent.get());
+        playerEntity = new PacketEntitySelf(player);
+        selfTrackedEntity = new TrackerData(0, 0, 0, 0, 0, EntityTypes.PLAYER, player.lastTransactionSent.get());
     }
 
     public int getPacketEntityID(PacketEntity entity) {
@@ -50,7 +48,7 @@ public class CompensatedEntities {
     }
 
     public void tick() {
-        this.playerEntity.setPositionRaw(player.boundingBox);
+        playerEntity.setPositionRaw(player.boundingBox);
         for (PacketEntity vehicle : entityMap.values()) {
             for (PacketEntity passenger : vehicle.passengers) {
                 tickPassenger(vehicle, passenger);
@@ -60,7 +58,9 @@ public class CompensatedEntities {
 
     public void removeEntity(int entityID) {
         PacketEntity entity = entityMap.remove(entityID);
-        if (entity == null) return;
+        if (entity == null) {
+            return;
+        }
 
         for (PacketEntity passenger : new ArrayList<>(entity.passengers)) {
             passenger.eject();
@@ -87,7 +87,9 @@ public class CompensatedEntities {
         PacketEntity desiredEntity = playerEntity.getRiding() != null ? playerEntity.getRiding() : playerEntity;
 
         HashMap<PotionType, Integer> effects = desiredEntity.potionsMap;
-        if (effects == null) return null;
+        if (effects == null) {
+            return null;
+        }
 
         return effects.get(type);
     }
@@ -147,20 +149,23 @@ public class CompensatedEntities {
         modifiers.removeIf(modifier -> modifier.getUUID().equals(SPRINTING_MODIFIER_UUID));
 
         for (WrapperPlayServerEntityProperties.PropertyModifier attributemodifier : modifiers) {
-            if (attributemodifier.getOperation() == WrapperPlayServerEntityProperties.PropertyModifier.Operation.ADDITION)
+            if (attributemodifier.getOperation() == WrapperPlayServerEntityProperties.PropertyModifier.Operation.ADDITION) {
                 d0 += attributemodifier.getAmount();
+            }
         }
 
         double d1 = d0;
 
         for (WrapperPlayServerEntityProperties.PropertyModifier attributemodifier : modifiers) {
-            if (attributemodifier.getOperation() == WrapperPlayServerEntityProperties.PropertyModifier.Operation.MULTIPLY_BASE)
+            if (attributemodifier.getOperation() == WrapperPlayServerEntityProperties.PropertyModifier.Operation.MULTIPLY_BASE) {
                 d1 += d0 * attributemodifier.getAmount();
+            }
         }
 
         for (WrapperPlayServerEntityProperties.PropertyModifier attributemodifier : modifiers) {
-            if (attributemodifier.getOperation() == WrapperPlayServerEntityProperties.PropertyModifier.Operation.MULTIPLY_TOTAL)
+            if (attributemodifier.getOperation() == WrapperPlayServerEntityProperties.PropertyModifier.Operation.MULTIPLY_TOTAL) {
                 d1 *= 1.0D + attributemodifier.getAmount();
+            }
         }
 
         return GrimMath.clampFloat((float) d1, (float) minValue, (float) maxValue);
@@ -180,7 +185,9 @@ public class CompensatedEntities {
 
     public void addEntity(int entityID, EntityType entityType, Vector3d position, float xRot, int data) {
         // Dropped items are all server sided and players can't interact with them (except create them!), save the performance
-        if (entityType == EntityTypes.ITEM) return;
+        if (entityType == EntityTypes.ITEM) {
+            return;
+        }
 
         PacketEntity packetEntity;
 
@@ -227,7 +234,9 @@ public class CompensatedEntities {
 
     public void updateEntityMetadata(int entityID, List<EntityData> watchableObjects) {
         PacketEntity entity = player.compensatedEntities.getEntity(entityID);
-        if (entity == null) return;
+        if (entity == null) {
+            return;
+        }
 
         if (entity.isAgeable()) {
             int id;
@@ -430,7 +439,9 @@ public class CompensatedEntities {
 
             EntityData fireworkWatchableObject = WatchableIndexUtil.getIndex(watchableObjects, 9 - offset);
 
-            if (fireworkWatchableObject == null) return;
+            if (fireworkWatchableObject == null) {
+                return;
+            }
 
             Optional<Integer> attachedEntityID = (Optional<Integer>) fireworkWatchableObject.getValue();
 
@@ -452,7 +463,9 @@ public class CompensatedEntities {
             }
 
             EntityData hookWatchableObject = WatchableIndexUtil.getIndex(watchableObjects, index);
-            if (hookWatchableObject == null) return;
+            if (hookWatchableObject == null) {
+                return;
+            }
 
             Integer attachedEntityID = (Integer) hookWatchableObject.getValue();
             ((PacketEntityHook) entity).attached = attachedEntityID - 1; // the server adds 1 to the ID

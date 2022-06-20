@@ -14,7 +14,7 @@ public class PacketChangeGameState extends PacketCheck {
     }
 
     @Override
-    public void onPacketSend(final PacketSendEvent event) {
+    public void onPacketSend(PacketSendEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.CHANGE_GAME_STATE) {
             WrapperPlayServerChangeGameState packet = new WrapperPlayServerChangeGameState(event);
 

@@ -18,7 +18,7 @@ public class MovementTickerRideable extends MovementTickerLivingVehicle {
         // Do stuff for boosting on a pig/strider
         if (boost.currentBoostTime++ < boost.boostTimeMax) {
             // I wonder how much fastmath actually affects boosting movement
-            f += f * 1.15F * player.trigHandler.sin((float) boost.currentBoostTime / (float) boost.boostTimeMax * (float) Math.PI);
+            f += f * 1.15F * player.trigHandler.sin((float) boost.currentBoostTime / boost.boostTimeMax * (float) Math.PI);
         }
 
         player.speed = f;
@@ -33,6 +33,8 @@ public class MovementTickerRideable extends MovementTickerLivingVehicle {
     @Override
     public void livingEntityTravel() {
         super.livingEntityTravel();
-        if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_17)) Collisions.handleInsideBlocks(player);
+        if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_17)) {
+            Collisions.handleInsideBlocks(player);
+        }
     }
 }

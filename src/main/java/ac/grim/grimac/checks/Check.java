@@ -20,20 +20,22 @@ public class Check<T> {
     private String configName;
     private String alernativeName;
 
-    public Check(final GrimPlayer player) {
+    public Check(GrimPlayer player) {
         this.player = player;
 
-        final Class<?> checkClass = this.getClass();
+        Class<?> checkClass = getClass();
 
         if (checkClass.isAnnotationPresent(CheckData.class)) {
-            final CheckData checkData = checkClass.getAnnotation(CheckData.class);
-            this.checkName = checkData.name();
-            this.configName = checkData.configName();
+            CheckData checkData = checkClass.getAnnotation(CheckData.class);
+            checkName = checkData.name();
+            configName = checkData.configName();
             // Fall back to check name
-            if (this.configName.equals("DEFAULT")) this.configName = this.checkName;
-            this.decay = checkData.decay();
-            this.setbackVL = checkData.setback();
-            this.alernativeName = checkData.alternativeName();
+            if (configName.equals("DEFAULT")) {
+                configName = checkName;
+            }
+            decay = checkData.decay();
+            setbackVL = checkData.setback();
+            alernativeName = checkData.alternativeName();
         }
 
         reload();
@@ -50,11 +52,15 @@ public class Check<T> {
     }
 
     public final boolean flag() {
-        if (player.disableGrim) return false; // Avoid calling event if disabled
+        if (player.disableGrim) {
+            return false; // Avoid calling event if disabled
+        }
 
         FlagEvent event = new FlagEvent(this);
         Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return false;
+        if (event.isCancelled()) {
+            return false;
+        }
 
         player.punishmentManager.handleViolation(this);
 
@@ -76,7 +82,9 @@ public class Check<T> {
         decay = getConfig().getDoubleElse(configName + ".decay", decay);
         setbackVL = getConfig().getDoubleElse(configName + ".setbackvl", setbackVL);
 
-        if (setbackVL == -1) setbackVL = Double.MAX_VALUE;
+        if (setbackVL == -1) {
+            setbackVL = Double.MAX_VALUE;
+        }
     }
 
     public void alert(String verbose) {
@@ -87,11 +95,10 @@ public class Check<T> {
         return GrimAPI.INSTANCE.getConfigManager().getConfig();
     }
 
-    public boolean setbackIfAboveSetbackVL() {
+    public void setbackIfAboveSetbackVL() {
         if (getViolations() > setbackVL) {
-            return player.getSetbackTeleportUtil().executeViolationSetback();
+            player.getSetbackTeleportUtil().executeViolationSetback();
         }
-        return false;
     }
 
     public String formatOffset(double offset) {

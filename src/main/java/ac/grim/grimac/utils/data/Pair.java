@@ -30,7 +30,7 @@ public class Pair<A, B> {
     }
 
     public static <T, K> Pair<T, K> of(T a, K b) {
-        return new Pair<T, K>(a, b);
+        return new Pair<>(a, b);
     }
 
     public A getFirst() {
@@ -47,6 +47,6 @@ public class Pair<A, B> {
             return false;
         }
         Pair b = (Pair) o;
-        return Objects.equals(this.first, b.first) && Objects.equals(this.second, b.second);
+        return Objects.equals(first, b.first) && Objects.equals(second, b.second);
     }
 }

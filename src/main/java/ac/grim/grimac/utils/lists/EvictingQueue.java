@@ -8,7 +8,7 @@ public class EvictingQueue<K> extends ArrayList<K> {
     private final int maxSize;
 
     public EvictingQueue(int size) {
-        this.maxSize = size;
+        maxSize = size;
     }
 
     public boolean add(K k) {

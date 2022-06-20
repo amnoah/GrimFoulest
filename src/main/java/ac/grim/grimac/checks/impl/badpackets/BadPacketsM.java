@@ -17,7 +17,7 @@ public class BadPacketsM extends PacketCheck {
         super(playerData);
     }
 
-    public void onPacketReceive(final PacketReceiveEvent event) {
+    public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) { // idle packet
             // Due to a bug in 1.8 clients, this check isn't possible for 1.8 clients
             // Instead, we must tick "using item" with flying packets like the server does

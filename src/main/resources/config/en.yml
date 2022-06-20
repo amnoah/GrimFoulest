@@ -36,7 +36,7 @@ Simulation:
   # Measured in blocks from the possible movement
   # We account for Optifine by switching trig tables but dropping this to 0.001 will reduce FastMath
   # flagging the anticheat if this compensation doesn't work...
-  threshold: 0.0001
+  threshold: 0.00122
   # How large of a violation in a tick before the player gets immediately setback?
   # -1 to disable
   immediate-setback-threshold: 0.1

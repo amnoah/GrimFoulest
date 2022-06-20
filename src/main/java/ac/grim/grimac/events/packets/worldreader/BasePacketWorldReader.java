@@ -2,9 +2,7 @@ package ac.grim.grimac.events.packets.worldreader;
 
 import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.player.GrimPlayer;
-import ac.grim.grimac.utils.anticheat.LogUtil;
 import ac.grim.grimac.utils.chunks.Column;
-import ac.grim.grimac.utils.data.Pair;
 import ac.grim.grimac.utils.data.TeleportData;
 import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
@@ -13,7 +11,6 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.world.chunk.BaseChunk;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.server.*;
-import org.bukkit.Location;
 
 public class BasePacketWorldReader extends PacketListenerAbstract {
 
@@ -26,7 +23,9 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
         if (event.getPacketType() == PacketType.Play.Server.UNLOAD_CHUNK) {
             WrapperPlayServerUnloadChunk unloadChunk = new WrapperPlayServerUnloadChunk(event);
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             unloadChunk(player, unloadChunk.getChunkX(), unloadChunk.getChunkZ());
         }
@@ -34,35 +33,45 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
         // 1.7 and 1.8 only
         if (event.getPacketType() == PacketType.Play.Server.MAP_CHUNK_BULK) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             handleMapChunkBulk(player, event);
         }
 
         if (event.getPacketType() == PacketType.Play.Server.CHUNK_DATA) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             handleMapChunk(player, event);
         }
 
         if (event.getPacketType() == PacketType.Play.Server.BLOCK_CHANGE) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             handleBlockChange(player, event);
         }
 
         if (event.getPacketType() == PacketType.Play.Server.MULTI_BLOCK_CHANGE) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             handleMultiBlockChange(player, event);
         }
 
         if (event.getPacketType() == PacketType.Play.Server.ACKNOWLEDGE_BLOCK_CHANGES) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             WrapperPlayServerAcknowledgeBlockChanges changes = new WrapperPlayServerAcknowledgeBlockChanges(event);
             player.compensatedWorld.handlePredictionConfirmation(changes.getSequence());
@@ -89,7 +98,9 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
         boolean shouldPostTrans = Math.abs(player.x - chunkCenterX) < 16 && Math.abs(player.z - chunkCenterZ) < 16;
 
         for (TeleportData teleports : player.getSetbackTeleportUtil().teleports) {
-            if (teleports.getFlags().getMask() != 0) continue; // Worse that will happen is people will get an extra setback... relative teleports aren't good for long distance teleports anyways
+            if (teleports.getFlags().getMask() != 0) {
+                continue; // Worse that will happen is people will get an extra setback... relative teleports aren't good for long distance teleports anyways
+            }
             shouldPostTrans = shouldPostTrans || (Math.abs(teleports.getLocation().getX() - chunkCenterX) < 16 && Math.abs(teleports.getLocation().getZ() - chunkCenterZ) < 16);
         }
 
@@ -116,7 +127,9 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
     }
 
     public void unloadChunk(GrimPlayer player, int x, int z) {
-        if (player == null) return;
+        if (player == null) {
+            return;
+        }
         player.compensatedWorld.removeChunkLater(x, z);
     }
 
@@ -127,8 +140,9 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
         Vector3i blockPosition = blockChange.getBlockPosition();
         // Don't spam transactions (block changes are sent in batches)
         if (Math.abs(blockPosition.getX() - player.x) < range && Math.abs(blockPosition.getY() - player.y) < range && Math.abs(blockPosition.getZ() - player.z) < range &&
-                player.lastTransSent + 2 < System.currentTimeMillis())
+                player.lastTransSent + 2 < System.currentTimeMillis()) {
             player.sendTransaction();
+        }
 
         player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> player.compensatedWorld.updateBlock(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ(), blockChange.getBlockId()));
     }

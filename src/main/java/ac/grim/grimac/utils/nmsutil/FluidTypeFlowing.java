@@ -16,7 +16,9 @@ public class FluidTypeFlowing {
         float fluidLevel = (float) Math.min(player.compensatedWorld.getFluidLevelAt(originalX, originalY, originalZ), 8 / 9D);
         ClientVersion version = player.getClientVersion();
 
-        if (fluidLevel == 0) return new Vector();
+        if (fluidLevel == 0) {
+            return new Vector();
+        }
 
         double d0 = 0.0D;
         double d1 = 0.0D;
@@ -47,8 +49,8 @@ public class FluidTypeFlowing {
                 }
 
                 if (f1 != 0.0F) {
-                    d0 += (float) enumdirection.getModX() * f1;
-                    d1 += (float) enumdirection.getModZ() * f1;
+                    d0 += enumdirection.getModX() * f1;
+                    d1 += enumdirection.getModZ() * f1;
                 }
             }
         }
@@ -80,8 +82,12 @@ public class FluidTypeFlowing {
         WrappedBlockState data = player.compensatedWorld.getWrappedBlockStateAt(x, y, z);
         StateType type = data.getType();
 
-        if (isSame(player, x, y, z, originalX, y, originalZ)) return false;
-        if (type == StateTypes.ICE) return false;
+        if (isSame(player, x, y, z, originalX, y, originalZ)) {
+            return false;
+        }
+        if (type == StateTypes.ICE) {
+            return false;
+        }
 
         // 1.11 and below clients use a different method to determine solid faces
         if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_12)) {
@@ -109,15 +115,18 @@ public class FluidTypeFlowing {
             // Report bugs on GitHub, as always.  1.13 is an odd version and issues could be lurking here.
             if (Materials.isStairs(type) || Materials.isLeaves(type)
                     || Materials.isShulker(type) || Materials.isGlassBlock(type)
-                    || BlockTags.TRAPDOORS.contains(type))
+                    || BlockTags.TRAPDOORS.contains(type)) {
                 return false;
+            }
 
             if (type == StateTypes.BEACON || BlockTags.CAULDRONS.contains(type)
-                    || type == StateTypes.GLOWSTONE || type == StateTypes.SEA_LANTERN || type == StateTypes.CONDUIT)
+                    || type == StateTypes.GLOWSTONE || type == StateTypes.SEA_LANTERN || type == StateTypes.CONDUIT) {
                 return false;
+            }
 
-            if (type == StateTypes.PISTON || type == StateTypes.STICKY_PISTON || type == StateTypes.PISTON_HEAD)
+            if (type == StateTypes.PISTON || type == StateTypes.STICKY_PISTON || type == StateTypes.PISTON_HEAD) {
                 return false;
+            }
 
             return type == StateTypes.SOUL_SAND || (CollisionData.getData(type).getMovementCollisionBox(player, player.getClientVersion(), data, x, y, z).isFullBlock());
         } else {

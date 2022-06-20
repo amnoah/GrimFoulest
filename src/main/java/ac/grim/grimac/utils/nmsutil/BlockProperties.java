@@ -14,12 +14,15 @@ import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 public class BlockProperties {
 
     public static float getBlockFrictionUnderPlayer(GrimPlayer player) {
-        if (player.isGliding || player.isFlying) return 1.0f;
+        if (player.isGliding || player.isFlying) {
+            return 1.0f;
+        }
 
         double searchBelowAmount = 0.5000001;
 
-        if (player.getClientVersion().isOlderThan(ClientVersion.V_1_15))
+        if (player.getClientVersion().isOlderThan(ClientVersion.V_1_15)) {
             searchBelowAmount = 1;
+        }
 
         StateType material = player.compensatedWorld.getStateTypeAt(player.lastX, player.lastY - searchBelowAmount, player.lastZ);
 
@@ -29,17 +32,27 @@ public class BlockProperties {
     public static float getMaterialFriction(GrimPlayer player, StateType material) {
         float friction = 0.6f;
 
-        if (material == StateTypes.ICE) friction = 0.98f;
-        if (material == StateTypes.SLIME_BLOCK && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_8))
+        if (material == StateTypes.ICE) {
+            friction = 0.98f;
+        }
+        if (material == StateTypes.SLIME_BLOCK && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_8)) {
             friction = 0.8f;
+        }
         // ViaVersion honey block replacement
-        if (material == StateTypes.HONEY_BLOCK && player.getClientVersion().isOlderThan(ClientVersion.V_1_15))
+        if (material == StateTypes.HONEY_BLOCK && player.getClientVersion().isOlderThan(ClientVersion.V_1_15)) {
             friction = 0.8f;
-        if (material == StateTypes.PACKED_ICE) friction = 0.98f;
-        if (material == StateTypes.FROSTED_ICE) friction = 0.98f;
+        }
+        if (material == StateTypes.PACKED_ICE) {
+            friction = 0.98f;
+        }
+        if (material == StateTypes.FROSTED_ICE) {
+            friction = 0.98f;
+        }
         if (material == StateTypes.BLUE_ICE) {
             friction = 0.98f;
-            if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_13)) friction = 0.989f;
+            if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_13)) {
+                friction = 0.989f;
+            }
         }
 
         return friction;
@@ -67,7 +80,7 @@ public class BlockProperties {
             return player.flySpeed * 20 * (player.isSprinting ? 0.1f : 0.05f);
         }
 
-        return player.lastSprintingForSpeed ? (float) ((double) 0.02f + 0.005999999865889549D) : 0.02f;
+        return player.lastSprintingForSpeed ? (float) (0.02f + 0.005999999865889549D) : 0.02f;
     }
 
     public static StateType getOnBlock(GrimPlayer player, double x, double y, double z) {
@@ -85,26 +98,34 @@ public class BlockProperties {
     }
 
     public static float getBlockSpeedFactor(GrimPlayer player) {
-        if (player.isGliding || player.isFlying) return 1.0f;
+        if (player.isGliding || player.isFlying) {
+            return 1.0f;
+        }
         // This system was introduces in 1.15 players to add support for honey blocks slowing players down
-        if (player.getClientVersion().isOlderThan(ClientVersion.V_1_15)) return 1.0f;
+        if (player.getClientVersion().isOlderThan(ClientVersion.V_1_15)) {
+            return 1.0f;
+        }
 
         StateType block = player.compensatedWorld.getStateTypeAt(player.x, player.y, player.z);
 
         // This is the 1.16.0 and 1.16.1 method for detecting if the player is on soul speed
         if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16) && player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_16_1)) {
-            StateType onBlock = BlockProperties.getOnBlock(player, player.x, player.y, player.z);
-            if (onBlock == StateTypes.SOUL_SAND && player.getInventory().getBoots().getEnchantmentLevel(EnchantmentTypes.SOUL_SPEED, PacketEvents.getAPI().getServerManager().getVersion().toClientVersion()) > 0)
+            StateType onBlock = getOnBlock(player, player.x, player.y, player.z);
+            if (onBlock == StateTypes.SOUL_SAND && player.getInventory().getBoots().getEnchantmentLevel(EnchantmentTypes.SOUL_SPEED, PacketEvents.getAPI().getServerManager().getVersion().toClientVersion()) > 0) {
                 return 1.0f;
+            }
         }
 
-        if (block == StateTypes.HONEY_BLOCK) return 0.4f;
+        if (block == StateTypes.HONEY_BLOCK) {
+            return 0.4f;
+        }
         if (block == StateTypes.SOUL_SAND) {
             // Soul speed is a 1.16+ enchantment
             // 1.15- players obviously do not get this boost
             // This new method for detecting soul speed was added in 1.16.2
-            if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16_2) && player.getInventory().getBoots().getEnchantmentLevel(EnchantmentTypes.SOUL_SPEED, PacketEvents.getAPI().getServerManager().getVersion().toClientVersion()) > 0)
+            if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16_2) && player.getInventory().getBoots().getEnchantmentLevel(EnchantmentTypes.SOUL_SPEED, PacketEvents.getAPI().getServerManager().getVersion().toClientVersion()) > 0) {
                 return 1.0f;
+            }
             return 0.4f;
         }
 
@@ -115,12 +136,15 @@ public class BlockProperties {
         }
 
         StateType block2 = player.compensatedWorld.getStateTypeAt(player.x, player.y - 0.5000001, player.z);
-        if (block2 == StateTypes.HONEY_BLOCK) return 0.4f;
+        if (block2 == StateTypes.HONEY_BLOCK) {
+            return 0.4f;
+        }
         if (block2 == StateTypes.SOUL_SAND) {
             // Soul speed is a 1.16+ enchantment
             // This new method for detecting soul speed was added in 1.16.2
-            if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16_2) && player.getInventory().getBoots().getEnchantmentLevel(EnchantmentTypes.SOUL_SPEED, PacketEvents.getAPI().getServerManager().getVersion().toClientVersion()) > 0)
+            if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16_2) && player.getInventory().getBoots().getEnchantmentLevel(EnchantmentTypes.SOUL_SPEED, PacketEvents.getAPI().getServerManager().getVersion().toClientVersion()) > 0) {
                 return 1.0f;
+            }
             return 0.4f;
         }
         return 1.0f;

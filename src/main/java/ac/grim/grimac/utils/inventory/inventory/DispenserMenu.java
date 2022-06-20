@@ -22,15 +22,15 @@ public class DispenserMenu extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(int slotID) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotID);
+        Slot slot = slots.get(slotID);
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             if (slotID < 9) {
-                if (!this.moveItemStackTo(itemstack1, 9, 45, true)) {
+                if (!moveItemStackTo(itemstack1, 9, 45, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(itemstack1, 0, 9, false)) {
+            } else if (!moveItemStackTo(itemstack1, 0, 9, false)) {
                 return ItemStack.EMPTY;
             }
 

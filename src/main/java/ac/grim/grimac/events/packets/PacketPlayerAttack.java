@@ -29,7 +29,9 @@ public class PacketPlayerAttack extends PacketListenerAbstract {
             WrapperPlayClientInteractEntity interact = new WrapperPlayClientInteractEntity(event);
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
 
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             if (interact.getAction() == WrapperPlayClientInteractEntity.InteractAction.ATTACK) {
                 ItemStack heldItem = player.getInventory().getHeldItem();
@@ -37,8 +39,9 @@ public class PacketPlayerAttack extends PacketListenerAbstract {
 
                 // You don't get a release use item with block hitting with a sword?
                 if (heldItem != null && player.getClientVersion().isOlderThan(ClientVersion.V_1_9)) {
-                    if (heldItem.getType().hasAttribute(ItemTypes.ItemAttribute.SWORD))
+                    if (heldItem.getType().hasAttribute(ItemTypes.ItemAttribute.SWORD)) {
                         player.packetStateData.slowedByUsingItem = false;
+                    }
                 }
 
                 if (entity != null && (!(entity.type instanceof LivingEntity) || entity.type == EntityTypes.PLAYER)) {
@@ -68,7 +71,9 @@ public class PacketPlayerAttack extends PacketListenerAbstract {
 
         if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             player.minPlayerAttackSlow = 0;
         }

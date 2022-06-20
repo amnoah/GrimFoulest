@@ -40,7 +40,9 @@ public class PacketPlayerAbilities extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_ABILITIES) {
             WrapperPlayClientPlayerAbilities abilities = new WrapperPlayClientPlayerAbilities(event);
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             if (hasSetFlying && !abilities.isFlying()) {
                 hasSetFlying = false;
@@ -52,7 +54,7 @@ public class PacketPlayerAbilities extends PacketCheck {
                 hasSetFlying = true;
             }
 
-            player.isFlying = abilities.isFlying() && player.canFly;
+            player.isFlying = abilities.isFlying() && player.isFlightAllowed;
         }
     }
 
@@ -62,13 +64,17 @@ public class PacketPlayerAbilities extends PacketCheck {
             WrapperPlayServerPlayerAbilities abilities = new WrapperPlayServerPlayerAbilities(event);
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
 
-            if (player == null) return;
+            if (player == null) {
+                return;
+            }
 
             player.sendTransaction();
 
             player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
                 setFlyToFalse = -1;
-                player.canFly = abilities.isFlightAllowed();
+                player.isFlightAllowed = abilities.isFlightAllowed();
+                player.isInGodMode = abilities.isInGodMode();
+                player.isInCreative = abilities.isInCreativeMode();
                 player.isFlying = abilities.isFlying();
             });
         }

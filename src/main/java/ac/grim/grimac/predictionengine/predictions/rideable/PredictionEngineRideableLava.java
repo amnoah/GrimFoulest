@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class PredictionEngineRideableLava extends PredictionEngineLava {
 
-    Vector movementVector;
+    final Vector movementVector;
 
     public PredictionEngineRideableLava(Vector movementVector) {
         this.movementVector = movementVector;

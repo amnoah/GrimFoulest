@@ -25,13 +25,13 @@ public class HorseMenu extends AbstractContainerMenu {
 
         storage = new InventoryStorage(size);
 
-        this.addSlot(new Slot(storage, 0) {
+        addSlot(new Slot(storage, 0) {
             public boolean mayPlace(ItemStack p_39677_) {
-                return p_39677_.is(ItemTypes.SADDLE) && !this.hasItem() && horse.type != EntityTypes.LLAMA &&
+                return p_39677_.is(ItemTypes.SADDLE) && !hasItem() && horse.type != EntityTypes.LLAMA &&
                         !horse.isDead && !horse.isBaby && horse.isTame;
             }
         });
-        this.addSlot(new Slot(storage, 1) {
+        addSlot(new Slot(storage, 1) {
             public boolean mayPlace(ItemStack stack) {
                 return stack.getType() == ItemTypes.DIAMOND_HORSE_ARMOR || stack.getType() == ItemTypes.GOLDEN_HORSE_ARMOR ||
                         stack.getType() == ItemTypes.IRON_HORSE_ARMOR || stack.getType() == ItemTypes.LEATHER_HORSE_ARMOR;
@@ -47,7 +47,7 @@ public class HorseMenu extends AbstractContainerMenu {
 
             for (int k = 0; k < 3; ++k) {
                 for (int l = 0; l < columns; ++l) {
-                    this.addSlot(new Slot(storage, 2 + l + k * columns));
+                    addSlot(new Slot(storage, 2 + l + k * columns));
                 }
             }
         }
@@ -58,35 +58,35 @@ public class HorseMenu extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(int p_39666_) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(p_39666_);
+        Slot slot = slots.get(p_39666_);
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-            int i = this.storage.getSize();
+            int i = storage.getSize();
             if (p_39666_ < i) {
-                if (!this.moveItemStackTo(itemstack1, i, this.slots.size(), true)) {
+                if (!moveItemStackTo(itemstack1, i, slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(1).mayPlace(itemstack1) && !this.getSlot(1).hasItem()) {
-                if (!this.moveItemStackTo(itemstack1, 1, 2, false)) {
+            } else if (getSlot(1).mayPlace(itemstack1) && !getSlot(1).hasItem()) {
+                if (!moveItemStackTo(itemstack1, 1, 2, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.getSlot(0).mayPlace(itemstack1)) {
-                if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
+            } else if (getSlot(0).mayPlace(itemstack1)) {
+                if (!moveItemStackTo(itemstack1, 0, 1, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (i <= 2 || !this.moveItemStackTo(itemstack1, 2, i, false)) {
+            } else if (i <= 2 || !moveItemStackTo(itemstack1, 2, i, false)) {
                 int j = i + 27;
                 int k = j + 9;
                 if (p_39666_ >= j && p_39666_ < k) {
-                    if (!this.moveItemStackTo(itemstack1, i, j, false)) {
+                    if (!moveItemStackTo(itemstack1, i, j, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (p_39666_ >= i && p_39666_ < j) {
-                    if (!this.moveItemStackTo(itemstack1, j, k, false)) {
+                } else if (p_39666_ < j) {
+                    if (!moveItemStackTo(itemstack1, j, k, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (!this.moveItemStackTo(itemstack1, j, j, false)) {
+                } else if (!moveItemStackTo(itemstack1, j, j, false)) {
                     return ItemStack.EMPTY;
                 }
 

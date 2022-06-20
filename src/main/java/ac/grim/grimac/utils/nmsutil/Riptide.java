@@ -34,7 +34,9 @@ public class Riptide {
 
         // If the player collided vertically with the 1.199999F pushing movement, then the Y additional movement was added
         // (We switched the order around as our prediction engine isn't designed for the proper implementation)
-        if (player.verticalCollision) return new Vector(f1, 0, f3);
+        if (player.verticalCollision) {
+            return new Vector(f1, 0, f3);
+        }
 
         return new Vector(f1, f2, f3);
     }

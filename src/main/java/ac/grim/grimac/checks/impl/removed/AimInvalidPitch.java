@@ -13,8 +13,10 @@ public class AimInvalidPitch extends RotationCheck {
     }
 
     @Override
-    public void process(final RotationUpdate rotationUpdate) {
-        if (player.packetStateData.lastPacketWasTeleport) return;
+    public void process(RotationUpdate rotationUpdate) {
+        if (player.packetStateData.lastPacketWasTeleport) {
+            return;
+        }
 
         boolean invalid = Math.abs(rotationUpdate.getTo().getYaw()) != 90 && Math.abs(rotationUpdate.getDeltaYaw()) > 0.5 && Math.abs(rotationUpdate.getDeltaPitch()) < 0.001 && rotationUpdate.getDeltaPitch() != 0;
 

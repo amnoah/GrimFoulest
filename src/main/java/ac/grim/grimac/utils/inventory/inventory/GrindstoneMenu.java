@@ -85,7 +85,7 @@ public class GrindstoneMenu extends AbstractContainerMenu {
                 int l = item.getMaxDurability() - itemstack1.getDamageValue();
                 int i1 = k + l + item.getMaxDurability() * 5 / 100;
                 i = Math.max(item.getMaxDurability() - i1, 0);
-                itemstack2 = this.mergeEnchants(itemstack, itemstack1);
+                itemstack2 = mergeEnchants(itemstack, itemstack1);
                 if (!itemstack2.isDamageableItem()) {
                     if (!ItemStack.isSameItemSameTags(itemstack, itemstack1)) {
                         getSlot(2).set(ItemStack.EMPTY);
@@ -100,7 +100,7 @@ public class GrindstoneMenu extends AbstractContainerMenu {
                 itemstack2 = flag3 ? itemstack : itemstack1;
             }
 
-            getSlot(2).set(this.removeNonCurses(itemstack2, i, j));
+            getSlot(2).set(removeNonCurses(itemstack2, i, j));
         }
     }
 
@@ -165,31 +165,31 @@ public class GrindstoneMenu extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(int p_39589_) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(p_39589_);
+        Slot slot = slots.get(p_39589_);
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             ItemStack itemstack2 = getSlot(0).getItem();
             ItemStack itemstack3 = getSlot(1).getItem();
             if (p_39589_ == 2) {
-                if (!this.moveItemStackTo(itemstack1, 3, 39, true)) {
+                if (!moveItemStackTo(itemstack1, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
 
                 //slot.onQuickCraft(itemstack1, itemstack);
             } else if (p_39589_ != 0 && p_39589_ != 1) {
                 if (!itemstack2.isEmpty() && !itemstack3.isEmpty()) {
-                    if (p_39589_ >= 3 && p_39589_ < 30) {
-                        if (!this.moveItemStackTo(itemstack1, 30, 39, false)) {
+                    if (p_39589_ < 30) {
+                        if (!moveItemStackTo(itemstack1, 30, 39, false)) {
                             return ItemStack.EMPTY;
                         }
-                    } else if (p_39589_ >= 30 && p_39589_ < 39 && !this.moveItemStackTo(itemstack1, 3, 30, false)) {
+                    } else if (p_39589_ < 39 && !moveItemStackTo(itemstack1, 3, 30, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (!this.moveItemStackTo(itemstack1, 0, 2, false)) {
+                } else if (!moveItemStackTo(itemstack1, 0, 2, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(itemstack1, 3, 39, false)) {
+            } else if (!moveItemStackTo(itemstack1, 3, 39, false)) {
                 return ItemStack.EMPTY;
             }
 

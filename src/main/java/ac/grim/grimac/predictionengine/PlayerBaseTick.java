@@ -16,7 +16,7 @@ import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 public class PlayerBaseTick {
-    GrimPlayer player;
+    final GrimPlayer player;
 
     public PlayerBaseTick(GrimPlayer player) {
         this.player = player;
@@ -45,8 +45,9 @@ public class PlayerBaseTick {
         updateSwimming();
 
         // If in lava, fall distance is multiplied by 0.5
-        if (player.wasTouchingLava)
+        if (player.wasTouchingLava) {
             player.fallDistance *= 0.5;
+        }
 
         // You cannot crouch while flying, only shift - could be specific to 1.14?
         // pre-1.13 clients don't have this code
@@ -60,11 +61,11 @@ public class PlayerBaseTick {
         } else {
             player.isSlowMovement =
                     !player.wasFlying && !player.isSwimming && canEnterPose(player, Pose.CROUCHING, player.lastX, player.lastY, player.lastZ)
-                    && (player.wasSneaking || !player.isInBed && !canEnterPose(player, Pose.STANDING, player.lastX, player.lastY, player.lastZ)) ||
-                    // If the player is in the swimming pose
-                    // Or if the player is not gliding, and the player's pose is fall flying
-                    // and the player is not touching water (yes, this also can override the gliding slowness)
-                    ((player.pose == Pose.SWIMMING || (!player.isGliding && player.pose == Pose.FALL_FLYING)) && !player.wasTouchingWater);
+                            && (player.wasSneaking || !player.isInBed && !canEnterPose(player, Pose.STANDING, player.lastX, player.lastY, player.lastZ)) ||
+                            // If the player is in the swimming pose
+                            // Or if the player is not gliding, and the player's pose is fall flying
+                            // and the player is not touching water (yes, this also can override the gliding slowness)
+                            ((player.pose == Pose.SWIMMING || (!player.isGliding && player.pose == Pose.FALL_FLYING)) && !player.wasTouchingWater);
 
             // Mojang also accidentally left this in with 1.14-1.14.4
             if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_14) && player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_14_4)) {
@@ -72,14 +73,16 @@ public class PlayerBaseTick {
             }
         }
 
-        if (player.compensatedEntities.getSelf().inVehicle()) player.isSlowMovement = false;
+        if (player.compensatedEntities.getSelf().inVehicle()) {
+            player.isSlowMovement = false;
+        }
 
         // Players in boats don't care about being in blocks
         if (!player.compensatedEntities.getSelf().inVehicle()) {
-            this.moveTowardsClosestSpace(player.lastX - (player.boundingBox.maxX - player.boundingBox.minX) * 0.35, player.lastZ + (player.boundingBox.maxZ - player.boundingBox.minZ) * 0.35);
-            this.moveTowardsClosestSpace(player.lastX - (player.boundingBox.maxX - player.boundingBox.minX) * 0.35, player.lastZ - (player.boundingBox.maxZ - player.boundingBox.minZ) * 0.35);
-            this.moveTowardsClosestSpace(player.lastX + (player.boundingBox.maxX - player.boundingBox.minX) * 0.35, player.lastZ - (player.boundingBox.maxZ - player.boundingBox.minZ) * 0.35);
-            this.moveTowardsClosestSpace(player.lastX + (player.boundingBox.maxX - player.boundingBox.minX) * 0.35, player.lastZ + (player.boundingBox.maxZ - player.boundingBox.minZ) * 0.35);
+            moveTowardsClosestSpace(player.lastX - (player.boundingBox.maxX - player.boundingBox.minX) * 0.35, player.lastZ + (player.boundingBox.maxZ - player.boundingBox.minZ) * 0.35);
+            moveTowardsClosestSpace(player.lastX - (player.boundingBox.maxX - player.boundingBox.minX) * 0.35, player.lastZ - (player.boundingBox.maxZ - player.boundingBox.minZ) * 0.35);
+            moveTowardsClosestSpace(player.lastX + (player.boundingBox.maxX - player.boundingBox.minX) * 0.35, player.lastZ - (player.boundingBox.maxZ - player.boundingBox.minZ) * 0.35);
+            moveTowardsClosestSpace(player.lastX + (player.boundingBox.maxX - player.boundingBox.minX) * 0.35, player.lastZ + (player.boundingBox.maxZ - player.boundingBox.minZ) * 0.35);
         }
 
         float f = BlockProperties.getBlockSpeedFactor(player);
@@ -105,13 +108,15 @@ public class PlayerBaseTick {
         double d1 = (float) Math.floor(d0) + player.compensatedWorld.getWaterFluidLevelAt(player.lastX, d0, player.lastZ);
         if (d1 > d0) {
             player.fluidOnEyes = FluidTag.WATER;
-            if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_15_2))
+            if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_15_2)) {
                 player.wasEyeInWater = true;
+            }
             return;
         }
 
-        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_15_2))
+        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_15_2)) {
             player.wasEyeInWater = false;
+        }
 
         d1 = (float) Math.floor(d0) + player.compensatedWorld.getWaterFluidLevelAt(player.lastX, d0, player.lastZ);
         if (d1 > d0) {
@@ -123,9 +128,10 @@ public class PlayerBaseTick {
         updateInWaterStateAndDoWaterCurrentPushing();
         double d = player.bukkitPlayer != null && player.bukkitPlayer.getWorld().getEnvironment() == World.Environment.NETHER ? 0.007 : 0.0023333333333333335;
         // 1.15 and below clients use block collisions to check for being in lava
-        if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16))
-            player.wasTouchingLava = this.updateFluidHeightAndDoFluidPushing(FluidTag.LAVA, d);
-            // 1.13 and below clients use this stupid method to check if in lava
+        if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16)) {
+            player.wasTouchingLava = updateFluidHeightAndDoFluidPushing(FluidTag.LAVA, d);
+        }
+        // 1.13 and below clients use this stupid method to check if in lava
         else if (player.getClientVersion().isOlderThan(ClientVersion.V_1_14)) {
             SimpleCollisionBox playerBox = player.boundingBox.copy().expand(-0.1F, -0.4F, -0.1F);
             player.wasTouchingLava = player.compensatedWorld.containsLava(playerBox);
@@ -134,7 +140,9 @@ public class PlayerBaseTick {
 
     public void updatePowderSnow() {
         // Pre-1.17 clients don't have powder snow and therefore don't desync
-        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_16_4)) return;
+        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_16_4)) {
+            return;
+        }
 
         // The client first desync's this attribute
         player.compensatedEntities.getSelf().playerSpeed.getModifiers().removeIf(modifier -> modifier.getUUID().equals(CompensatedEntities.SNOW_MODIFIER_UUID));
@@ -147,7 +155,7 @@ public class PlayerBaseTick {
             if (i > 0) {
                 int ticksToFreeze = 140;
                 // Remember, floats are not commutative, we must do it in the client's specific order
-                float percentFrozen = (float) Math.min(i, ticksToFreeze) / (float) ticksToFreeze;
+                float percentFrozen = (float) Math.min(i, ticksToFreeze) / ticksToFreeze;
                 float percentFrozenReducedToSpeed = -0.05F * percentFrozen;
                 player.compensatedEntities.getSelf().playerSpeed.getModifiers().add(new WrapperPlayServerEntityProperties.PropertyModifier(CompensatedEntities.SNOW_MODIFIER_UUID, percentFrozenReducedToSpeed, WrapperPlayServerEntityProperties.PropertyModifier.Operation.ADDITION));
             }
@@ -328,7 +336,7 @@ public class PlayerBaseTick {
         int blockX = (int) Math.floor(xPosition);
         int blockZ = (int) Math.floor(zPosition);
 
-        if (!this.suffocatesAt(blockX, blockZ)) {
+        if (!suffocatesAt(blockX, blockZ)) {
             return;
         }
         double relativeXMovement = xPosition - blockX;
@@ -343,21 +351,23 @@ public class PlayerBaseTick {
             boolean doesSuffocate;
             switch (direction2) {
                 case EAST:
-                    doesSuffocate = this.suffocatesAt(blockX + 1, blockZ);
+                    doesSuffocate = suffocatesAt(blockX + 1, blockZ);
                     break;
                 case WEST:
-                    doesSuffocate = this.suffocatesAt(blockX - 1, blockZ);
+                    doesSuffocate = suffocatesAt(blockX - 1, blockZ);
                     break;
                 case NORTH:
-                    doesSuffocate = this.suffocatesAt(blockX, blockZ - 1);
+                    doesSuffocate = suffocatesAt(blockX, blockZ - 1);
                     break;
                 default:
                 case SOUTH:
-                    doesSuffocate = this.suffocatesAt(blockX, blockZ + 1);
+                    doesSuffocate = suffocatesAt(blockX, blockZ + 1);
                     break;
             }
 
-            if (d6 >= lowestValue || doesSuffocate) continue;
+            if (d6 >= lowestValue || doesSuffocate) {
+                continue;
+            }
             lowestValue = d6;
             direction = direction2;
         }
@@ -375,9 +385,10 @@ public class PlayerBaseTick {
     }
 
     public void updateInWaterStateAndDoWaterCurrentPushing() {
-        player.wasTouchingWater = this.updateFluidHeightAndDoFluidPushing(FluidTag.WATER, 0.014) && !(player.compensatedEntities.getSelf().getRiding() != null && EntityTypes.isTypeInstanceOf(player.compensatedEntities.getSelf().getRiding().type, EntityTypes.BOAT));
-        if (player.wasTouchingWater)
+        player.wasTouchingWater = updateFluidHeightAndDoFluidPushing(FluidTag.WATER, 0.014) && !(player.compensatedEntities.getSelf().getRiding() != null && EntityTypes.isTypeInstanceOf(player.compensatedEntities.getSelf().getRiding().type, EntityTypes.BOAT));
+        if (player.wasTouchingWater) {
             player.fallDistance = 0;
+        }
     }
 
     public boolean updateFluidHeightAndDoFluidPushing(FluidTag tag, double multiplier) {
@@ -414,8 +425,9 @@ public class PlayerBaseTick {
                         fluidHeight = player.compensatedWorld.getLavaFluidLevelAt(x, y, z);
                     }
 
-                    if (fluidHeight == 0)
+                    if (fluidHeight == 0) {
                         continue;
+                    }
 
                     double d0 = (float) (y + 1) - fluidHeight;
 
@@ -467,11 +479,13 @@ public class PlayerBaseTick {
                         fluidHeight = player.compensatedWorld.getLavaFluidLevelAt(x, y, z);
                     }
 
-                    if (player.getClientVersion().isOlderThan(ClientVersion.V_1_14))
+                    if (player.getClientVersion().isOlderThan(ClientVersion.V_1_14)) {
                         fluidHeight = Math.min(fluidHeight, 8 / 9D);
+                    }
 
-                    if (fluidHeight == 0 || (fluidHeightToWorld = y + fluidHeight) < aABB.minY)
+                    if (fluidHeight == 0 || (fluidHeightToWorld = y + fluidHeight) < aABB.minY) {
                         continue;
+                    }
 
                     hasTouched = true;
                     d2 = Math.max(fluidHeightToWorld - aABB.minY, d2);

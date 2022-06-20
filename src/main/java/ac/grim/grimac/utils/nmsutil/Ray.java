@@ -16,8 +16,8 @@ public class Ray implements Cloneable {
     }
 
     public Ray(GrimPlayer player, double x, double y, double z, float xRot, float yRot) {
-        this.origin = new Vector(x, y, z);
-        this.direction = calculateDirection(player, xRot, yRot);
+        origin = new Vector(x, y, z);
+        direction = calculateDirection(player, xRot, yRot);
     }
 
     // Account for FastMath by using player's trig handler
@@ -37,8 +37,8 @@ public class Ray implements Cloneable {
         Ray clone;
         try {
             clone = (Ray) super.clone();
-            clone.origin = this.origin.clone();
-            clone.direction = this.direction.clone();
+            clone.origin = origin.clone();
+            clone.direction = direction.clone();
             return clone;
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();

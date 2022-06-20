@@ -21,7 +21,9 @@ public final class EvictingList<T> extends LinkedList<T> {
 
     @Override
     public boolean add(T t) {
-        if (size() >= getMaxSize()) removeFirst();
+        if (size() >= getMaxSize()) {
+            removeFirst();
+        }
         return super.add(t);
     }
 }

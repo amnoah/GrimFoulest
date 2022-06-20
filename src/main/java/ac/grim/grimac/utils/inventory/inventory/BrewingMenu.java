@@ -28,36 +28,36 @@ public class BrewingMenu extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(int slotID) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotID);
+        Slot slot = slots.get(slotID);
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-            if ((slotID < 0 || slotID > 2) && slotID != 3 && slotID != 4) {
+            if (slotID > 2 && slotID != 3 && slotID != 4) {
                 if (FuelSlot.mayPlaceItem(itemstack)) {
-                    if (this.moveItemStackTo(itemstack1, 4, 5, false) || IngredientsSlot.mayPlaceItem(itemstack1) && !this.moveItemStackTo(itemstack1, 3, 4, false)) {
+                    if (moveItemStackTo(itemstack1, 4, 5, false) || IngredientsSlot.mayPlaceItem(itemstack1) && !moveItemStackTo(itemstack1, 3, 4, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (IngredientsSlot.mayPlaceItem(itemstack1)) {
-                    if (!this.moveItemStackTo(itemstack1, 3, 4, false)) {
+                    if (!moveItemStackTo(itemstack1, 3, 4, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (PotionSlot.mayPlaceItem(itemstack) && itemstack.getAmount() == 1) {
-                    if (!this.moveItemStackTo(itemstack1, 0, 3, false)) {
+                    if (!moveItemStackTo(itemstack1, 0, 3, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (slotID >= 5 && slotID < 32) {
-                    if (!this.moveItemStackTo(itemstack1, 32, 41, false)) {
+                } else if (slotID < 32) {
+                    if (!moveItemStackTo(itemstack1, 32, 41, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (slotID >= 32 && slotID < 41) {
-                    if (!this.moveItemStackTo(itemstack1, 5, 32, false)) {
+                } else if (slotID < 41) {
+                    if (!moveItemStackTo(itemstack1, 5, 32, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (!this.moveItemStackTo(itemstack1, 5, 41, false)) {
+                } else if (!moveItemStackTo(itemstack1, 5, 41, false)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                if (!this.moveItemStackTo(itemstack1, 5, 41, true)) {
+                if (!moveItemStackTo(itemstack1, 5, 41, true)) {
                     return ItemStack.EMPTY;
                 }
             }

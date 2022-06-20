@@ -15,7 +15,7 @@ import java.util.Queue;
 
 @CheckData(name = "BadPacketsP")
 public class BadPacketsO extends PacketCheck {
-    Queue<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
+    final Queue<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
 
     public BadPacketsO(GrimPlayer player) {
         super(player);
@@ -50,7 +50,9 @@ public class BadPacketsO extends PacketCheck {
                 Pair<Long, Long> data;
                 do {
                     data = keepaliveMap.poll();
-                    if (data == null) break;
+                    if (data == null) {
+                        break;
+                    }
                 } while (data.getFirst() != id);
             }
         }

@@ -37,7 +37,9 @@ public enum BlockPlaceResult {
     // The client only predicts one of the individual bed blocks, interestingly
     BED((player, place) -> {
         // 1.12- players don't predict bed places for some reason
-        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_12_2)) return;
+        if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_12_2)) {
+            return;
+        }
 
         BlockFace facing = place.getPlayerFacing();
         if (place.isBlockFaceOpen(facing)) {
@@ -145,12 +147,16 @@ public enum BlockPlaceResult {
     AMETHYST_CLUSTER((player, place) -> {
         WrappedBlockState amethyst = place.getMaterial().createBlockState(CompensatedWorld.blockVersion);
         amethyst.setFacing(place.getDirection());
-        if (place.isFullFace(place.getDirection().getOppositeFace())) place.set(amethyst);
+        if (place.isFullFace(place.getDirection().getOppositeFace())) {
+            place.set(amethyst);
+        }
     }, ItemTypes.AMETHYST_CLUSTER),
 
     BAMBOO((player, place) -> {
         Vector3i clicked = place.getPlacedAgainstBlockLocation();
-        if (player.compensatedWorld.getFluidLevelAt(clicked.getX(), clicked.getY(), clicked.getZ()) > 0) return;
+        if (player.compensatedWorld.getFluidLevelAt(clicked.getX(), clicked.getY(), clicked.getZ()) > 0) {
+            return;
+        }
 
         WrappedBlockState below = place.getBelowState();
         if (BlockTags.BAMBOO_PLANTABLE_ON.contains(below.getType())) {
@@ -173,7 +179,9 @@ public enum BlockPlaceResult {
 
         boolean canSurvive = !BlockTags.FENCE_GATES.contains(place.getPlacedAgainstMaterial());
         // This is exempt from being able to place on
-        if (!canSurvive) return;
+        if (!canSurvive) {
+            return;
+        }
 
         if (place.isFaceVertical()) {
             if (direction == BlockFace.DOWN) {
@@ -207,7 +215,9 @@ public enum BlockPlaceResult {
             bell.setAttachment(flag1 ? Attachment.FLOOR : Attachment.CEILING);
             canSurvive = place.isFullFace(flag1 ? BlockFace.DOWN : BlockFace.UP);
         }
-        if (canSurvive) place.set(bell);
+        if (canSurvive) {
+            place.set(bell);
+        }
     }, ItemTypes.BELL),
 
     CANDLE((player, place) -> {
@@ -216,7 +226,9 @@ public enum BlockPlaceResult {
 
         if (BlockTags.CANDLES.contains(existing.getType())) {
             // Max candles already exists
-            if (existing.getCandles() == 4) return;
+            if (existing.getCandles() == 4) {
+                return;
+            }
             candle.setCandles(existing.getCandles() + 1);
         }
 
@@ -229,11 +241,15 @@ public enum BlockPlaceResult {
     SEA_PICKLE((player, place) -> {
         WrappedBlockState existing = place.getExistingBlockData();
 
-        if (!place.isFullFace(BlockFace.DOWN) && !place.isFaceEmpty(BlockFace.DOWN)) return;
+        if (!place.isFullFace(BlockFace.DOWN) && !place.isFaceEmpty(BlockFace.DOWN)) {
+            return;
+        }
 
         if (existing.getType() == StateTypes.SEA_PICKLE) {
             // Max pickels already exist
-            if (existing.getPickles() == 4) return;
+            if (existing.getPickles() == 4) {
+                return;
+            }
             existing.setPickles(existing.getPickles() + 1);
         }
 
@@ -264,7 +280,9 @@ public enum BlockPlaceResult {
 
     COCOA((player, place) -> {
         for (BlockFace face : place.getNearestPlacingDirections()) {
-            if (BlockFaceHelper.isFaceVertical(face)) continue;
+            if (BlockFaceHelper.isFaceVertical(face)) {
+                continue;
+            }
             StateType mat = place.getDirectionalState(face).getType();
             if (mat == StateTypes.JUNGLE_LOG || mat == StateTypes.STRIPPED_JUNGLE_LOG || mat == StateTypes.JUNGLE_WOOD) {
                 WrappedBlockState data = place.getMaterial().createBlockState(CompensatedWorld.blockVersion);
@@ -294,14 +312,18 @@ public enum BlockPlaceResult {
 
     LANTERN((player, place) -> {
         for (BlockFace face : place.getNearestPlacingDirections()) {
-            if (BlockFaceHelper.isFaceHorizontal(face)) continue;
+            if (BlockFaceHelper.isFaceHorizontal(face)) {
+                continue;
+            }
             WrappedBlockState lantern = place.getMaterial().createBlockState(CompensatedWorld.blockVersion);
 
             boolean isHanging = face == BlockFace.UP;
             lantern.setHanging(isHanging);
 
             boolean canSurvive = place.isFaceFullCenter(isHanging ? BlockFace.UP : BlockFace.DOWN) && !BlockTags.FENCE_GATES.contains(place.getPlacedAgainstMaterial());
-            if (!canSurvive) continue;
+            if (!canSurvive) {
+                continue;
+            }
 
             place.set(lantern);
             return;
@@ -330,7 +352,9 @@ public enum BlockPlaceResult {
         }
 
         // No valid locations
-        if (!primaryValid) return;
+        if (!primaryValid) {
+            return;
+        }
 
         WrappedBlockState toPlace = StateTypes.POINTED_DRIPSTONE.createBlockState(CompensatedWorld.blockVersion);
         toPlace.setVerticalDirection(VerticalDirection.valueOf(primaryDir.name())); // This block is facing UPWARDS as placed on the top face
@@ -542,7 +566,9 @@ public enum BlockPlaceResult {
         boolean isHead = place.getMaterial().getName().contains("HEAD") || place.getMaterial().getName().contains("SKULL");
         boolean isWallSign = !isTorch && !isHead;
 
-        if (isHead && player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_12_2)) return; // 1.12- players don't predict head places
+        if (isHead && player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_12_2)) {
+            return; // 1.12- players don't predict head places
+        }
 
         if (isTorch) {
             dir = StateTypes.WALL_TORCH.createBlockState(CompensatedWorld.blockVersion);
@@ -559,7 +585,7 @@ public enum BlockPlaceResult {
             if (face != BlockFace.UP) {
                 if (BlockFaceHelper.isFaceHorizontal(face)) {
                     boolean canPlace = isHead || ((isWallSign || place.isFullFace(face)) && (isTorch || place.isSolidBlocking(face)));
-                    if (canPlace && face != BlockFace.UP) { // center requires nothing (head), full face (torch), or solid (sign)
+                    if (canPlace) { // center requires nothing (head), full face (torch), or solid (sign)
                         dir.setFacing(face.getOppositeFace());
                         place.set(dir);
                         return;
@@ -590,47 +616,58 @@ public enum BlockPlaceResult {
         for (BlockFace face : place.getNearestPlacingDirections()) {
             switch (face) {
                 case UP:
-                    if (multiFace.isUp()) continue;
+                    if (multiFace.isUp()) {
+                        continue;
+                    }
                     if (place.isFullFace(face)) {
                         multiFace.setUp(true);
                         break;
                     }
                     continue;
                 case DOWN:
-                    if (multiFace.isDown()) continue;
+                    if (multiFace.isDown()) {
+                        continue;
+                    }
                     if (place.isFullFace(face)) {
                         multiFace.setDown(true);
                         break;
                     }
                     continue;
                 case NORTH:
-                    if (multiFace.getNorth() == North.TRUE) continue;
+                    if (multiFace.getNorth() == North.TRUE) {
+                        continue;
+                    }
                     if (place.isFullFace(face)) {
                         multiFace.setNorth(North.TRUE);
                         break;
                     }
                     continue;
                 case SOUTH:
-                    if (multiFace.getSouth() == South.TRUE) continue;
+                    if (multiFace.getSouth() == South.TRUE) {
+                        continue;
+                    }
                     if (place.isFullFace(face)) {
                         multiFace.setSouth(South.TRUE);
                         break;
                     }
                     continue;
                 case EAST:
-                    if (multiFace.getEast() == East.TRUE) continue;
+                    if (multiFace.getEast() == East.TRUE) {
+                        continue;
+                    }
                     if (place.isFullFace(face)) {
                         multiFace.setEast(East.TRUE);
                         return;
                     }
                     continue;
                 case WEST:
-                    if (multiFace.getWest() == West.TRUE) continue;
+                    if (multiFace.getWest() == West.TRUE) {
+                        continue;
+                    }
                     if (place.isFullFace(face)) {
                         multiFace.setWest(West.TRUE);
                         break;
                     }
-                    continue;
             }
         }
 
@@ -715,7 +752,9 @@ public enum BlockPlaceResult {
     FIRE((player, place) -> {
         boolean byFlammable = false;
         for (BlockFace face : BlockFace.values()) {
-            if (place.getDirectionalState(face).getType().isFlammable()) byFlammable = true;
+            if (place.getDirectionalState(face).getType().isFlammable()) {
+                byFlammable = true;
+            }
         }
         if (byFlammable || place.isFullFace(BlockFace.DOWN)) {
             place.set(place.getMaterial());
@@ -913,10 +952,14 @@ public enum BlockPlaceResult {
             int i = (ccwBox.isFullBlock() ? -1 : 0) + (aboveCCWBox.isFullBlock() ? -1 : 0) + (cwBox.isFullBlock() ? 1 : 0) + (aboveCWBox.isFullBlock() ? 1 : 0);
 
             boolean isCCWLower = false;
-            if (BlockTags.DOORS.contains(ccwState.getType())) isCCWLower = ccwState.getHalf() == Half.LOWER;
+            if (BlockTags.DOORS.contains(ccwState.getType())) {
+                isCCWLower = ccwState.getHalf() == Half.LOWER;
+            }
 
             boolean isCWLower = false;
-            if (BlockTags.DOORS.contains(cwState.getType())) isCWLower = ccwState.getHalf() == Half.LOWER;
+            if (BlockTags.DOORS.contains(cwState.getType())) {
+                isCWLower = ccwState.getHalf() == Half.LOWER;
+            }
 
             Hinge hinge;
             if ((!isCCWLower || isCWLower) && i <= 0) {
@@ -996,7 +1039,9 @@ public enum BlockPlaceResult {
                     i++;
                 }
             }
-            if (i == 7) return; // Cancel block place
+            if (i == 7) {
+                return; // Cancel block place
+            }
         } // else, cancel if the scaffolding is exactly 7 away, grim doesn't handle this edge case yet.
 
 
@@ -1032,7 +1077,9 @@ public enum BlockPlaceResult {
 
     MANGROVE_PROPAGULE((player, place) -> {
         // Must be hanging below mangrove leaves
-        if (place.getAboveState().getType() != StateTypes.MANGROVE_LEAVES) return;
+        if (place.getAboveState().getType() != StateTypes.MANGROVE_LEAVES) {
+            return;
+        }
         // Fall back to BUSH_BLOCK_TYPE
         if (place.isOnDirt() || place.isOn(StateTypes.FARMLAND)) {
             place.set();
@@ -1067,9 +1114,7 @@ public enum BlockPlaceResult {
     }, ItemTypes.COMMAND_BLOCK, ItemTypes.CHAIN_COMMAND_BLOCK, ItemTypes.REPEATING_COMMAND_BLOCK,
             ItemTypes.JIGSAW, ItemTypes.STRUCTURE_BLOCK),
 
-    NO_DATA((player, place) -> {
-        place.set(place.getMaterial());
-    }, ItemTypes.AIR);
+    NO_DATA((player, place) -> place.set(place.getMaterial()), ItemTypes.AIR);
 
     // This should be an array... but a hashmap will do for now...
     private static final Map<ItemType, BlockPlaceResult> lookupMap = new HashMap<>();
@@ -1103,7 +1148,7 @@ public enum BlockPlaceResult {
         }
 
         this.data = data;
-        this.materials = types.toArray(new ItemType[0]);
+        materials = types.toArray(new ItemType[0]);
     }
 
     public static BlockPlaceFactory getMaterialData(ItemType placed) {

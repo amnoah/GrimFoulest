@@ -49,7 +49,9 @@ public class SimpleCollisionBox implements CollisionBox {
         this.maxY = maxY;
         this.minZ = minZ;
         this.maxZ = maxZ;
-        if (minX == 0 && minY == 0 && minZ == 0 && maxX == 1 && maxY == 1 && maxZ == 1) isFullBlock = true;
+        if (minX == 0 && minY == 0 && minZ == 0 && maxX == 1 && maxY == 1 && maxZ == 1) {
+            isFullBlock = true;
+        }
     }
 
     public SimpleCollisionBox(Vector3d min, Vector3d max) {
@@ -72,19 +74,19 @@ public class SimpleCollisionBox implements CollisionBox {
     }
 
     public SimpleCollisionBox expand(double x, double y, double z) {
-        this.minX -= x;
-        this.minY -= y;
-        this.minZ -= z;
-        this.maxX += x;
-        this.maxY += y;
-        this.maxZ += z;
+        minX -= x;
+        minY -= y;
+        minZ -= z;
+        maxX += x;
+        maxY += y;
+        maxZ += z;
         return sort();
     }
 
     public SimpleCollisionBox sort() {
-        double minX = Math.min(this.minX, this.maxX);
-        double minY = Math.min(this.minY, this.maxY);
-        double minZ = Math.min(this.minZ, this.maxZ);
+        double minX = Math.min(this.minX, maxX);
+        double minY = Math.min(this.minY, maxY);
+        double minZ = Math.min(this.minZ, maxZ);
         double maxX = Math.max(this.minX, this.maxX);
         double maxY = Math.max(this.minY, this.maxY);
         double maxZ = Math.max(this.minZ, this.maxZ);
@@ -100,26 +102,26 @@ public class SimpleCollisionBox implements CollisionBox {
     }
 
     public SimpleCollisionBox expandMin(double x, double y, double z) {
-        this.minX += x;
-        this.minY += y;
-        this.minZ += z;
+        minX += x;
+        minY += y;
+        minZ += z;
         return this;
     }
 
     public SimpleCollisionBox expandMax(double x, double y, double z) {
-        this.maxX += x;
-        this.maxY += y;
-        this.maxZ += z;
+        maxX += x;
+        maxY += y;
+        maxZ += z;
         return this;
     }
 
     public SimpleCollisionBox expand(double value) {
-        this.minX -= value;
-        this.minY -= value;
-        this.minZ -= value;
-        this.maxX += value;
-        this.maxY += value;
-        this.maxZ += value;
+        minX -= value;
+        minY -= value;
+        minZ -= value;
+        maxX += value;
+        maxY += value;
+        maxZ += value;
         return this;
     }
 
@@ -164,16 +166,16 @@ public class SimpleCollisionBox implements CollisionBox {
 
     @Override
     public boolean isCollided(SimpleCollisionBox other) {
-        return other.maxX >= this.minX && other.minX <= this.maxX
-                && other.maxY >= this.minY && other.minY <= this.maxY
-                && other.maxZ >= this.minZ && other.minZ <= this.maxZ;
+        return other.maxX >= minX && other.minX <= maxX
+                && other.maxY >= minY && other.minY <= maxY
+                && other.maxZ >= minZ && other.minZ <= maxZ;
     }
 
     @Override
     public boolean isIntersected(SimpleCollisionBox other) {
-        return other.maxX - SimpleCollisionBox.COLLISION_EPSILON > this.minX && other.minX + SimpleCollisionBox.COLLISION_EPSILON < this.maxX
-                && other.maxY - SimpleCollisionBox.COLLISION_EPSILON > this.minY && other.minY + SimpleCollisionBox.COLLISION_EPSILON < this.maxY
-                && other.maxZ - SimpleCollisionBox.COLLISION_EPSILON > this.minZ && other.minZ + SimpleCollisionBox.COLLISION_EPSILON < this.maxZ;
+        return other.maxX - COLLISION_EPSILON > minX && other.minX + COLLISION_EPSILON < maxX
+                && other.maxY - COLLISION_EPSILON > minY && other.minY + COLLISION_EPSILON < maxY
+                && other.maxZ - COLLISION_EPSILON > minZ && other.minZ + COLLISION_EPSILON < maxZ;
     }
 
     public boolean isIntersected(CollisionBox other) {
@@ -186,16 +188,18 @@ public class SimpleCollisionBox implements CollisionBox {
         other.downCast(boxes);
 
         for (SimpleCollisionBox box : boxes) {
-            if (isIntersected(box)) return true;
+            if (isIntersected(box)) {
+                return true;
+            }
         }
 
         return false;
     }
 
     public boolean collidesVertically(SimpleCollisionBox other) {
-        return other.maxX > this.minX && other.minX < this.maxX
-                && other.maxY >= this.minY && other.minY <= this.maxY
-                && other.maxZ > this.minZ && other.minZ < this.maxZ;
+        return other.maxX > minX && other.minX < maxX
+                && other.maxY >= minY && other.minY <= maxY
+                && other.maxZ > minZ && other.minZ < maxZ;
     }
 
     public SimpleCollisionBox copy() {
@@ -203,12 +207,12 @@ public class SimpleCollisionBox implements CollisionBox {
     }
 
     public SimpleCollisionBox offset(double x, double y, double z) {
-        this.minX += x;
-        this.minY += y;
-        this.minZ += z;
-        this.maxX += x;
-        this.maxY += y;
-        this.maxZ += z;
+        minX += x;
+        minY += y;
+        minZ += z;
+        maxX += x;
+        maxY += y;
+        maxZ += z;
         return this;
     }
 

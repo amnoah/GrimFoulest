@@ -23,7 +23,7 @@ public class CompensatedCooldown extends PositionCheck {
     }
 
     @Override
-    public void onPositionUpdate(final PositionUpdate positionUpdate) {
+    public void onPositionUpdate(PositionUpdate positionUpdate) {
         for (Iterator<Map.Entry<ItemType, CooldownData>> it = itemCooldownMap.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<ItemType, CooldownData> entry = it.next();
 
@@ -33,7 +33,9 @@ public class CompensatedCooldown extends PositionCheck {
             }
 
             // The client will automatically remove cooldowns after enough time
-            if (entry.getValue().getTicksRemaining() <= 0) it.remove();
+            if (entry.getValue().getTicksRemaining() <= 0) {
+                it.remove();
+            }
         }
     }
 

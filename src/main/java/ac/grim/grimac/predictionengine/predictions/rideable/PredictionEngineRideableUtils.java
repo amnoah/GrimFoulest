@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.Set;
 
 public class PredictionEngineRideableUtils {
-    public static Set<VectorData> handleJumps(GrimPlayer player, Set<VectorData> possibleVectors) {
-        if (!(player.compensatedEntities.getSelf().getRiding() instanceof PacketEntityHorse)) return possibleVectors;
+    public static void handleJumps(GrimPlayer player, Set<VectorData> possibleVectors) {
+        if (!(player.compensatedEntities.getSelf().getRiding() instanceof PacketEntityHorse)) {
+            return;
+        }
 
         PacketEntityHorse horse = (PacketEntityHorse) player.compensatedEntities.getSelf().getRiding();
 
@@ -66,7 +68,6 @@ public class PredictionEngineRideableUtils {
             player.vehicleData.horseJumping = false;
         }
 
-        return possibleVectors;
     }
 
     public static List<VectorData> applyInputsToVelocityPossibilities(Vector movementVector, GrimPlayer player, Set<VectorData> possibleVectors, float speed) {

@@ -88,7 +88,9 @@ public class ConsumesBlockPlace {
             return state.isHasRecord();
         }
         if (state.getType() == StateTypes.LECTERN) {
-            if (state.isHasBook()) return true;
+            if (state.isHasBook()) {
+                return true;
+            }
             return ItemTags.LECTERN_BOOKS.contains(place.getItemStack().getType());
         }
 
@@ -101,7 +103,7 @@ public class ConsumesBlockPlace {
     }
 
     private static boolean isProperHit(WrappedBlockState bell, BlockFace direction, double p_49742_) {
-        if (direction != BlockFace.UP && direction != BlockFace.DOWN && !(p_49742_ > (double) 0.8124F)) {
+        if (direction != BlockFace.UP && direction != BlockFace.DOWN && !(p_49742_ > 0.8124F)) {
             BlockFace dir = bell.getFacing();
             Attachment attachment = bell.getAttachment();
             BlockFace dir2 = BlockFace.valueOf(direction.name());

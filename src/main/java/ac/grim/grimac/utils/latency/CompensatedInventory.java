@@ -40,7 +40,7 @@ import java.util.List;
 // for the first time... thanks mojang!
 public class CompensatedInventory extends PacketCheck {
     // Temporarily public for debugging
-    public Inventory inventory;
+    public final Inventory inventory;
     // Temporarily public for debugging
     public AbstractContainerMenu menu;
     // Packet based inventories aren't done yet.  Both Grim and PacketEvents need more work for this.
@@ -50,6 +50,7 @@ public class CompensatedInventory extends PacketCheck {
     // Although right now it looks like they will just copy us - which I wouldn't mind.
     public boolean isPacketInventoryActive = true;
     public boolean needResend = false;
+    public int stateID = 0; // Don't mess up the last sent state ID by changing it
     // Here are the mappings from the geniuses at Mojang
     // 1, 2, 3, 4 and 0 are the crafting table
     // 5, 6, 7, 8 are the armor slots from helmet to boots
@@ -57,7 +58,6 @@ public class CompensatedInventory extends PacketCheck {
     // 36-44 is the hotbar
     // 9 is top left, through 35 being the bottom right.
     int openWindowID = 0;
-    public int stateID = 0; // Don't mess up the last sent state ID by changing it
 
     public CompensatedInventory(GrimPlayer playerData) {
         super(playerData);
@@ -75,8 +75,9 @@ public class CompensatedInventory extends PacketCheck {
     }
 
     public ItemStack getOffHand() {
-        if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9))
+        if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9)) {
             return ItemStack.EMPTY;
+        }
         ItemStack item = isPacketInventoryActive || player.bukkitPlayer == null ? inventory.getOffhand() :
                 SpigotConversionUtil.fromBukkitItemStack(player.bukkitPlayer.getInventory().getItemInOffHand());
         return item == null ? ItemStack.EMPTY : item;
@@ -107,22 +108,28 @@ public class CompensatedInventory extends PacketCheck {
     }
 
     public boolean hasItemType(ItemType type) {
-        if (isPacketInventoryActive || player.bukkitPlayer == null) return inventory.hasItemType(type);
+        if (isPacketInventoryActive || player.bukkitPlayer == null) {
+            return inventory.hasItemType(type);
+        }
 
         // Fall back to bukkit inventories
         for (org.bukkit.inventory.ItemStack item : player.bukkitPlayer.getInventory().getContents()) {
             ItemStack itemStack = SpigotConversionUtil.fromBukkitItemStack(item);
-            if (itemStack != null && itemStack.getType() == type) return true;
+            if (itemStack != null && itemStack.getType() == type) {
+                return true;
+            }
         }
         return false;
     }
 
-    public void onPacketReceive(final PacketReceiveEvent event) {
+    public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
             WrapperPlayClientPlayerDigging dig = new WrapperPlayClientPlayerDigging(event);
 
             // 1.8 clients don't predict dropping items
-            if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_8)) return;
+            if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_8)) {
+                return;
+            }
 
             if (dig.getAction() != DiggingAction.DROP_ITEM) {
             } else {
@@ -145,7 +152,9 @@ public class CompensatedInventory extends PacketCheck {
             WrapperPlayClientHeldItemChange slot = new WrapperPlayClientHeldItemChange(event);
 
             // Stop people from spamming the server with an out-of-bounds exception
-            if (slot.getSlot() > 8) return;
+            if (slot.getSlot() > 8) {
+                return;
+            }
 
             inventory.selected = slot.getSlot();
         }
@@ -183,7 +192,7 @@ public class CompensatedInventory extends PacketCheck {
         }
     }
 
-    public void onPacketSend(final PacketSendEvent event) {
+    public void onPacketSend(PacketSendEvent event) {
         // Not 1:1 MCP, based on Wiki.VG to be simpler as we need less logic...
         // For example, we don't need permanent storage, only storing data until the client closes the window
         // We also don't need a lot of server-sided only logic
@@ -257,7 +266,9 @@ public class CompensatedInventory extends PacketCheck {
             // Unsure if we need to know about this.
             if (items.getWindowId() == 0) { // Player inventory
                 player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
-                    if (!isPacketInventoryActive) return;
+                    if (!isPacketInventoryActive) {
+                        return;
+                    }
                     List<ItemStack> slots = items.getItems();
                     for (int i = 0; i < slots.size(); i++) {
                         inventory.getSlot(i).set(slots.get(i));
@@ -268,7 +279,9 @@ public class CompensatedInventory extends PacketCheck {
                 });
             } else {
                 player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
-                    if (!isPacketInventoryActive) return;
+                    if (!isPacketInventoryActive) {
+                        return;
+                    }
                     if (items.getWindowId() == openWindowID) {
                         List<ItemStack> slots = items.getItems();
                         for (int i = 0; i < slots.size(); i++) {
@@ -292,7 +305,9 @@ public class CompensatedInventory extends PacketCheck {
             stateID = slot.getStateId();
 
             player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> {
-                if (!isPacketInventoryActive) return;
+                if (!isPacketInventoryActive) {
+                    return;
+                }
                 if (slot.getWindowId() == -1) { // Carried item
                     inventory.setCarried(slot.getItem());
                 } else if (slot.getWindowId() == -2) { // Any slot is allowed to change in inventory

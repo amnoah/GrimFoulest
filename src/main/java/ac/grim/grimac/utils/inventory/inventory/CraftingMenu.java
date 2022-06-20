@@ -25,25 +25,25 @@ public class CraftingMenu extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(int slotID) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(slotID);
+        Slot slot = slots.get(slotID);
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             if (slotID == 0) {
-                if (!this.moveItemStackTo(itemstack1, 10, 46, true)) {
+                if (!moveItemStackTo(itemstack1, 10, 46, true)) {
                     return ItemStack.EMPTY;
                 }
             } else if (slotID >= 10 && slotID < 46) {
-                if (!this.moveItemStackTo(itemstack1, 1, 10, false)) {
+                if (!moveItemStackTo(itemstack1, 1, 10, false)) {
                     if (slotID < 37) {
-                        if (!this.moveItemStackTo(itemstack1, 37, 46, false)) {
+                        if (!moveItemStackTo(itemstack1, 37, 46, false)) {
                             return ItemStack.EMPTY;
                         }
-                    } else if (!this.moveItemStackTo(itemstack1, 10, 37, false)) {
+                    } else if (!moveItemStackTo(itemstack1, 10, 37, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
-            } else if (!this.moveItemStackTo(itemstack1, 10, 46, false)) {
+            } else if (!moveItemStackTo(itemstack1, 10, 46, false)) {
                 return ItemStack.EMPTY;
             }
 
