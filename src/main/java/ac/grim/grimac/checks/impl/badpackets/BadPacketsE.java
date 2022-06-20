@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 
 @CheckData(name = "BadPacketsE")
 public class BadPacketsE extends PacketCheck {
+
     private int noReminderTicks;
 
     public BadPacketsE(GrimPlayer player) {
@@ -17,17 +18,21 @@ public class BadPacketsE extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION ||
-                event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION) {
-            noReminderTicks = 0;
-        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            noReminderTicks++;
+        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
+
+            if (packet.hasPositionChanged()) {
+                noReminderTicks = 0;
+            } else {
+                noReminderTicks++;
+            }
+
         } else if (event.getPacketType() == PacketType.Play.Client.STEER_VEHICLE) {
             noReminderTicks = 0; // Exempt vehicles
         }
 
         if (noReminderTicks > 20) {
-            flagAndAlert(); // ban?  I don't know how this would false
+            flagAndAlert(); // ban? I don't know how this would false
         }
     }
 }

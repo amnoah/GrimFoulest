@@ -18,21 +18,14 @@ public class BadPacketsP extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        // Invalid Interact Entity
-        if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
-            WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
-
-            if (packet.getEntityId() < 0) {
-                flagAndAlert("Interact Entity");
-                return;
-            }
-        }
-
         // Invalid Block Place
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) {
             WrapperPlayClientPlayerBlockPlacement packet = new WrapperPlayClientPlayerBlockPlacement(event);
 
-            if (packet.getFace() == BlockFace.UP && packet.getBlockPosition().getX() == 0.0 && packet.getBlockPosition().getY() == 0.0 && packet.getBlockPosition().getZ() == 0.0) {
+            if (packet.getFace() == BlockFace.UP
+                    && packet.getBlockPosition().getX() == 0.0
+                    && packet.getBlockPosition().getY() == 0.0
+                    && packet.getBlockPosition().getZ() == 0.0) {
                 flagAndAlert("Block Place");
                 return;
             }
@@ -49,17 +42,11 @@ public class BadPacketsP extends PacketCheck {
             }
         }
 
-        // Invalid Creative Slot
-        if (event.getPacketType() == PacketType.Play.Client.CREATIVE_INVENTORY_ACTION && player.gamemode != GameMode.CREATIVE) {
-            flagAndAlert("Creative Slot");
-            return;
-        }
-
         // Invalid Slot
         if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) {
             WrapperPlayClientHeldItemChange packet = new WrapperPlayClientHeldItemChange(event);
 
-            if (packet.getSlot() < 0 || packet.getSlot() > 9) {
+            if (packet.getSlot() < 0 || packet.getSlot() > 8) {
                 flagAndAlert("Invalid Slot");
                 return;
             }

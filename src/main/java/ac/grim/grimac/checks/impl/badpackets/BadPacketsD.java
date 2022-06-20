@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 
 @CheckData(name = "BadPacketsD")
 public class BadPacketsD extends PacketCheck {
+
     public BadPacketsD(GrimPlayer player) {
         super(player);
     }
@@ -19,10 +20,11 @@ public class BadPacketsD extends PacketCheck {
             return;
         }
 
-        if (event.getPacketType() == PacketType.Play.Client.PLAYER_ROTATION || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
+        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
-            if (packet.getLocation().getPitch() > 90 || packet.getLocation().getPitch() < -90) {
-                flagAndAlert(); // Ban.
+
+            if (packet.hasRotationChanged() && Math.abs(packet.getLocation().getPitch()) > 90) {
+                flagAndAlert();
             }
         }
     }
