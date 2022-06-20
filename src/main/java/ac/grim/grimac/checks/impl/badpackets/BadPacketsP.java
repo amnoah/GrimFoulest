@@ -5,6 +5,7 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.protocol.player.DiggingAction;
 import com.github.retrooper.packetevents.protocol.player.GameMode;
 import com.github.retrooper.packetevents.protocol.world.BlockFace;
 import com.github.retrooper.packetevents.wrapper.play.client.*;
@@ -22,12 +23,41 @@ public class BadPacketsP extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) {
             WrapperPlayClientPlayerBlockPlacement packet = new WrapperPlayClientPlayerBlockPlacement(event);
 
+            // TODO: May fail on lily-pads for 1.9+ players
             if (packet.getFace() == BlockFace.UP
                     && packet.getBlockPosition().getX() == 0.0
                     && packet.getBlockPosition().getY() == 0.0
                     && packet.getBlockPosition().getZ() == 0.0) {
                 flagAndAlert("Block Place");
                 return;
+            }
+        }
+
+        // Invalid Use Item
+        if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
+            WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
+
+            if (packet.getAction() == DiggingAction.RELEASE_USE_ITEM) {
+                if (packet.getFace() != BlockFace.DOWN
+                        || packet.getBlockPosition().getX() != 0
+                        || packet.getBlockPosition().getY() != 0
+                        || packet.getBlockPosition().getZ() != 0) {
+                    flagAndAlert("Use Item");
+                }
+            }
+        }
+
+        // Invalid Spectate
+        if (event.getPacketType() == PacketType.Play.Client.SPECTATE) {
+            if (player.gamemode != GameMode.SPECTATOR) {
+                flagAndAlert("Spectate");
+            }
+        }
+
+        // Invalid Steer Vehicle
+        if (event.getPacketType() == PacketType.Play.Client.STEER_VEHICLE) {
+            if (!player.compensatedEntities.getSelf().inVehicle()) {
+                flagAndAlert("Not in Vehicle");
             }
         }
 
@@ -146,8 +176,15 @@ public class BadPacketsP extends PacketCheck {
             boolean isFlightAllowed = packet.isFlightAllowed().get();
             boolean isInCreative = packet.isInCreativeMode().get();
 
-            if (isFlying == player.isFlying && isInGodMode == player.isInGodMode && isFlightAllowed == player.isFlightAllowed && isInCreative == player.isInCreative && !isFlying && !isInGodMode && !isFlightAllowed && !isInCreative) {
+            if (isFlying == player.isFlying && isInGodMode == player.isInGodMode
+                    && isFlightAllowed == player.isFlightAllowed && isInCreative == player.isInCreative
+                    && !isFlying && !isInGodMode && !isFlightAllowed && !isInCreative) {
                 flagAndAlert("Abilities (All)");
+                return;
+            }
+
+            if (isFlying && !player.isFlightAllowed) {
+                flagAndAlert("Abilities (Flight Allowed)");
                 return;
             }
 
