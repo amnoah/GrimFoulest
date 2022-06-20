@@ -15,6 +15,7 @@ import java.util.Queue;
 
 @CheckData(name = "BadPacketsP")
 public class BadPacketsO extends PacketCheck {
+
     final Queue<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
 
     public BadPacketsO(GrimPlayer player) {

@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEn
 
 @CheckData(name = "BadPacketsF")
 public class BadPacketsF extends PacketCheck {
+
     public boolean lastSprinting;
     boolean thanksMojang; // Support 1.14+ clients starting on either true or false sprinting, we don't know
 
@@ -27,16 +28,19 @@ public class BadPacketsF extends PacketCheck {
                         thanksMojang = true;
                         return;
                     }
+
                     flagAndAlert();
                 }
 
                 lastSprinting = true;
+
             } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SPRINTING) {
                 if (!lastSprinting) {
                     if (!thanksMojang) {
                         thanksMojang = true;
                         return;
                     }
+
                     flagAndAlert();
                 }
 

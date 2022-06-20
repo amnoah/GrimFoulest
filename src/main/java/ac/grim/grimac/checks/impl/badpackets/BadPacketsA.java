@@ -10,6 +10,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientHe
 // Frequency BadPacketsF
 @CheckData(name = "BadPacketsA")
 public class BadPacketsA extends PacketCheck {
+
     int lastSlot = -1;
 
     public BadPacketsA(GrimPlayer player) {

@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.protocol.player.GameMode;
 
 @CheckData(name = "BadPacketsK")
 public class BadPacketsK extends PacketCheck {
+
     public BadPacketsK(GrimPlayer player) {
         super(player);
     }

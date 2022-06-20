@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientSt
 
 @CheckData(name = "BadPacketsB")
 public class BadPacketsB extends PacketCheck {
+
     public BadPacketsB(GrimPlayer player) {
         super(player);
     }
@@ -17,7 +18,6 @@ public class BadPacketsB extends PacketCheck {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.STEER_VEHICLE) {
             WrapperPlayClientSteerVehicle packet = new WrapperPlayClientSteerVehicle(event);
-
             float forwards = Math.abs(packet.getForward());
             float sideways = Math.abs(packet.getSideways());
 

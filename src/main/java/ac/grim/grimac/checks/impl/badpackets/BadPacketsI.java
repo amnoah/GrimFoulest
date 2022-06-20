@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 
 @CheckData(name = "BadPacketsI")
 public class BadPacketsI extends PacketCheck {
+
     public BadPacketsI(GrimPlayer player) {
         super(player);
     }

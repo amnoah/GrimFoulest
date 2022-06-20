@@ -10,6 +10,7 @@ import ac.grim.grimac.utils.anticheat.update.RotationUpdate;
 // It works on clients who % 360 their rotation.
 @CheckData(name = "AimModulo360", decay = 0.005)
 public class AimModulo360 extends RotationCheck {
+
     float lastDeltaYaw;
 
     public AimModulo360(GrimPlayer playerData) {
@@ -21,11 +22,13 @@ public class AimModulo360 extends RotationCheck {
         if (player.packetStateData.lastPacketWasTeleport) {
             return;
         }
+
         if (player.xRot < 360 && player.xRot > -360 && Math.abs(rotationUpdate.getDeltaYaw()) > 320 && Math.abs(lastDeltaYaw) < 30) {
             flagAndAlert();
         } else {
             reward();
         }
+
         lastDeltaYaw = rotationUpdate.getDeltaYaw();
     }
 }

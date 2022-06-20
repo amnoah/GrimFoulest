@@ -8,6 +8,7 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 
 @CheckData(name = "BadPacketsJ")
 public class BadPacketsJ extends PacketCheck {
+
     public BadPacketsJ(GrimPlayer player) {
         super(player);
     }

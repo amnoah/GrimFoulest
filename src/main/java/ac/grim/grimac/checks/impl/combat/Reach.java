@@ -42,10 +42,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 // You may not copy the check unless you are licensed under GPL
 @CheckData(name = "Reach", configName = "Reach", setback = 10)
 public class Reach extends PacketCheck {
-    private static final List<EntityType> blacklisted = Arrays.asList(
-            EntityTypes.BOAT,
-            EntityTypes.CHEST_BOAT,
-            EntityTypes.SHULKER);
+
+    private static final List<EntityType> blacklisted = Arrays.asList(EntityTypes.BOAT, EntityTypes.CHEST_BOAT, EntityTypes.SHULKER);
     // Concurrent to support weird entity trackers
     private final ConcurrentLinkedQueue<Integer> playerAttackQueue = new ConcurrentLinkedQueue<>();
     private boolean cancelImpossibleHits;
@@ -68,6 +66,7 @@ public class Reach extends PacketCheck {
             }
 
             PacketEntity entity = player.compensatedEntities.entityMap.get(action.getEntityId());
+
             // Stop people from freezing transactions before an entity spawns to bypass reach
             if (entity == null) {
                 // Only cancel if and only if we are tracking this entity
@@ -81,9 +80,11 @@ public class Reach extends PacketCheck {
             if (player.gamemode == GameMode.CREATIVE) {
                 return;
             }
+
             if (player.compensatedEntities.getSelf().inVehicle()) {
                 return;
             }
+
             if (entity.riding != null) {
                 return;
             }
@@ -100,6 +101,7 @@ public class Reach extends PacketCheck {
             if (player.packetStateData.lastPacketWasTeleport || player.packetStateData.lastPacketWasOnePointSeventeenDuplicate) {
                 return;
             }
+
             tickFlying();
         }
     }
@@ -113,7 +115,8 @@ public class Reach extends PacketCheck {
     //
     // Meaning that the other check should be the only one that flags.
     private boolean isKnownInvalid(PacketEntity reachEntity) {
-        boolean giveMovementThresholdLenience = player.packetStateData.didLastMovementIncludePosition || player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9);
+        boolean giveMovementThresholdLenience = player.packetStateData.didLastMovementIncludePosition
+                || player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9);
 
         // If the entity doesn't exist, or if it is exempt, or if it is dead
         if ((blacklisted.contains(reachEntity.type) || !reachEntity.isLivingEntity()) && reachEntity.type != EntityTypes.END_CRYSTAL) {
@@ -123,11 +126,13 @@ public class Reach extends PacketCheck {
         if (player.gamemode == GameMode.CREATIVE) {
             return false;
         }
+
         if (player.compensatedEntities.getSelf().inVehicle()) {
             return false;
         }
 
         double lowest = 6;
+
         // Filter out what we assume to be cheats
         if (cancelBuffer != 0) {
             return checkReach(reachEntity, true) != null; // If they flagged
@@ -135,9 +140,12 @@ public class Reach extends PacketCheck {
             // Don't allow blatant cheats to get first hit
             for (double eyes : player.getPossibleEyeHeights()) {
                 SimpleCollisionBox targetBox = reachEntity.getPossibleCollisionBoxes();
+
                 if (reachEntity.type == EntityTypes.END_CRYSTAL) {
-                    targetBox = new SimpleCollisionBox(reachEntity.desyncClientPos.subtract(1, 0, 1), reachEntity.desyncClientPos.add(1, 2, 1));
+                    targetBox = new SimpleCollisionBox(reachEntity.desyncClientPos.subtract(1, 0, 1),
+                            reachEntity.desyncClientPos.add(1, 2, 1));
                 }
+
                 Vector from = new Vector(player.x, player.y + eyes, player.z);
                 Vector closestPoint = VectorUtils.cutBoxToVector(from, targetBox);
                 lowest = Math.min(lowest, closestPoint.distance(from));
@@ -149,11 +157,13 @@ public class Reach extends PacketCheck {
 
     private void tickFlying() {
         Integer attackQueue = playerAttackQueue.poll();
+
         while (attackQueue != null) {
             PacketEntity reachEntity = player.compensatedEntities.entityMap.get(attackQueue);
 
             if (reachEntity != null) {
                 String result = checkReach(reachEntity, false);
+
                 if (result != null) {
                     flagAndAlert(result);
                 }
@@ -187,7 +197,6 @@ public class Reach extends PacketCheck {
         }
 
         Vector3d from = new Vector3d(player.lastX, player.lastY, player.lastZ);
-
         double minDistance = Double.MAX_VALUE;
 
         // https://bugs.mojang.com/browse/MC-67665
@@ -212,7 +221,6 @@ public class Reach extends PacketCheck {
             for (double eye : player.getPossibleEyeHeights()) {
                 Vector eyePos = new Vector(from.getX(), from.getY() + eye, from.getZ());
                 Vector endReachPos = eyePos.clone().add(new Vector(lookVec.getX() * 6, lookVec.getY() * 6, lookVec.getZ() * 6));
-
                 Vector intercept = ReachUtils.calculateIntercept(targetBox, eyePos, endReachPos).getFirst();
 
                 if (ReachUtils.isVecInside(targetBox, eyePos)) {
@@ -230,10 +238,12 @@ public class Reach extends PacketCheck {
         if ((!blacklisted.contains(reachEntity.type) && reachEntity.isLivingEntity()) || reachEntity.type == EntityTypes.END_CRYSTAL) {
             if (minDistance == Double.MAX_VALUE) {
                 cancelBuffer = 1;
-                return "Missed hitbox";
+                return "Missed Hitbox";
+
             } else if (minDistance > 3) {
                 cancelBuffer = 1;
                 return String.format("%.5f", minDistance) + " blocks";
+
             } else {
                 cancelBuffer = Math.max(0, cancelBuffer - 0.25);
             }

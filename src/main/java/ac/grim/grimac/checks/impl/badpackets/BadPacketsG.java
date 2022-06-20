@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEn
 
 @CheckData(name = "BadPacketsG")
 public class BadPacketsG extends PacketCheck {
+
     boolean wasTeleport;
     boolean lastSneaking;
 
@@ -29,6 +30,7 @@ public class BadPacketsG extends PacketCheck {
                 } else {
                     lastSneaking = true;
                 }
+
             } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SNEAKING) {
                 if (!lastSneaking && !wasTeleport) {
                     flagAndAlert();

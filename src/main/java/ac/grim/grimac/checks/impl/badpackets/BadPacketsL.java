@@ -21,6 +21,7 @@ public class BadPacketsL extends PacketCheck {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
             WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
+
             if (packet.getAction() == DiggingAction.RELEASE_USE_ITEM) {
                 // The client only sends this packet in one place, with BlockPos.ZERO and Direction.DOWN
                 if (packet.getFace() != BlockFace.DOWN

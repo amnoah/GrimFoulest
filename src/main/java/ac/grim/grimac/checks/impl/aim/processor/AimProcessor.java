@@ -10,6 +10,7 @@ import lombok.Getter;
 
 // From OverFlow V2 AntiCheat, modified from o(n^2) to best case o(1) worst case o(n) time.
 public class AimProcessor extends RotationCheck {
+
     private final RunningMode<Double> yawSamples = new RunningMode<>(50);
     private final RunningMode<Double> pitchSamples = new RunningMode<>(50);
     @Getter

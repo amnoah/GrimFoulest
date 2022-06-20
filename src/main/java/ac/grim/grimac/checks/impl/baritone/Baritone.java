@@ -9,6 +9,7 @@ import ac.grim.grimac.utils.math.GrimMath;
 
 @CheckData(name = "Baritone")
 public class Baritone extends RotationCheck {
+
     private float lastPitchDifference;
     private int verbose;
 
@@ -20,7 +21,6 @@ public class Baritone extends RotationCheck {
     public void process(RotationUpdate rotationUpdate) {
         HeadRotation from = rotationUpdate.getFrom();
         HeadRotation to = rotationUpdate.getTo();
-
         float deltaPitch = Math.abs(to.getPitch() - from.getPitch());
 
         // Baritone works with small degrees, limit to 1 degrees to pick up on baritone slightly moving aim to bypass anticheats

@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientIn
 
 @CheckData(name = "BadPacketsH")
 public class BadPacketsH extends PacketCheck {
+
     private int hits;
 
     public BadPacketsH(GrimPlayer player) {
@@ -27,6 +28,7 @@ public class BadPacketsH extends PacketCheck {
             if (++hits > 2) {
                 flagAndAlert();
             }
+
         } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
             hits = 0;
         }
