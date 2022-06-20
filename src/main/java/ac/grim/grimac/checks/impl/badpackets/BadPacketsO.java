@@ -46,7 +46,7 @@ public class BadPacketsO extends PacketCheck {
             }
 
             if (!hasID) {
-                flagAndAlert("ID: " + id);
+                flagAndAlert("KeepAlive (ID: " + id + ")");
             } else { // Found the ID, remove stuff until we get to it (to stop very slow memory leaks)
                 Pair<Long, Long> data;
                 do {
