@@ -38,8 +38,7 @@ public class Cinematic extends RotationCheck {
             lastHighRate = now;
         }
 
-        // TODO: Shouldn't the first one be deltaYaw?
-        if (deltaPitch > 0.0 && deltaPitch > 0.0) {
+        if (deltaYaw > 0.0 && deltaPitch > 0.0) {
             yawSamples.add(deltaYaw);
             pitchSamples.add(deltaPitch);
         }
