@@ -19,7 +19,7 @@ public class BadPacketsC extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
             WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
 
-            if (packet.getEntityId() == player.entityID || packet.getEntityId() < 0) {
+            if (packet.getEntityId() == player.entityID) {
                 flagAndAlert();
             }
         }
