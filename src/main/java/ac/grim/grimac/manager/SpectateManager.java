@@ -4,6 +4,7 @@ import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.manager.init.Initable;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfo;
+import lombok.AllArgsConstructor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -16,7 +17,6 @@ public class SpectateManager implements Initable {
     private final Map<UUID, PreviousState> spectatingPlayers = new ConcurrentHashMap<>();
     private final Set<UUID> hiddenPlayers = ConcurrentHashMap.newKeySet();
     private final Set<String> allowedWorlds = ConcurrentHashMap.newKeySet();
-
     private boolean checkWorld = false;
 
     @Override
@@ -42,6 +42,7 @@ public class SpectateManager implements Initable {
         if (spectatingPlayers.containsKey(player.getUniqueId())) {
             return false;
         }
+
         spectatingPlayers.put(player.getUniqueId(), new PreviousState(player.getGameMode(), player.getLocation()));
         return true;
     }
@@ -57,10 +58,12 @@ public class SpectateManager implements Initable {
 
     public void disable(Player player) {
         PreviousState previousState = spectatingPlayers.get(player.getUniqueId());
+
         if (previousState != null) {
             player.teleport(previousState.location);
             player.setGameMode(previousState.gameMode);
         }
+
         handlePlayerStopSpectating(player.getUniqueId());
     }
 
@@ -68,13 +71,9 @@ public class SpectateManager implements Initable {
         spectatingPlayers.remove(uuid);
     }
 
+    @AllArgsConstructor
     private static class PreviousState {
         private final GameMode gameMode;
         private final Location location;
-        public PreviousState(GameMode gameMode, Location location) {
-            this.gameMode = gameMode;
-            this.location = location;
-        }
     }
-
 }

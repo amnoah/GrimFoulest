@@ -31,20 +31,19 @@ public class PunishmentManager {
 
             for (Object s : punish) {
                 LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) s;
-
                 List<String> checks = (List<String>) map.getOrDefault("checks", new ArrayList<>());
                 List<String> commands = (List<String>) map.getOrDefault("commands", new ArrayList<>());
                 int removeViolationsAfter = (int) map.getOrDefault("removeViolationsAfter", 300);
-
                 List<ParsedCommand> parsed = new ArrayList<>();
                 List<Check> checksList = new ArrayList<>();
 
                 for (String command : checks) {
                     command = command.toLowerCase(Locale.ROOT);
+
                     for (Check check : player.checkManager.allChecks.values()) { // o(n) * o(n)?
-                        if (check.getCheckName() != null &&
-                                (check.getCheckName().toLowerCase(Locale.ROOT).contains(command)
-                                        || check.getAlernativeName().toLowerCase(Locale.ROOT).contains(command))) { // Some checks have equivalent names like AntiKB and AntiKnockback
+                        if (check.getCheckName() != null
+                                && (check.getCheckName().toLowerCase(Locale.ROOT).contains(command)
+                                || check.getAlternativeName().toLowerCase(Locale.ROOT).contains(command))) { // Some checks have equivalent names like AntiKB and AntiKnockback
                             checksList.add(check);
                         }
                     }
@@ -53,7 +52,6 @@ public class PunishmentManager {
                 for (String command : commands) {
                     String firstNum = command.substring(0, command.indexOf(":"));
                     String secondNum = command.substring(command.indexOf(":"), command.indexOf(" "));
-
                     int threshold = Integer.parseInt(firstNum);
                     int interval = Integer.parseInt(secondNum.substring(1));
                     String commandString = command.substring(command.indexOf(" ") + 1);
@@ -63,6 +61,7 @@ public class PunishmentManager {
 
                 groups.add(new PunishGroup(checksList, parsed, removeViolationsAfter));
             }
+
         } catch (Exception e) {
             LogUtil.error("Error while loading punishments.yml! This is likely your fault!");
             e.printStackTrace();
@@ -138,14 +137,11 @@ public class PunishmentManager {
     }
 }
 
+@Getter
 class PunishGroup {
-    @Getter
     List<Check> checks;
-    @Getter
     List<ParsedCommand> commands;
-    @Getter
     HashMap<Long, Check> violations = new HashMap<>();
-    @Getter
     int removeViolationsAfter;
 
     public PunishGroup(List<Check> checks, List<ParsedCommand> commands, int removeViolationsAfter) {
@@ -155,15 +151,12 @@ class PunishGroup {
     }
 }
 
+@Getter
+@Setter
 class ParsedCommand {
-    @Getter
     int threshold;
-    @Getter
     int interval;
-    @Getter
-    @Setter
     int executeCount;
-    @Getter
     String command;
 
     public ParsedCommand(int threshold, int interval, String command) {

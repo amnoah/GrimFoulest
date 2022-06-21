@@ -29,7 +29,7 @@ public class BadPacketsF extends PacketCheck {
                         return;
                     }
 
-                    flagAndAlert();
+                    flagAndAlert("", false);
                 }
 
                 lastSprinting = true;
@@ -41,7 +41,7 @@ public class BadPacketsF extends PacketCheck {
                         return;
                     }
 
-                    flagAndAlert();
+                    flagAndAlert("", false);
                 }
 
                 lastSprinting = false;

@@ -50,13 +50,10 @@ public class AimProcessor extends RotationCheck {
 
         HeadRotation from = rotationUpdate.getFrom();
         HeadRotation to = rotationUpdate.getTo();
-
         float deltaYaw = Math.abs(to.getYaw() - from.getYaw());
         float deltaPitch = Math.abs(to.getPitch() - from.getPitch());
-
         double gcdYaw = GrimMath.getGcd((long) (deltaYaw * GrimMath.EXPANDER), (long) (lastDeltaYaw * GrimMath.EXPANDER));
         double gcdPitch = GrimMath.getGcd((long) (deltaPitch * GrimMath.EXPANDER), (long) (lastDeltaPitch * GrimMath.EXPANDER));
-
         double dividedYawGcd = gcdYaw / GrimMath.EXPANDER;
         double dividedPitchGcd = gcdPitch / GrimMath.EXPANDER;
 
@@ -78,7 +75,6 @@ public class AimProcessor extends RotationCheck {
 
         double deltaX = deltaYaw / modeYaw;
         double deltaY = deltaPitch / modePitch;
-
         double sensitivityX = getSensitivityFromYawGCD(modeYaw);
         double sensitivityY = getSensitivityFromPitchGCD(modePitch);
 

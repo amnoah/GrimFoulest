@@ -19,6 +19,7 @@ import static com.github.retrooper.packetevents.protocol.packettype.PacketType.P
 
 @CheckData(name = "Post")
 public class PostCheck extends PacketCheck {
+
     private final ArrayDeque<PacketTypeCommon> post = new ArrayDeque<>();
     // Due to 1.9+ missing the idle packet, we must queue flags
     // 1.8 clients will have the same logic for simplicity, although it's not needed
@@ -43,7 +44,7 @@ public class PostCheck extends PacketCheck {
                 // 1.9+ clients have predictions, which will determine if hidden tick skipping occurred
                 if (player.isTickingReliablyFor(3)) {
                     for (String flag : flags) {
-                        flagAndAlert(flag);
+                        flagAndAlert(flag, false);
                     }
                 }
 
@@ -52,25 +53,32 @@ public class PostCheck extends PacketCheck {
 
             post.clear();
             sentFlying = true;
+
         } else {
             PacketTypeCommon packetType = event.getPacketType();
+
             if (WINDOW_CONFIRMATION.equals(packetType) || PONG.equals(packetType)) {
                 if (sentFlying && !post.isEmpty()) {
-                    flags.add(post.getFirst().toString().toLowerCase(Locale.ROOT).replace("_", " ") + " v" + player.getClientVersion().getReleaseName());
+                    flags.add(post.getFirst().toString().toLowerCase(Locale.ROOT).replace("_", " ")
+                            + " v" + player.getClientVersion().getReleaseName());
                 }
+
                 post.clear();
                 sentFlying = false;
-            } else if (PLAYER_ABILITIES.equals(packetType)
-                    || INTERACT_ENTITY.equals(packetType) || PLAYER_BLOCK_PLACEMENT.equals(packetType)
-                    || USE_ITEM.equals(packetType) || PLAYER_DIGGING.equals(packetType)) {
+
+            } else if (PLAYER_ABILITIES.equals(packetType) || INTERACT_ENTITY.equals(packetType)
+                    || PLAYER_BLOCK_PLACEMENT.equals(packetType) || USE_ITEM.equals(packetType)
+                    || PLAYER_DIGGING.equals(packetType)) {
                 if (sentFlying) {
                     post.add(event.getPacketType());
                 }
+
             } else if (CLICK_WINDOW.equals(packetType) && player.getClientVersion().isOlderThan(ClientVersion.V_1_15)) {
                 // Why do 1.15+ players send the click window packet whenever? This doesn't make sense.
                 if (sentFlying) {
                     post.add(event.getPacketType());
                 }
+
             } else if ((ENTITY_ACTION.equals(packetType) || ANIMATION.equals(packetType)) // ViaRewind sends START_FALL_FLYING packets async for 1.8 clients on 1.9+ servers
                     && (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9) // ViaVersion delays animations for 1.8 clients on 1.9+ servers
                     || PacketEvents.getAPI().getServerManager().getVersion().isOlderThanOrEquals(ServerVersion.V_1_8_8))) {

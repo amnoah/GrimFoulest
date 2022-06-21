@@ -27,7 +27,7 @@ public class AimDuplicateLook extends RotationCheck {
         }
 
         if (rotationUpdate.getFrom().equals(rotationUpdate.getTo())) {
-            flagAndAlert();
+            flagAndAlert("", false);
         }
     }
 }

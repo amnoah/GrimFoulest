@@ -69,8 +69,8 @@ public class PositionPlace extends BlockPlaceCheck {
         }
 
         if (flag) {
+            flagAndAlert("", false);
             place.resync();
-            flagAndAlert();
         }
     }
 }

@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.prediction;
+package ac.grim.grimac.checks.impl.groundspoof;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PostPredictionCheck;
@@ -8,10 +8,10 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.player.GameMode;
 
-@CheckData(name = "GroundSpoof", configName = "GroundSpoof", setback = 10, decay = 0.01)
-public class NoFallB extends PostPredictionCheck {
+@CheckData(name = "GroundSpoof A", setback = 10, decay = 0.01)
+public class GroundSpoofA extends PostPredictionCheck {
 
-    public NoFallB(GrimPlayer player) {
+    public GroundSpoofA(GrimPlayer player) {
         super(player);
     }
 
@@ -19,7 +19,8 @@ public class NoFallB extends PostPredictionCheck {
     public void onPredictionComplete(PredictionComplete predictionComplete) {
         // Exemptions
         // Don't check players in spectator
-        if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_8) && player.gamemode == GameMode.SPECTATOR) {
+        if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_8)
+                && player.gamemode == GameMode.SPECTATOR) {
             return;
         }
 
@@ -38,11 +39,8 @@ public class NoFallB extends PostPredictionCheck {
             return;
         }
 
-        boolean invalid = player.clientClaimsLastOnGround != player.onGround;
-
-        if (invalid) {
-            flagWithSetback();
-            alert("claimed " + player.clientClaimsLastOnGround);
+        if (player.clientClaimsLastOnGround != player.onGround) {
+            flagAndAlert("Spoofing " + player.clientClaimsLastOnGround, true);
             player.checkManager.getNoFall().flipPlayerGroundStatus = true;
         }
     }

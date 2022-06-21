@@ -11,6 +11,7 @@ import ac.grim.grimac.utils.anticheat.update.PredictionComplete;
 import ac.grim.grimac.utils.chunks.Column;
 import ac.grim.grimac.utils.collisions.datatypes.SimpleCollisionBox;
 import ac.grim.grimac.utils.data.*;
+import ac.grim.grimac.utils.data.packetentity.PacketEntity;
 import ac.grim.grimac.utils.math.GrimMath;
 import ac.grim.grimac.utils.math.VectorUtils;
 import ac.grim.grimac.utils.nmsutil.Collisions;
@@ -30,6 +31,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SetbackTeleportUtil extends PostPredictionCheck {
+
     // Sync to netty
     public final ConcurrentLinkedQueue<TeleportData> teleports = new ConcurrentLinkedQueue<>();
     // Sync to netty, a player MUST accept a teleport to spawn into the world
@@ -91,19 +93,22 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
         if (player.gamemode == GameMode.SPECTATOR || player.disableGrim) {
             return; // We don't care about spectators, they don't flag
         }
+
         blockOffsets = true;
+
         if (safeTeleportPosition == null) {
             return; // Player hasn't spawned yet
         }
+
         blockMovementsUntilResync(safeTeleportPosition.position);
     }
 
-    public boolean executeViolationSetback() {
+    public void executeViolationSetback() {
         if (isExempt()) {
-            return false;
+            return;
         }
+
         blockMovementsUntilResync(safeTeleportPosition.position);
-        return true;
     }
 
     private boolean isExempt() {
@@ -112,10 +117,12 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
         if (safeTeleportPosition == null) {
             return true;
         }
+
         // Setbacks aren't allowed
         if (player.disableGrim) {
             return true;
         }
+
         // Player has permission to cheat, permission not given to OP by default.
         return player.bukkitPlayer != null && player.bukkitPlayer.hasPermission("grim.nosetback");
     }
@@ -132,7 +139,9 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
         if (requiredSetBack == null || player.bukkitPlayer == null) {
             return; // Player hasn't gotten a single teleport yet.
         }
+
         requiredSetBack.setPlugin(false); // The player has illegal movement, block from vanilla ac override
+
         if (!force && isPendingSetback()) {
             return; // Don't spam setbacks
         }
@@ -234,7 +243,7 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
 
                     // Make sure bukkit also knows the player got teleported out of their vehicle, can't do this async
                     Bukkit.getScheduler().runTask(GrimAPI.INSTANCE.getPlugin(), () -> {
-                        Entity vehicle = player.bukkitPlayer.getVehicle();
+                        PacketEntity vehicle = player.compensatedEntities.getSelf().getRiding();
                         if (vehicle != null) {
                             vehicle.eject();
                         }
@@ -313,14 +322,16 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
 
                 teleportData.setTeleportData(teleportPos);
                 teleportData.setTeleport(true);
+
             } else if (lastTransaction > teleportPos.getTransaction()) { // The player ignored the teleport
                 // Stop a permanent desync from people ping spoofing
                 // Mainly so people stop reporting "disablers" when they just enable ping spoof
                 // And for debugging purposes... so misbehaving clients can be tested
                 if (teleports.size() == 1) {
-                    player.checkManager.getPacketCheck(BadPacketsL.class).flagAndAlert();
+                    player.checkManager.getPacketCheck(BadPacketsL.class).flagAndAlert("Transaction", false);
                     sendSetback(requiredSetBack);
                 }
+
                 teleports.poll();
                 continue;
             }

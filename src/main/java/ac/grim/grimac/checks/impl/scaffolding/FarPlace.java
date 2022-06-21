@@ -13,6 +13,7 @@ import org.bukkit.util.Vector;
 
 @CheckData(name = "FarPlace")
 public class FarPlace extends BlockPlaceCheck {
+
     public FarPlace(GrimPlayer player) {
         super(player);
     }
@@ -40,7 +41,7 @@ public class FarPlace extends BlockPlaceCheck {
 
 
         if (min > maxReach * maxReach) { // fail
-            flagAndAlert();
+            flagAndAlert("", false);
             place.resync();
         }
     }

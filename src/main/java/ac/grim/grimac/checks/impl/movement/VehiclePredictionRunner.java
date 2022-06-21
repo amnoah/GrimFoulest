@@ -6,6 +6,7 @@ import ac.grim.grimac.utils.anticheat.update.PositionUpdate;
 import ac.grim.grimac.utils.anticheat.update.VehiclePositionUpdate;
 
 public class VehiclePredictionRunner extends VehicleCheck {
+
     public VehiclePredictionRunner(GrimPlayer playerData) {
         super(playerData);
     }
@@ -15,7 +16,8 @@ public class VehiclePredictionRunner extends VehicleCheck {
         // Vehicle onGround = false always
         // We don't do vehicle setbacks because vehicle netcode sucks.
         if (player.compensatedEntities.getSelf().inVehicle()) {
-            player.movementCheckRunner.processAndCheckMovementPacket(new PositionUpdate(vehicleUpdate.getFrom(), vehicleUpdate.getTo(), false, null, null, vehicleUpdate.isTeleport()));
+            player.movementCheckRunner.processAndCheckMovementPacket(new PositionUpdate(vehicleUpdate.getFrom(),
+                    vehicleUpdate.getTo(), false, null, null, vehicleUpdate.isTeleport()));
         }
     }
 }

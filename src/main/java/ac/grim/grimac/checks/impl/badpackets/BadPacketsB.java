@@ -22,11 +22,11 @@ public class BadPacketsB extends PacketCheck {
             WrapperPlayClientHeldItemChange packet = new WrapperPlayClientHeldItemChange(event);
 
             if (packet.getSlot() == lastSlot) {
-                flagAndAlert("Sent Same Slot");
+                flagAndAlert("Sent Same Slot", false);
             }
 
             if (packet.getSlot() < 0 || packet.getSlot() > 8) {
-                flagAndAlert("Invalid Slot");
+                flagAndAlert("Invalid Slot", false);
             }
 
             lastSlot = packet.getSlot();

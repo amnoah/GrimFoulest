@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.badpackets;
+package ac.grim.grimac.checks.impl.groundspoof;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
@@ -6,10 +6,10 @@ import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-@CheckData(name = "BadPackets J")
-public class BadPacketsJ extends PacketCheck {
+@CheckData(name = "GroundSpoof C")
+public class GroundSpoofC extends PacketCheck {
 
-    public BadPacketsJ(GrimPlayer player) {
+    public GroundSpoofC(GrimPlayer player) {
         super(player);
     }
 
@@ -43,7 +43,7 @@ public class BadPacketsJ extends PacketCheck {
 
             // TODO: False flags 0.0 when player stuck inside block / recently teleported
             if (!hasPos && !hasLook && isOnGround != calcOnGround) {
-                flagAndAlert("(Y: " + posY % 1.0D + ")");
+                flagAndAlert("(Y: " + posY % 1.0D + ")", true);
             }
         }
     }

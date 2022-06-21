@@ -40,7 +40,7 @@ public class BadPacketsI extends PacketCheck {
 
             // lastYaw and lastPitch are identical
             if (lastYaw == posYaw && lastPitch == posPitch) {
-                flagAndAlert("Sent Same Look");
+                flagAndAlert("Sent Same Look", false);
             }
 
             lastYaw = posYaw;

@@ -24,7 +24,7 @@ public class BadPacketsC extends PacketCheck {
             WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
 
             if (sentAnimation && packet.getAction() == DiggingAction.FINISHED_DIGGING) {
-                flagAndAlert("Swing After Destroy");
+                flagAndAlert("Swing After Destroy", false);
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {

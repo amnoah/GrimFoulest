@@ -22,16 +22,12 @@ public class Cinematic extends RotationCheck {
     @Override
     public void process(RotationUpdate rotationUpdate) {
         long now = System.currentTimeMillis();
-
         double deltaYaw = rotationUpdate.getDeltaYaw();
         double deltaPitch = rotationUpdate.getDeltaPitch();
-
         double differenceYaw = Math.abs(deltaYaw - lastDeltaYaw);
         double differencePitch = Math.abs(deltaPitch - lastDeltaPitch);
-
         double joltYaw = Math.abs(differenceYaw - deltaYaw);
         double joltPitch = Math.abs(differencePitch - deltaPitch);
-
         boolean cinematic = (now - lastHighRate > 250L) || now - lastSmooth < 9000L;
 
         if (joltYaw > 1.0 && joltPitch > 1.0) {

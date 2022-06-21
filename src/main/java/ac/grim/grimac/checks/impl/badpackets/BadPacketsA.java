@@ -28,7 +28,7 @@ public class BadPacketsA extends PacketCheck {
                     && packet.getBlockPosition().getX() == 0.0
                     && packet.getBlockPosition().getY() == 0.0
                     && packet.getBlockPosition().getZ() == 0.0) {
-                flagAndAlert("Block Place");
+                flagAndAlert("Block Place", false);
                 return;
             }
         }
@@ -42,7 +42,7 @@ public class BadPacketsA extends PacketCheck {
                         || packet.getBlockPosition().getX() != 0
                         || packet.getBlockPosition().getY() != 0
                         || packet.getBlockPosition().getZ() != 0) {
-                    flagAndAlert("Use Item");
+                    flagAndAlert("Use Item", false);
                 }
             }
         }
@@ -50,7 +50,7 @@ public class BadPacketsA extends PacketCheck {
         // Invalid Spectate
         if (event.getPacketType() == PacketType.Play.Client.SPECTATE) {
             if (player.gamemode != GameMode.SPECTATOR) {
-                flagAndAlert("Spectate");
+                flagAndAlert("Spectate", false);
             }
         }
 
@@ -59,7 +59,7 @@ public class BadPacketsA extends PacketCheck {
             WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
 
             if (packet.getEntityId() == player.entityID) {
-                flagAndAlert("Self Interact");
+                flagAndAlert("Self Interact", false);
             }
         }
 
@@ -70,11 +70,11 @@ public class BadPacketsA extends PacketCheck {
             float sideways = Math.abs(packet.getSideways());
 
             if (!player.compensatedEntities.getSelf().inVehicle()) {
-                flagAndAlert("Not in Vehicle");
+                flagAndAlert("Not in Vehicle", false);
             }
 
             if (forwards > 0.98f || sideways > 0.98f) {
-                flagAndAlert("Vehicle Speed");
+                flagAndAlert("Vehicle Speed", false);
             }
         }
 
@@ -84,7 +84,7 @@ public class BadPacketsA extends PacketCheck {
             String message = packet.getText();
 
             if (message.equals("")) {
-                flagAndAlert("Tab Complete");
+                flagAndAlert("Tab Complete", false);
                 return;
             }
         }
@@ -93,7 +93,7 @@ public class BadPacketsA extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.CREATIVE_INVENTORY_ACTION) {
             // Could be transaction split
             if (player.gamemode != GameMode.CREATIVE) {
-                flagAndAlert("Creative Slot");
+                flagAndAlert("Creative Slot", false);
             }
         }
 
@@ -104,49 +104,52 @@ public class BadPacketsA extends PacketCheck {
             switch (packet.getPacketId()) {
                 case 0:
                     if (packet.getButton() != 0 && packet.getButton() != 1) {
-                        flagAndAlert("Window Click (0)");
+                        flagAndAlert("Window Click (0)", false);
                         return;
                     }
                     break;
 
                 case 1:
                     if (packet.getButton() != 0 && packet.getButton() != 1) {
-                        flagAndAlert("Window Click (1)");
+                        flagAndAlert("Window Click (1)", false);
                         return;
                     }
                     break;
 
                 case 2:
-                    if (packet.getButton() != 0 && packet.getButton() != 1 && packet.getButton() != 2 && packet.getButton() != 8 && packet.getButton() != 40) {
-                        flagAndAlert("Window Click (2)");
+                    if (packet.getButton() != 0 && packet.getButton() != 1 && packet.getButton() != 2
+                            && packet.getButton() != 8 && packet.getButton() != 40) {
+                        flagAndAlert("Window Click (2)", false);
                         return;
                     }
                     break;
 
                 case 3:
                     if (packet.getButton() != 2) {
-                        flagAndAlert("Window Click (3)");
+                        flagAndAlert("Window Click (3)", false);
                         return;
                     }
                     break;
 
                 case 4:
                     if (packet.getButton() != 0 && packet.getButton() != 1) {
-                        flagAndAlert("Window Click (4)");
+                        flagAndAlert("Window Click (4)", false);
                         return;
                     }
                     break;
 
                 case 5:
-                    if (packet.getButton() != 0 && packet.getButton() != 1 && packet.getButton() != 2 && packet.getButton() != 4 && packet.getButton() != 5 && packet.getButton() != 6 && packet.getButton() != 8 && packet.getButton() != 9 && packet.getButton() != 10) {
-                        flagAndAlert("Window Click (5)");
+                    if (packet.getButton() != 0 && packet.getButton() != 1 && packet.getButton() != 2
+                            && packet.getButton() != 4 && packet.getButton() != 5 && packet.getButton() != 6
+                            && packet.getButton() != 8 && packet.getButton() != 9 && packet.getButton() != 10) {
+                        flagAndAlert("Window Click (5)", false);
                         return;
                     }
                     break;
 
                 case 6:
                     if (packet.getButton() != 0) {
-                        flagAndAlert("Window Click (6)");
+                        flagAndAlert("Window Click (6)", false);
                         return;
                     }
                     break;
@@ -158,27 +161,31 @@ public class BadPacketsA extends PacketCheck {
             WrapperPlayClientEntityAction packet = new WrapperPlayClientEntityAction(event);
 
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.LEAVE_BED && !player.isInBed) {
-                flagAndAlert("Entity Action (Sleeping)");
+                flagAndAlert("Entity Action (Sleeping)", false);
                 return;
             }
 
-            if (packet.getAction() == WrapperPlayClientEntityAction.Action.OPEN_HORSE_INVENTORY && !player.compensatedEntities.getSelf().inVehicle()) {
-                flagAndAlert("Entity Action (Horse Inventory)");
+            if (packet.getAction() == WrapperPlayClientEntityAction.Action.OPEN_HORSE_INVENTORY
+                    && !player.compensatedEntities.getSelf().inVehicle()) {
+                flagAndAlert("Entity Action (Horse Inventory)", false);
                 return;
             }
 
-            if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_JUMPING_WITH_HORSE && !player.compensatedEntities.getSelf().inVehicle()) {
-                flagAndAlert("Entity Action (Horse Start Jump)");
+            if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_JUMPING_WITH_HORSE
+                    && !player.compensatedEntities.getSelf().inVehicle()) {
+                flagAndAlert("Entity Action (Horse Start Jump)", false);
                 return;
             }
 
-            if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_JUMPING_WITH_HORSE && !player.compensatedEntities.getSelf().inVehicle()) {
-                flagAndAlert("Entity Action (Horse Stop Jump)");
+            if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_JUMPING_WITH_HORSE
+                    && !player.compensatedEntities.getSelf().inVehicle()) {
+                flagAndAlert("Entity Action (Horse Stop Jump)", false);
                 return;
             }
 
-            if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_JUMPING_WITH_HORSE && !player.compensatedEntities.getSelf().inVehicle()) {
-                flagAndAlert("Entity Action (Horse Stop Jump)");
+            if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_JUMPING_WITH_HORSE
+                    && !player.compensatedEntities.getSelf().inVehicle()) {
+                flagAndAlert("Entity Action (Horse Stop Jump)", false);
                 return;
             }
         }
@@ -194,28 +201,28 @@ public class BadPacketsA extends PacketCheck {
             if (isFlying == player.isFlying && isInGodMode == player.isInGodMode
                     && isFlightAllowed == player.isFlightAllowed && isInCreative == player.isInCreative
                     && !isFlying && !isInGodMode && !isFlightAllowed && !isInCreative) {
-                flagAndAlert("Abilities (All)");
+                flagAndAlert("Abilities (All)", false);
                 return;
             }
 
             if (isFlying && !player.isFlightAllowed) {
-                flagAndAlert("Abilities (Flight Allowed)");
+                flagAndAlert("Abilities (Flight Allowed)", false);
                 return;
             }
 
             if (player.gamemode != GameMode.CREATIVE) {
                 if (isInGodMode != player.isInGodMode) {
-                    flagAndAlert("Abilities (GodMode)");
+                    flagAndAlert("Abilities (GodMode)", false);
                     return;
                 }
 
                 if (isFlying && !player.isFlying) {
-                    flagAndAlert("Abilities (Flying)");
+                    flagAndAlert("Abilities (Flying)", false);
                     return;
                 }
 
                 if (isInCreative && !player.isInCreative) {
-                    flagAndAlert("Abilities (Creative)");
+                    flagAndAlert("Abilities (Creative)", false);
                 }
             }
         }

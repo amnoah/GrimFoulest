@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 
 @CheckData(name = "Simulation", configName = "Simulation", decay = 0.02)
 public class OffsetHandler extends PostPredictionCheck {
+
     // Config
     double setbackDecayMultiplier;
     double threshold;
@@ -35,18 +36,15 @@ public class OffsetHandler extends PostPredictionCheck {
 
         if (offset >= threshold || offset >= immediateSetbackThreshold) {
             flag();
-
             advantageGained += offset;
-
-            boolean isSetback = advantageGained >= maxAdvantage || offset >= immediateSetbackThreshold;
             giveOffsetLenienceNextTick(offset);
 
-            if (isSetback) {
+            if (advantageGained >= maxAdvantage || offset >= immediateSetbackThreshold) {
                 player.getSetbackTeleportUtil().executeViolationSetback();
             }
 
             violations++;
-            alert("o: " + formatOffset(offset));
+            alert("Offset: " + formatOffset(offset));
 
             advantageGained = Math.min(advantageGained, maxCeiling);
         } else {
@@ -85,6 +83,7 @@ public class OffsetHandler extends PostPredictionCheck {
         if (maxAdvantage == -1) {
             maxAdvantage = Double.MAX_VALUE;
         }
+
         if (immediateSetbackThreshold == -1) {
             immediateSetbackThreshold = Double.MAX_VALUE;
         }

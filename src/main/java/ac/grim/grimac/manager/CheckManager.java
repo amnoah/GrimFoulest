@@ -8,13 +8,14 @@ import ac.grim.grimac.checks.impl.aim.processor.Cinematic;
 import ac.grim.grimac.checks.impl.badpackets.*;
 import ac.grim.grimac.checks.impl.baritone.Baritone;
 import ac.grim.grimac.checks.impl.combat.Reach;
-import ac.grim.grimac.checks.impl.groundspoof.NoFallA;
+import ac.grim.grimac.checks.impl.groundspoof.GroundSpoofC;
+import ac.grim.grimac.checks.impl.groundspoof.GroundSpoofB;
 import ac.grim.grimac.checks.impl.misc.ClientBrand;
 import ac.grim.grimac.checks.impl.misc.FastBreak;
 import ac.grim.grimac.checks.impl.movement.*;
 import ac.grim.grimac.checks.impl.post.PostCheck;
 import ac.grim.grimac.checks.impl.prediction.DebugHandler;
-import ac.grim.grimac.checks.impl.prediction.NoFallB;
+import ac.grim.grimac.checks.impl.groundspoof.GroundSpoofA;
 import ac.grim.grimac.checks.impl.prediction.OffsetHandler;
 import ac.grim.grimac.checks.impl.prediction.Phase;
 import ac.grim.grimac.checks.impl.scaffolding.*;
@@ -39,7 +40,7 @@ import com.google.common.collect.ImmutableClassToInstanceMap;
 
 public class CheckManager {
 
-    public final ClassToInstanceMap<Check<?>> allChecks;
+    public final ClassToInstanceMap<Check> allChecks;
     final ClassToInstanceMap<PacketCheck> packetChecks;
     final ClassToInstanceMap<PositionCheck> positionCheck;
     final ClassToInstanceMap<RotationCheck> rotationCheck;
@@ -60,7 +61,9 @@ public class CheckManager {
                 .put(PacketPlayerAbilities.class, new PacketPlayerAbilities(player))
                 .put(PacketWorldBorder.class, new PacketWorldBorder(player))
                 .put(ClientBrand.class, new ClientBrand(player))
-                .put(NoFallA.class, new NoFallA(player))
+
+                .put(GroundSpoofB.class, new GroundSpoofB(player))
+                .put(GroundSpoofC.class, new GroundSpoofC(player))
 
                 .put(BadPacketsA.class, new BadPacketsA(player))
                 .put(BadPacketsB.class, new BadPacketsB(player))
@@ -71,7 +74,6 @@ public class CheckManager {
                 .put(BadPacketsG.class, new BadPacketsG(player))
                 .put(BadPacketsH.class, new BadPacketsH(player))
                 .put(BadPacketsI.class, new BadPacketsI(player))
-                .put(BadPacketsJ.class, new BadPacketsJ(player))
                 .put(BadPacketsK.class, new BadPacketsK(player))
                 .put(BadPacketsL.class, new BadPacketsL(player))
                 .put(BadPacketsM.class, new BadPacketsM(player))
@@ -102,7 +104,7 @@ public class CheckManager {
         postPredictionCheck = new ImmutableClassToInstanceMap.Builder<PostPredictionCheck>()
                 .put(GhostBlockDetector.class, new GhostBlockDetector(player))
                 .put(Phase.class, new Phase(player))
-                .put(NoFallB.class, new NoFallB(player))
+                .put(GroundSpoofA.class, new GroundSpoofA(player))
                 .put(OffsetHandler.class, new OffsetHandler(player))
                 .put(DebugHandler.class, new DebugHandler(player))
                 .put(EntityControl.class, new EntityControl(player))
@@ -126,7 +128,7 @@ public class CheckManager {
                 .put(VehicleTimer.class, new VehicleTimer(player))
                 .build();
 
-        allChecks = new ImmutableClassToInstanceMap.Builder<Check<?>>()
+        allChecks = new ImmutableClassToInstanceMap.Builder<Check>()
                 .putAll(packetChecks)
                 .putAll(positionCheck)
                 .putAll(rotationCheck)
@@ -204,8 +206,8 @@ public class CheckManager {
         return getPacketCheck(PacketEntityReplication.class);
     }
 
-    public NoFallA getNoFall() {
-        return getPacketCheck(NoFallA.class);
+    public GroundSpoofB getNoFall() {
+        return getPacketCheck(GroundSpoofB.class);
     }
 
     public KnockbackHandler getKnockbackHandler() {

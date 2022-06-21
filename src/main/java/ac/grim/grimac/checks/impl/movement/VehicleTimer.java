@@ -7,6 +7,7 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 
 @CheckData(name = "Timer - Vehicle", configName = "TimerVehicle", setback = 10)
 public class VehicleTimer extends TimerCheck {
+
     boolean isDummy = false;
 
     public VehicleTimer(GrimPlayer player) {
@@ -15,7 +16,8 @@ public class VehicleTimer extends TimerCheck {
 
     @Override
     public boolean shouldCountPacketForTimer(PacketTypeCommon packetType) {
-        // Ignore teleports (TODO: Fix vehicle teleports)
+        // Ignore teleports
+        // TODO: Fix vehicle teleports
         if (player.packetStateData.lastPacketWasTeleport) {
             return false;
         }
@@ -29,6 +31,7 @@ public class VehicleTimer extends TimerCheck {
             if (isDummy) { // Server is controlling vehicle
                 return true;
             }
+
             isDummy = true; // Client is controlling vehicle
         }
 

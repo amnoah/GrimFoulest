@@ -5,14 +5,13 @@
 # [alert] - special command to alert
 # [webhook] - special command to alert to discord webhook
 Punishments:
-  Simulation:
+  Movement:
     # After how many seconds should a violation be removed?
     remove-violations-after: 300
     checks:
       - "Simulation"
       - "GroundSpoof"
       - "Timer"
-      - "NoFall"
     # Threshold:Interval Command
     #
     # Example, to kick the player with the message "incorrect movement!" after 100 violations, with no interval
@@ -20,7 +19,7 @@ Punishments:
     # - "100:0 kick %player% incorrect movement!"
     #
     commands:
-      - "5:5 [alert]"
+      - "1:0 [alert]"
       - "100:100 [webhook]"
   Knockback:
     remove-violations-after: 300

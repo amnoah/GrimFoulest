@@ -33,7 +33,7 @@ public class BadPacketsN extends PacketCheck {
             // Player location is above max value (max world border)
             if (Math.abs(packet.getLocation().getX()) > HARD_CODED_BORDER
                     || Math.abs(packet.getLocation().getZ()) > HARD_CODED_BORDER) {
-                flagAndAlert("Max Value");
+                flagAndAlert("Max Value", true);
             }
         }
     }

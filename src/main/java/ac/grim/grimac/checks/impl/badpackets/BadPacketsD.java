@@ -24,7 +24,7 @@ public class BadPacketsD extends PacketCheck {
             WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
 
             if (packet.hasRotationChanged() && Math.abs(packet.getLocation().getPitch()) > 90) {
-                flagAndAlert();
+                flagAndAlert("", false);
             }
         }
     }

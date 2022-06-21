@@ -14,15 +14,13 @@ import org.bukkit.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 // We are making a velocity sandwich between two pieces of transaction packets (bread)
-@CheckData(name = "AntiKB", alternativeName = "AntiKnockback", configName = "Knockback", setback = 10, decay = 0.025)
+@CheckData(name = "Knockback", setback = 10, decay = 0.025)
 public class KnockbackHandler extends PacketCheck {
-    final ConcurrentLinkedQueue<VelocityData> firstBreadMap = new ConcurrentLinkedQueue<>();
 
+    final ConcurrentLinkedQueue<VelocityData> firstBreadMap = new ConcurrentLinkedQueue<>();
     final ConcurrentLinkedQueue<VelocityData> lastKnockbackKnownTaken = new ConcurrentLinkedQueue<>();
     VelocityData firstBreadOnlyKnockback = null;
-
     boolean wasExplosionZeroPointZeroThree = false;
-
     double offsetToFlag;
     double setbackVL;
 
@@ -86,11 +84,13 @@ public class KnockbackHandler extends PacketCheck {
 
     private void tickKnockback(int transactionID) {
         VelocityData data = firstBreadMap.peek();
+
         while (data != null) {
             if (data.transaction == transactionID) { // First bread knockback
                 firstBreadOnlyKnockback = new VelocityData(data.entityID, data.transaction, data.isSetback, data.vector);
                 firstBreadMap.poll();
                 break; // All knockback after this will have not been applied
+
             } else if (data.transaction < transactionID) { // This kb has 100% arrived to the player
                 if (firstBreadOnlyKnockback != null) // Don't require kb twice
                 {
@@ -101,6 +101,7 @@ public class KnockbackHandler extends PacketCheck {
                 firstBreadOnlyKnockback = null;
                 firstBreadMap.poll();
                 data = firstBreadMap.peek();
+
             } else { // We are too far ahead in the future
                 break;
             }
@@ -110,8 +111,8 @@ public class KnockbackHandler extends PacketCheck {
     public void onTeleport() {
         // Don't exempt if the player used grim to get a teleport here.
         // This will flag but it's required to stop abuse
-        if (player.getSetbackTeleportUtil().getRequiredSetBack() == null ||
-                player.getSetbackTeleportUtil().getRequiredSetBack().isPlugin()) {
+        if (player.getSetbackTeleportUtil().getRequiredSetBack() == null
+                || player.getSetbackTeleportUtil().getRequiredSetBack().isPlugin()) {
             forceExempt();
         }
     }
@@ -179,13 +180,14 @@ public class KnockbackHandler extends PacketCheck {
                         player.getSetbackTeleportUtil().blockMovementsUntilResync(player.getSetbackTeleportUtil().safeTeleportPosition.position, !player.likelyKB.hasSetbackForThis);
                     }
 
-                    String formatOffset = "o: " + formatOffset(player.likelyKB.offset);
+                    String formatOffset = "Offset: " + formatOffset(player.likelyKB.offset);
 
                     if (player.likelyKB.offset == Integer.MAX_VALUE) {
-                        formatOffset = "ignored knockback";
+                        formatOffset = "Ignored Knockback";
                     }
 
                     alert(formatOffset);
+
                 } else {
                     reward();
                 }
@@ -195,9 +197,11 @@ public class KnockbackHandler extends PacketCheck {
 
     public VelocityData calculateFirstBreadKnockback(int entityID, int transaction) {
         tickKnockback(transaction);
+
         if (firstBreadOnlyKnockback != null && firstBreadOnlyKnockback.entityID == entityID) {
             return firstBreadOnlyKnockback;
         }
+
         return null;
     }
 

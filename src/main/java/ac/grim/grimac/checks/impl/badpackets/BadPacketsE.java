@@ -32,7 +32,7 @@ public class BadPacketsE extends PacketCheck {
         }
 
         if (noReminderTicks > 20) {
-            flagAndAlert(); // ban? I don't know how this would false
+            flagAndAlert("", false); // ban? I don't know how this would false
         }
     }
 }

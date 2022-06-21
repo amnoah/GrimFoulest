@@ -30,7 +30,7 @@ public class Baritone extends RotationCheck {
             if (gcd < 131072L) {
                 verbose = Math.min(verbose + 1, 20);
                 if (verbose > 9) {
-                    flagAndAlert("GCD: " + gcd);
+                    flagAndAlert("GCD: " + gcd, false);
                     verbose = 0;
                 }
             } else {

@@ -8,6 +8,7 @@ import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
 public class SetbackBlocker extends PacketCheck {
+
     public SetbackBlocker(GrimPlayer playerData) {
         super(playerData);
     }

@@ -9,46 +9,52 @@ import org.bukkit.Bukkit;
 
 // Class from https://github.com/Tecnio/AntiCheatBase/blob/master/src/main/java/me/tecnio/anticheat/check/Check.java
 @Getter
-public class Check<T> {
-    protected final GrimPlayer player;
+public class Check {
 
+    protected final GrimPlayer player;
     public double violations;
     public double decay;
     public double setbackVL;
-
     private String checkName;
     private String configName;
-    private String alernativeName;
+    private String alternativeName;
 
     public Check(GrimPlayer player) {
         this.player = player;
-
         Class<?> checkClass = getClass();
 
         if (checkClass.isAnnotationPresent(CheckData.class)) {
             CheckData checkData = checkClass.getAnnotation(CheckData.class);
             checkName = checkData.name();
             configName = checkData.configName();
+
             // Fall back to check name
             if (configName.equals("DEFAULT")) {
                 configName = checkName;
             }
+
             decay = checkData.decay();
             setbackVL = checkData.setback();
-            alernativeName = checkData.alternativeName();
+            alternativeName = checkData.alternativeName();
         }
 
         reload();
     }
 
-    public void flagAndAlert(String verbose) {
+    public void flagAndAlert(String verbose, boolean setback) {
         if (flag()) {
             alert(verbose);
+
+            if (setback) {
+                setbackIfAboveSetbackVL();
+            }
         }
     }
 
-    public void flagAndAlert() {
-        flagAndAlert("");
+    public void flagAndSetback() {
+        if (flag()) {
+            setbackIfAboveSetbackVL();
+        }
     }
 
     public final boolean flag() {
@@ -58,20 +64,14 @@ public class Check<T> {
 
         FlagEvent event = new FlagEvent(this);
         Bukkit.getPluginManager().callEvent(event);
+
         if (event.isCancelled()) {
             return false;
         }
 
         player.punishmentManager.handleViolation(this);
-
         violations++;
         return true;
-    }
-
-    public final void flagWithSetback() {
-        if (flag()) {
-            setbackIfAboveSetbackVL();
-        }
     }
 
     public final void reward() {

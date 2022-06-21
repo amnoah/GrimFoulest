@@ -16,12 +16,12 @@ import java.util.List;
 
 // Catches NoFalls for LOOK and GROUND packets
 // This check runs AFTER the predictions
-@CheckData(name = "NoFall", configName = "nofall", setback = 10)
-public class NoFallA extends PacketCheck {
+@CheckData(name = "GroundSpoof B", setback = 10)
+public class GroundSpoofB extends PacketCheck {
 
     public boolean flipPlayerGroundStatus = false;
 
-    public NoFallA(GrimPlayer player) {
+    public GroundSpoofB(GrimPlayer player) {
         super(player);
     }
 
@@ -34,7 +34,7 @@ public class NoFallA extends PacketCheck {
                 return;
             }
 
-            // The player has already been flagged, and
+            // The player has already been flagged
             if (player.getSetbackTeleportUtil().blockOffsets) {
                 return;
             }
@@ -48,7 +48,7 @@ public class NoFallA extends PacketCheck {
                 if (!isNearGround(wrapper.isOnGround())) { // If player isn't near ground
                     // 1.8 boats have a mind on their own... only flag if they're not near a boat or are on 1.9+
                     if (!GhostBlockDetector.isGhostBlock(player)) {
-                        flagWithSetback();
+                        flagAndSetback();
                     }
 
                     if (!player.disableGrim) {

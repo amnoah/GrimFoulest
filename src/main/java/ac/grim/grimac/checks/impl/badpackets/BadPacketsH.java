@@ -26,7 +26,7 @@ public class BadPacketsH extends PacketCheck {
             }
 
             if (++hits > 2) {
-                flagAndAlert();
+                flagAndAlert("", false);
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {

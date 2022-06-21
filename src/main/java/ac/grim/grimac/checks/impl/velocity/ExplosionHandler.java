@@ -15,13 +15,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 @CheckData(name = "AntiExplosion", configName = "Explosion", setback = 10)
 public class ExplosionHandler extends PacketCheck {
-    final ConcurrentLinkedQueue<VelocityData> firstBreadMap = new ConcurrentLinkedQueue<>();
 
+    final ConcurrentLinkedQueue<VelocityData> firstBreadMap = new ConcurrentLinkedQueue<>();
     VelocityData lastExplosionsKnownTaken = null;
     VelocityData firstBreadAddedExplosion = null;
-
     boolean wasKbZeroPointZeroThree = false;
-
     double offsetToFlag;
     double setbackVL;
 
@@ -37,7 +35,6 @@ public class ExplosionHandler extends PacketCheck {
     public void onPacketSend(PacketSendEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.EXPLOSION) {
             WrapperPlayServerExplosion explosion = new WrapperPlayServerExplosion(event);
-
             Vector3f velocity = explosion.getPlayerMotion();
 
             if (!explosion.getRecords().isEmpty()) {
@@ -55,6 +52,7 @@ public class ExplosionHandler extends PacketCheck {
                 if (explosion.getRecords().isEmpty()) {
                     player.sendTransaction();
                 }
+
                 addPlayerExplosion(player.lastTransactionSent.get(), velocity);
                 event.getPostTasks().add(player::sendTransaction);
             }
@@ -62,7 +60,8 @@ public class ExplosionHandler extends PacketCheck {
     }
 
     public void addPlayerExplosion(int breadOne, Vector3f explosion) {
-        firstBreadMap.add(new VelocityData(-1, breadOne, player.getSetbackTeleportUtil().isSendingSetback, new Vector(explosion.getX(), explosion.getY(), explosion.getZ())));
+        firstBreadMap.add(new VelocityData(-1, breadOne, player.getSetbackTeleportUtil().isSendingSetback,
+                new Vector(explosion.getX(), explosion.getY(), explosion.getZ())));
     }
 
     public void setPointThree(boolean isPointThree) {
@@ -89,8 +88,8 @@ public class ExplosionHandler extends PacketCheck {
     public void forceExempt() {
         // Don't exempt if the player used grim to get a teleport here.
         // This will flag but it's required to stop abuse
-        if (player.getSetbackTeleportUtil().getRequiredSetBack() == null ||
-                player.getSetbackTeleportUtil().getRequiredSetBack().isPlugin()) {
+        if (player.getSetbackTeleportUtil().getRequiredSetBack() == null
+                || player.getSetbackTeleportUtil().getRequiredSetBack().isPlugin()) {
             // Unsure explosion was taken
             if (player.firstBreadExplosion != null) {
                 player.firstBreadExplosion.offset = 0;
@@ -130,8 +129,7 @@ public class ExplosionHandler extends PacketCheck {
             }
         }
 
-        if (wasZero || player.predictedVelocity.isExplosion() ||
-                (minTrans < kbTrans)) {
+        if (wasZero || player.predictedVelocity.isExplosion() || (minTrans < kbTrans)) {
             // Unsure knockback was taken
             if (player.firstBreadExplosion != null) {
                 player.firstBreadExplosion.offset = Math.min(player.firstBreadExplosion.offset, offset);
@@ -151,10 +149,10 @@ public class ExplosionHandler extends PacketCheck {
                     }
                 }
 
-                String formatOffset = "o: " + formatOffset(offset);
+                String formatOffset = "Offset: " + formatOffset(offset);
 
                 if (player.likelyExplosions.offset == Integer.MAX_VALUE) {
-                    formatOffset = "ignored explosion";
+                    formatOffset = "Ignored Explosion";
                 }
 
                 alert(formatOffset);
@@ -166,18 +164,19 @@ public class ExplosionHandler extends PacketCheck {
 
     public VelocityData getPossibleExplosions(int lastTransaction) {
         handleTransactionPacket(lastTransaction);
+
         if (lastExplosionsKnownTaken == null) {
             return null;
         }
 
         VelocityData returnLastExplosion = lastExplosionsKnownTaken;
         lastExplosionsKnownTaken = null;
-
         return returnLastExplosion;
     }
 
     private void handleTransactionPacket(int transactionID) {
         VelocityData data = firstBreadMap.peek();
+
         while (data != null) {
             if (data.transaction == transactionID) { // First bread explosion
                 firstBreadMap.poll();
@@ -187,6 +186,7 @@ public class ExplosionHandler extends PacketCheck {
                     firstBreadAddedExplosion = new VelocityData(-1, data.transaction, data.isSetback, data.vector);
                 }
                 break; // All knockback after this will have not been applied
+
             } else if (data.transaction < transactionID) {
                 if (lastExplosionsKnownTaken != null) {
                     lastExplosionsKnownTaken.vector.clone().add(data.vector);
@@ -202,6 +202,7 @@ public class ExplosionHandler extends PacketCheck {
                 firstBreadAddedExplosion = null;
                 firstBreadMap.poll();
                 data = firstBreadMap.peek();
+
             } else { // We are too far ahead in the future
                 break;
             }

@@ -6,7 +6,7 @@ import ac.grim.grimac.utils.anticheat.update.PositionUpdate;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 
-public abstract class PacketCheck extends Check<Object> {
+public abstract class PacketCheck extends Check {
 
     public PacketCheck(GrimPlayer playerData) {
         super(playerData);

@@ -55,19 +55,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 // Variables that need lag compensation should have their own class
 // Soon there will be a generic class for lag compensation
 public class GrimPlayer {
+
     public final User user;
     // Start transaction handling stuff
     // Determining player ping
     // The difference between keepalive and transactions is that keepalive is async while transactions are sync
     public final Queue<Pair<Short, Long>> transactionsSent = new ConcurrentLinkedQueue<>();
     public final List<Short> didWeSendThatTrans = Collections.synchronizedList(new ArrayList<>());
+    public final AtomicInteger lastTransactionSent = new AtomicInteger(0);
+    public final AtomicInteger lastTransactionReceived = new AtomicInteger(0);
+    public final VehicleData vehicleData = new VehicleData();
+    // This variable is for support with test servers that want to be able to disable grim
+    // Grim disabler 2022 still working!
+    public final boolean disableGrim = false;
     private final AtomicInteger transactionIDCounter = new AtomicInteger(0);
     public UUID playerUUID;
     public int entityID;
     @Nullable
     public Player bukkitPlayer;
-    public final AtomicInteger lastTransactionSent = new AtomicInteger(0);
-    public final AtomicInteger lastTransactionReceived = new AtomicInteger(0);
     // End transaction handling stuff
     // Manager like classes
     public CheckManager checkManager;
@@ -133,7 +138,6 @@ public class GrimPlayer {
     public float depthStriderLevel;
     public float sneakingSpeedMultiplier = 0.3f;
     public float flySpeed;
-    public final VehicleData vehicleData = new VehicleData();
     // The client claims this
     public boolean clientClaimsLastOnGround;
     // Set from base tick
@@ -183,9 +187,6 @@ public class GrimPlayer {
     public Vector3d bedPosition;
     public long lastBlockPlaceUseItem = 0;
     public Queue<PacketWrapper<?>> placeUseItemPackets = new LinkedBlockingQueue<>();
-    // This variable is for support with test servers that want to be able to disable grim
-    // Grim disabler 2022 still working!
-    public final boolean disableGrim = false;
     PacketTracker packetTracker;
     private int transactionPing = 0;
     private long playerClockAtLeast = System.nanoTime();

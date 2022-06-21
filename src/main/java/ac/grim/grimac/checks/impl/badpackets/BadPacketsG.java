@@ -26,14 +26,14 @@ public class BadPacketsG extends PacketCheck {
 
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SNEAKING) {
                 if (lastSneaking && !wasTeleport) {
-                    flagAndAlert();
+                    flagAndAlert("", false);
                 } else {
                     lastSneaking = true;
                 }
 
             } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SNEAKING) {
                 if (!lastSneaking && !wasTeleport) {
-                    flagAndAlert();
+                    flagAndAlert("", false);
                 } else {
                     lastSneaking = false;
                 }

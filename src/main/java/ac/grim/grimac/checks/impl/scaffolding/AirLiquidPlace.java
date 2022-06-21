@@ -10,6 +10,7 @@ import com.github.retrooper.packetevents.util.Vector3i;
 
 @CheckData(name = "AirLiquidPlace")
 public class AirLiquidPlace extends BlockPlaceCheck {
+
     public AirLiquidPlace(GrimPlayer player) {
         super(player);
     }

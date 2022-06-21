@@ -22,6 +22,7 @@ import java.util.List;
 
 @CheckData(name = "RotationPlace")
 public class RotationPlace extends BlockPlaceCheck {
+
     double flagBuffer = 0; // If the player flags once, force them to play legit, or we will cancel the tick before.
 
     public RotationPlace(GrimPlayer player) {
@@ -33,10 +34,10 @@ public class RotationPlace extends BlockPlaceCheck {
         if (place.getMaterial() == StateTypes.SCAFFOLDING) {
             return;
         }
+
         if (flagBuffer > 0 && !didRayTraceHit(place)) {
-            // If the player hit and has flagged this check recently
+            flagAndAlert("pre-flying", false);
             place.resync(); // Deny the block placement.
-            flagAndAlert("pre-flying");
         }
     }
 
@@ -46,12 +47,14 @@ public class RotationPlace extends BlockPlaceCheck {
         if (place.getMaterial() == StateTypes.SCAFFOLDING) {
             return;
         }
-        // Ray trace to try and hit the target block.
+
+        // Ray-trace to try and hit the target block
         boolean hit = didRayTraceHit(place);
+
         // This can false with rapidly moving yaw in 1.8+ clients
         if (!hit) {
             flagBuffer = 1;
-            flagAndAlert("post-flying");
+            flagAndAlert("post-flying", false);
         } else {
             flagBuffer = Math.max(0, flagBuffer - 0.1);
         }

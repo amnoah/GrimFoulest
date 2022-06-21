@@ -32,15 +32,17 @@ public class NoSlow extends PostPredictionCheck {
 
             if (bestOffset > offsetToFlag) {
                 if (flaggedLastTick) {
-                    flagWithSetback();
-                    alert("");
+                    flagAndAlert("", true);
                 }
+
                 flaggedLastTick = true;
+
             } else {
                 reward();
                 flaggedLastTick = false;
             }
         }
+
         bestOffset = 1;
     }
 

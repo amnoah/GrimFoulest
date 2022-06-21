@@ -24,8 +24,7 @@ public class BadPacketsM extends PacketCheck {
             // Instead, we must tick "using item" with flying packets like the server does
             if (sentHeldItem && player.isTickingReliablyFor(3)
                     && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9)) {
-                flagAndAlert();
-                player.checkManager.getPostPredictionCheck(NoSlow.class).flagWithSetback(); // Impossible to false, call NoSlow violation to setback
+                flagAndAlert("", true);
             } else {
                 sentHeldItem = true;
             }

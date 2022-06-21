@@ -165,7 +165,7 @@ public class Reach extends PacketCheck {
                 String result = checkReach(reachEntity, false);
 
                 if (result != null) {
-                    flagAndAlert(result);
+                    flagAndAlert(result, false);
                 }
             }
 

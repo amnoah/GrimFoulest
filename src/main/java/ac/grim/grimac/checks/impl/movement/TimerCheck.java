@@ -10,6 +10,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 
 @CheckData(name = "Timer", configName = "TimerA", setback = 10)
 public class TimerCheck extends PacketCheck {
+
     long timerBalanceRealTime = 0;
 
     // Default value is real time minus max keep-alive time
@@ -70,11 +71,8 @@ public class TimerCheck extends PacketCheck {
 
         if (timerBalanceRealTime > System.nanoTime()) {
             if (flag()) {
-                // Cancel the packet
-                if (!player.disableGrim) {
-                    event.setCancelled(true);
-                }
-                alert("");
+                event.setCancelled(true);
+                flagAndAlert("", true);
             }
 
             // Reset the violation by 1 movement

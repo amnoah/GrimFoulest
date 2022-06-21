@@ -70,6 +70,7 @@ public class DebugHandler extends PostPredictionCheck {
                 this.actually.clear();
                 this.offset.clear();
             }
+
             // Even if last was a flag, we must send the new message if the player flagged
             this.predicted.add(p);
             this.actually.add(a);
@@ -107,6 +108,7 @@ public class DebugHandler extends PostPredictionCheck {
         if (player.getSetbackTeleportUtil().blockOffsets) {
             return ChatColor.GRAY;
         }
+
         if (offset <= 0 || totalOffset <= 0) { // If exempt don't bother coloring, so I stop getting false false reports
             return ChatColor.GRAY;
         } else if (offset < 0.0001) {
