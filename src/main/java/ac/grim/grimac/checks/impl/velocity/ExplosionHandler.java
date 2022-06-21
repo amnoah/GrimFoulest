@@ -149,7 +149,7 @@ public class ExplosionHandler extends PacketCheck {
                     }
                 }
 
-                String formatOffset = "Offset: " + formatOffset(offset);
+                String formatOffset = "(" + formatOffset(offset) + ")";
 
                 if (player.likelyExplosions.offset == Integer.MAX_VALUE) {
                     formatOffset = "Ignored Explosion";

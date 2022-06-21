@@ -43,13 +43,6 @@ Punishments:
     commands:
       - "1:0 [alert]"
       - "40:40 [webhook]"
-  Reach:
-    remove-violations-after: 300
-    checks:
-      - "Reach"
-    commands:
-      - "1:0 [alert]"
-      - "5:5 [webhook]"
   Misc:
     remove-violations-after: 300
     checks:
@@ -64,7 +57,8 @@ Punishments:
   Combat:
     remove-violations-after: 300
     checks:
-      - "Killaura"
       - "Aim"
+      - "Reach"
+      - "Hitbox"
     commands:
       - "1:0 [alert]"

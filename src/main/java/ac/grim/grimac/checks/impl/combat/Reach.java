@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 // You may not copy the check unless you are licensed under GPL
-@CheckData(name = "Reach", configName = "Reach", setback = 10)
+@CheckData(name = "Reach", setback = 10)
 public class Reach extends PacketCheck {
 
     private static final List<EntityType> blacklisted = Arrays.asList(EntityTypes.BOAT, EntityTypes.CHEST_BOAT, EntityTypes.SHULKER);
@@ -235,14 +235,15 @@ public class Reach extends PacketCheck {
         }
 
         // if the entity is not exempt and the entity is alive
-        if ((!blacklisted.contains(reachEntity.type) && reachEntity.isLivingEntity()) || reachEntity.type == EntityTypes.END_CRYSTAL) {
+        if ((!blacklisted.contains(reachEntity.type) && reachEntity.isLivingEntity())
+                || reachEntity.type == EntityTypes.END_CRYSTAL) {
             if (minDistance == Double.MAX_VALUE) {
                 cancelBuffer = 1;
-                return "Hitbox";
+                player.checkManager.getPacketCheck(Hitbox.class).flagAndAlert("", false);
 
             } else if (minDistance > 3) {
                 cancelBuffer = 1;
-                return String.format("%.5f", minDistance);
+                return "Blocks: " + String.format("%.5f", minDistance);
 
             } else {
                 cancelBuffer = Math.max(0, cancelBuffer - 0.25);

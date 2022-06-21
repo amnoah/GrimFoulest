@@ -1,4 +1,4 @@
-prefix: "&b[Grim] "
+prefix: "&b[Grim]"
 alerts-enabled: "&aGrim alerts have been enabled."
 alerts-disabled: "&cGrim alerts have been disabled."
 client-brand-format: "%prefix% &f%player% &7joined using: &f%brand%"

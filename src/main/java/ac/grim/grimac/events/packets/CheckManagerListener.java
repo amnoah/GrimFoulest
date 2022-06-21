@@ -501,7 +501,7 @@ public class CheckManagerListener extends PacketListenerAbstract {
                         || Float.isNaN(pos.getYaw()) || Float.isNaN(pos.getPitch())
                         || Float.isInfinite(pos.getYaw()) || Float.isInfinite(pos.getPitch())) {
                     player.checkManager.getPacketCheck(BadPacketsN.class).flagAndAlert("Infinite (xyzYP: " + pos.getX()
-                            + ", " + pos.getY() + ", " + pos.getZ() + ", " + pos.getYaw() + ", " + pos.getPitch() + ")");
+                            + ", " + pos.getY() + ", " + pos.getZ() + ", " + pos.getYaw() + ", " + pos.getPitch() + ")", true);
                     event.setCancelled(true);
                     return;
                 }

@@ -3,6 +3,7 @@ package ac.grim.grimac.checks.impl.groundspoof;
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PostPredictionCheck;
 import ac.grim.grimac.player.GrimPlayer;
+import ac.grim.grimac.utils.anticheat.MessageUtil;
 import ac.grim.grimac.utils.anticheat.update.PredictionComplete;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
@@ -17,19 +18,18 @@ public class GroundSpoofA extends PostPredictionCheck {
 
     @Override
     public void onPredictionComplete(PredictionComplete predictionComplete) {
-        // Exemptions
-        // Don't check players in spectator
+        // Player is in spectator
         if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_8)
                 && player.gamemode == GameMode.SPECTATOR) {
             return;
         }
 
-        // And don't check this long list of ground exemptions
+        // Player is exempt on ground
         if (player.exemptOnGround()) {
             return;
         }
 
-        // Don't check if the player was on a ghost block
+        // Player was on a ghost block
         if (player.getSetbackTeleportUtil().blockOffsets) {
             return;
         }
@@ -40,7 +40,7 @@ public class GroundSpoofA extends PostPredictionCheck {
         }
 
         if (player.clientClaimsLastOnGround != player.onGround) {
-            flagAndAlert("Spoofing " + player.clientClaimsLastOnGround, true);
+            flagAndAlert( "(" + MessageUtil.toCamelCase(Boolean.toString(player.clientClaimsLastOnGround)) + ")", true);
             player.checkManager.getNoFall().flipPlayerGroundStatus = true;
         }
     }

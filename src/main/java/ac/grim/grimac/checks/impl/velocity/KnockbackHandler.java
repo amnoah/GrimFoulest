@@ -180,7 +180,7 @@ public class KnockbackHandler extends PacketCheck {
                         player.getSetbackTeleportUtil().blockMovementsUntilResync(player.getSetbackTeleportUtil().safeTeleportPosition.position, !player.likelyKB.hasSetbackForThis);
                     }
 
-                    String formatOffset = "Offset: " + formatOffset(player.likelyKB.offset);
+                    String formatOffset = "(" + formatOffset(player.likelyKB.offset) + ")";
 
                     if (player.likelyKB.offset == Integer.MAX_VALUE) {
                         formatOffset = "Ignored Knockback";

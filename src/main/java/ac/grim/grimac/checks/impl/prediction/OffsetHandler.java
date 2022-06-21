@@ -44,7 +44,7 @@ public class OffsetHandler extends PostPredictionCheck {
             }
 
             violations++;
-            alert("Offset: " + formatOffset(offset));
+            alert("(" + formatOffset(offset) + ")");
 
             advantageGained = Math.min(advantageGained, maxCeiling);
         } else {

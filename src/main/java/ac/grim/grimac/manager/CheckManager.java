@@ -7,6 +7,7 @@ import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
 import ac.grim.grimac.checks.impl.aim.processor.Cinematic;
 import ac.grim.grimac.checks.impl.badpackets.*;
 import ac.grim.grimac.checks.impl.baritone.Baritone;
+import ac.grim.grimac.checks.impl.combat.Hitbox;
 import ac.grim.grimac.checks.impl.combat.Reach;
 import ac.grim.grimac.checks.impl.groundspoof.GroundSpoofC;
 import ac.grim.grimac.checks.impl.groundspoof.GroundSpoofB;
@@ -53,6 +54,7 @@ public class CheckManager {
         // Include post checks in the packet check too
         packetChecks = new ImmutableClassToInstanceMap.Builder<PacketCheck>()
                 .put(Reach.class, new Reach(player))
+                .put(Hitbox.class, new Hitbox(player))
                 .put(PacketEntityReplication.class, new PacketEntityReplication(player))
                 .put(PacketChangeGameState.class, new PacketChangeGameState(player))
                 .put(ExplosionHandler.class, new ExplosionHandler(player))
@@ -61,10 +63,8 @@ public class CheckManager {
                 .put(PacketPlayerAbilities.class, new PacketPlayerAbilities(player))
                 .put(PacketWorldBorder.class, new PacketWorldBorder(player))
                 .put(ClientBrand.class, new ClientBrand(player))
-
                 .put(GroundSpoofB.class, new GroundSpoofB(player))
                 .put(GroundSpoofC.class, new GroundSpoofC(player))
-
                 .put(BadPacketsA.class, new BadPacketsA(player))
                 .put(BadPacketsB.class, new BadPacketsB(player))
                 .put(BadPacketsC.class, new BadPacketsC(player))
@@ -78,7 +78,6 @@ public class CheckManager {
                 .put(BadPacketsL.class, new BadPacketsL(player))
                 .put(BadPacketsM.class, new BadPacketsM(player))
                 .put(BadPacketsN.class, new BadPacketsN(player))
-
                 .put(PostCheck.class, new PostCheck(player))
                 .put(FastBreak.class, new FastBreak(player))
                 .put(SetbackBlocker.class, new SetbackBlocker(player)) // Must be last class otherwise we can't check while blocking packets
