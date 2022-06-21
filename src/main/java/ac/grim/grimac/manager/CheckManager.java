@@ -8,9 +8,6 @@ import ac.grim.grimac.checks.impl.aim.processor.Cinematic;
 import ac.grim.grimac.checks.impl.badpackets.*;
 import ac.grim.grimac.checks.impl.baritone.Baritone;
 import ac.grim.grimac.checks.impl.combat.Reach;
-import ac.grim.grimac.checks.impl.crash.CrashA;
-import ac.grim.grimac.checks.impl.crash.CrashB;
-import ac.grim.grimac.checks.impl.crash.CrashD;
 import ac.grim.grimac.checks.impl.groundspoof.NoFallA;
 import ac.grim.grimac.checks.impl.misc.ClientBrand;
 import ac.grim.grimac.checks.impl.misc.FastBreak;
@@ -41,6 +38,7 @@ import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableClassToInstanceMap;
 
 public class CheckManager {
+
     public final ClassToInstanceMap<Check<?>> allChecks;
     final ClassToInstanceMap<PacketCheck> packetChecks;
     final ClassToInstanceMap<PositionCheck> positionCheck;
@@ -63,7 +61,7 @@ public class CheckManager {
                 .put(PacketWorldBorder.class, new PacketWorldBorder(player))
                 .put(ClientBrand.class, new ClientBrand(player))
                 .put(NoFallA.class, new NoFallA(player))
-                .put(BadPacketsO.class, new BadPacketsO(player))
+
                 .put(BadPacketsA.class, new BadPacketsA(player))
                 .put(BadPacketsB.class, new BadPacketsB(player))
                 .put(BadPacketsC.class, new BadPacketsC(player))
@@ -72,23 +70,23 @@ public class CheckManager {
                 .put(BadPacketsF.class, new BadPacketsF(player))
                 .put(BadPacketsG.class, new BadPacketsG(player))
                 .put(BadPacketsH.class, new BadPacketsH(player))
-                .put(CrashA.class, new CrashA(player))
-                .put(CrashB.class, new CrashB(player))
-                .put(CrashD.class, new CrashD(player))
+                .put(BadPacketsI.class, new BadPacketsI(player))
+                .put(BadPacketsJ.class, new BadPacketsJ(player))
+                .put(BadPacketsK.class, new BadPacketsK(player))
+                .put(BadPacketsL.class, new BadPacketsL(player))
                 .put(BadPacketsM.class, new BadPacketsM(player))
                 .put(BadPacketsN.class, new BadPacketsN(player))
-                .put(BadPacketsP.class, new BadPacketsP(player))
-                .put(BadPacketsQ.class, new BadPacketsQ(player))
-                .put(BadPacketsR.class, new BadPacketsR(player))
-                .put(BadPacketsS.class, new BadPacketsS(player))
+
                 .put(PostCheck.class, new PostCheck(player))
                 .put(FastBreak.class, new FastBreak(player))
                 .put(SetbackBlocker.class, new SetbackBlocker(player)) // Must be last class otherwise we can't check while blocking packets
                 .build();
+
         positionCheck = new ImmutableClassToInstanceMap.Builder<PositionCheck>()
                 .put(PredictionRunner.class, new PredictionRunner(player))
                 .put(CompensatedCooldown.class, new CompensatedCooldown(player))
                 .build();
+
         rotationCheck = new ImmutableClassToInstanceMap.Builder<RotationCheck>()
                 .put(AimProcessor.class, new AimProcessor(player))
                 .put(Cinematic.class, new Cinematic(player))
@@ -96,6 +94,7 @@ public class CheckManager {
                 .put(AimDuplicateLook.class, new AimDuplicateLook(player))
                 .put(Baritone.class, new Baritone(player))
                 .build();
+
         vehicleCheck = new ImmutableClassToInstanceMap.Builder<VehicleCheck>()
                 .put(VehiclePredictionRunner.class, new VehiclePredictionRunner(player))
                 .build();

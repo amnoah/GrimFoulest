@@ -13,12 +13,12 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerKe
 import java.util.LinkedList;
 import java.util.Queue;
 
-@CheckData(name = "BadPacketsP")
-public class BadPacketsO extends PacketCheck {
+@CheckData(name = "BadPacketsK")
+public class BadPacketsK extends PacketCheck {
 
     final Queue<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
 
-    public BadPacketsO(GrimPlayer player) {
+    public BadPacketsK(GrimPlayer player) {
         super(player);
     }
 

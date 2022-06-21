@@ -238,11 +238,11 @@ public class Reach extends PacketCheck {
         if ((!blacklisted.contains(reachEntity.type) && reachEntity.isLivingEntity()) || reachEntity.type == EntityTypes.END_CRYSTAL) {
             if (minDistance == Double.MAX_VALUE) {
                 cancelBuffer = 1;
-                return "Missed Hitbox";
+                return "Hitbox";
 
             } else if (minDistance > 3) {
                 cancelBuffer = 1;
-                return String.format("%.5f", minDistance) + " blocks";
+                return String.format("%.5f", minDistance);
 
             } else {
                 cancelBuffer = Math.max(0, cancelBuffer - 0.25);

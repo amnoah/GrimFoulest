@@ -27,11 +27,13 @@ public class NoFallA extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.PLAYER_FLYING || event.getPacketType() == PacketType.Play.Client.PLAYER_ROTATION) {
+        if (event.getPacketType() == PacketType.Play.Client.PLAYER_FLYING
+                || event.getPacketType() == PacketType.Play.Client.PLAYER_ROTATION) {
             // The player hasn't spawned yet
             if (player.getSetbackTeleportUtil().insideUnloadedChunk()) {
                 return;
             }
+
             // The player has already been flagged, and
             if (player.getSetbackTeleportUtil().blockOffsets) {
                 return;
@@ -48,6 +50,7 @@ public class NoFallA extends PacketCheck {
                     if (!GhostBlockDetector.isGhostBlock(player)) {
                         flagWithSetback();
                     }
+
                     if (!player.disableGrim) {
                         wrapper.setOnGround(false);
                     }
@@ -66,10 +69,12 @@ public class NoFallA extends PacketCheck {
             // Also flip teleports because I don't trust vanilla's handling of teleports and ground
             if (flipPlayerGroundStatus) {
                 flipPlayerGroundStatus = false;
+
                 if (!player.disableGrim) {
                     wrapper.setOnGround(!wrapper.isOnGround());
                 }
             }
+
             if (player.packetStateData.lastPacketWasTeleport) {
                 if (!player.disableGrim) {
                     wrapper.setOnGround(false);
@@ -82,9 +87,9 @@ public class NoFallA extends PacketCheck {
         if (onGround) {
             SimpleCollisionBox feetBB = GetBoundingBox.getBoundingBoxFromPosAndSize(player.x, player.y, player.z, 0.6f, 0.001f);
             feetBB.expand(player.getMovementThreshold()); // Movement threshold can be in any direction
-
             return checkForBoxes(feetBB);
         }
+
         return true;
     }
 

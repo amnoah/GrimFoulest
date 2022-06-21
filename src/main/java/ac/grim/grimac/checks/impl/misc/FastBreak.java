@@ -26,9 +26,10 @@ import org.bukkit.entity.Player;
 
 // Based loosely off of Hawk BlockBreakSpeedSurvival
 // Also based loosely off of NoCheatPlus FastBreak
-// Also based off minecraft wiki: https://minecraft.fandom.com/wiki/Breaking#Instant_breaking
+// Also based off the Minecraft wiki: https://minecraft.fandom.com/wiki/Breaking#Instant_breaking
 @CheckData(name = "FastBreak")
 public class FastBreak extends PacketCheck {
+
     // The block the player is currently breaking
     Vector3i targetBlock = null;
     // The maximum amount of damage the player deals to the block
@@ -60,7 +61,6 @@ public class FastBreak extends PacketCheck {
                 startBreak = System.currentTimeMillis() - (targetBlock == null ? 50 : 0); // ???
                 targetBlock = digging.getBlockPosition();
                 maximumBlockDamage = BlockBreakSpeed.getBlockDamage(player, targetBlock);
-
                 double breakDelay = System.currentTimeMillis() - lastFinishBreak;
 
                 if (breakDelay >= 275) { // Reduce buffer if "close enough"
@@ -93,6 +93,7 @@ public class FastBreak extends PacketCheck {
                 if (blockBreakBalance > 1000) { // If more than a second of advantage
                     Bukkit.getScheduler().runTask(GrimAPI.INSTANCE.getPlugin(), () -> {
                         Player bukkitPlayer = player.bukkitPlayer;
+
                         if (bukkitPlayer == null || !bukkitPlayer.isOnline()) {
                             return;
                         }
@@ -104,7 +105,6 @@ public class FastBreak extends PacketCheck {
                             }
 
                             Block block = chunk.getBlock(digging.getBlockPosition().getX() & 15, digging.getBlockPosition().getY(), digging.getBlockPosition().getZ() & 15);
-
                             int blockId;
 
                             if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_13)) {

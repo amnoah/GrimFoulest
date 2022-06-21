@@ -1,7 +1,7 @@
 package ac.grim.grimac.events.packets;
 
 import ac.grim.grimac.GrimAPI;
-import ac.grim.grimac.checks.impl.crash.CrashD;
+import ac.grim.grimac.checks.impl.badpackets.BadPacketsN;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.update.*;
 import ac.grim.grimac.utils.blockplace.BlockPlaceResult;
@@ -486,33 +486,34 @@ public class CheckManagerListener extends PacketListenerAbstract {
 
         // It's not optimal, but we ignore packets blocked by timer because it could be used to interpolate
         // entities for reach faster, and mainly because it fucks with setbacks too much.
-        if (event.isCancelled() && (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType()) || event.getPacketType() == PacketType.Play.Client.VEHICLE_MOVE)) {
+        if (event.isCancelled() && (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())
+                || event.getPacketType() == PacketType.Play.Client.VEHICLE_MOVE)) {
             return;
         }
 
         if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             WrapperPlayClientPlayerFlying flying = new WrapperPlayClientPlayerFlying(event);
-
             Location pos = flying.getLocation();
 
             if (flying.hasPositionChanged()) {
                 if (Double.isNaN(pos.getX()) || Double.isNaN(pos.getY()) || Double.isNaN(pos.getZ())
-                        || Double.isInfinite(pos.getX()) || Double.isInfinite(pos.getY()) || Double.isInfinite(pos.getZ()) ||
-                        Float.isNaN(pos.getYaw()) || Float.isNaN(pos.getPitch()) ||
-                        Float.isInfinite(pos.getYaw()) || Float.isInfinite(pos.getPitch())) {
-                    player.checkManager.getPacketCheck(CrashD.class).flagAndAlert("xyzYP: " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ", " + pos.getYaw() + ", " + pos.getPitch());
+                        || Double.isInfinite(pos.getX()) || Double.isInfinite(pos.getY()) || Double.isInfinite(pos.getZ())
+                        || Float.isNaN(pos.getYaw()) || Float.isNaN(pos.getPitch())
+                        || Float.isInfinite(pos.getYaw()) || Float.isInfinite(pos.getPitch())) {
+                    player.checkManager.getPacketCheck(BadPacketsN.class).flagAndAlert("Infinite (xyzYP: " + pos.getX()
+                            + ", " + pos.getY() + ", " + pos.getZ() + ", " + pos.getYaw() + ", " + pos.getPitch() + ")");
                     event.setCancelled(true);
                     return;
                 }
             }
 
-            handleFlying(player, pos.getX(), pos.getY(), pos.getZ(), pos.getYaw(), pos.getPitch(), flying.hasPositionChanged(), flying.hasRotationChanged(), flying.isOnGround(), event);
+            handleFlying(player, pos.getX(), pos.getY(), pos.getZ(), pos.getYaw(), pos.getPitch(),
+                    flying.hasPositionChanged(), flying.hasRotationChanged(), flying.isOnGround(), event);
         }
 
         if (event.getPacketType() == PacketType.Play.Client.VEHICLE_MOVE) {
             WrapperPlayClientVehicleMove move = new WrapperPlayClientVehicleMove(event);
             Vector3d position = move.getPosition();
-
             player.lastX = player.x;
             player.lastY = player.y;
             player.lastZ = player.z;
@@ -525,7 +526,8 @@ public class CheckManagerListener extends PacketListenerAbstract {
             player.xRot = move.getYaw();
             player.yRot = move.getPitch();
 
-            VehiclePositionUpdate update = new VehiclePositionUpdate(clamp, position, move.getYaw(), move.getPitch(), player.packetStateData.lastPacketWasTeleport);
+            VehiclePositionUpdate update = new VehiclePositionUpdate(clamp, position, move.getYaw(),
+                    move.getPitch(), player.packetStateData.lastPacketWasTeleport);
             player.checkManager.onVehiclePositionUpdate(update);
 
             player.packetStateData.receivedSteerVehicle = false;
@@ -536,16 +538,18 @@ public class CheckManagerListener extends PacketListenerAbstract {
 
             if (dig.getAction() == DiggingAction.FINISHED_DIGGING) {
                 WrappedBlockState block = player.compensatedWorld.getWrappedBlockStateAt(dig.getBlockPosition());
+
                 // Not unbreakable
                 if (block.getType().getHardness() != -1.0f) {
-                    player.compensatedWorld.updateBlock(dig.getBlockPosition().getX(), dig.getBlockPosition().getY(), dig.getBlockPosition().getZ(), 0);
+                    player.compensatedWorld.updateBlock(dig.getBlockPosition().getX(), dig.getBlockPosition().getY(),
+                            dig.getBlockPosition().getZ(), 0);
                 }
             }
 
             if (dig.getAction() == DiggingAction.START_DIGGING) {
                 double damage = BlockBreakSpeed.getBlockDamage(player, dig.getBlockPosition());
 
-                //Instant breaking, no damage means it is unbreakable by creative players (with swords)
+                // Instant breaking, no damage means it is unbreakable by creative players (with swords)
                 if (damage > 1 || (player.gamemode == GameMode.CREATIVE && damage != 0)) {
                     player.compensatedWorld.startPredicting();
                     player.compensatedWorld.updateBlock(dig.getBlockPosition().getX(), dig.getBlockPosition().getY(), dig.getBlockPosition().getZ(), 0);
@@ -624,11 +628,12 @@ public class CheckManagerListener extends PacketListenerAbstract {
         player.checkManager.onPacketReceive(event);
     }
 
-    private void handleFlying(GrimPlayer player, double x, double y, double z, float yaw, float pitch, boolean hasPosition, boolean hasLook, boolean onGround, PacketReceiveEvent event) {
+    private void handleFlying(GrimPlayer player, double x, double y, double z, float yaw, float pitch,
+                              boolean hasPosition, boolean hasLook, boolean onGround, PacketReceiveEvent event) {
         long now = System.currentTimeMillis();
-
         player.packetStateData.lastPacketWasTeleport = false;
         TeleportAcceptData teleportData = null;
+
         if (hasPosition) {
             Vector3d position = VectorUtils.clampVector(new Vector3d(x, y, z));
             teleportData = player.getSetbackTeleportUtil().checkTeleportQueue(position.getX(), position.getY(), position.getZ());

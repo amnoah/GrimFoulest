@@ -5,10 +5,14 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
+import com.github.retrooper.packetevents.protocol.player.DiggingAction;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-@CheckData(name = "BadPacketsC")
+@CheckData(name = "BadPackets C")
 public class BadPacketsC extends PacketCheck {
+
+    private boolean sentAnimation;
 
     public BadPacketsC(GrimPlayer player) {
         super(player);
@@ -16,12 +20,18 @@ public class BadPacketsC extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
-            WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
+        if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
+            WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
 
-            if (packet.getEntityId() == player.entityID) {
-                flagAndAlert();
+            if (sentAnimation && packet.getAction() == DiggingAction.FINISHED_DIGGING) {
+                flagAndAlert("Swing After Destroy");
             }
+
+        } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
+            sentAnimation = true;
+
+        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            sentAnimation = false;
         }
     }
 }

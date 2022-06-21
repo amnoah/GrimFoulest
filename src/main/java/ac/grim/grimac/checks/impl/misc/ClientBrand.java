@@ -7,10 +7,13 @@ import ac.grim.grimac.utils.anticheat.MessageUtil;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPluginMessage;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class ClientBrand extends PacketCheck {
+
+    @Getter
     String brand = "vanilla";
     boolean hasBrand = false;
 
@@ -24,8 +27,7 @@ public class ClientBrand extends PacketCheck {
             WrapperPlayClientPluginMessage packet = new WrapperPlayClientPluginMessage(event);
 
             if (packet.getChannelName().equalsIgnoreCase("minecraft:brand") || // 1.13+
-                    packet.getChannelName().equals("MC|Brand")) { // 1.12
-
+                    packet.getChannelName().equals("MC|Brand")) { // 1.12-
                 byte[] data = packet.getData();
 
                 if (data.length == 0) {
@@ -56,9 +58,5 @@ public class ClientBrand extends PacketCheck {
                 }
             }
         }
-    }
-
-    public String getBrand() {
-        return brand;
     }
 }

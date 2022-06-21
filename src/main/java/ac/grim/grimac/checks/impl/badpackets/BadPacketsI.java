@@ -6,13 +6,13 @@ import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-@CheckData(name = "BadPackets R")
-public class BadPacketsR extends PacketCheck {
+@CheckData(name = "BadPackets I")
+public class BadPacketsI extends PacketCheck {
 
     private double lastYaw;
     private double lastPitch;
 
-    public BadPacketsR(GrimPlayer player) {
+    public BadPacketsI(GrimPlayer player) {
         super(player);
     }
 
@@ -22,20 +22,29 @@ public class BadPacketsR extends PacketCheck {
             WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
             float posYaw = packet.getLocation().getYaw();
             float posPitch = packet.getLocation().getPitch();
-            boolean hasLook = packet.hasRotationChanged();
 
+            // Player is inside unloaded chunk
+            if (player.getSetbackTeleportUtil().insideUnloadedChunk()) {
+                return;
+            }
+
+            // Player just teleported
             if (player.packetStateData.lastPacketWasTeleport) {
                 return;
             }
 
-            if (hasLook) {
-                if (lastYaw == posYaw && lastPitch == posPitch) {
-                    flagAndAlert("Sent Same Look");
-                }
-
-                lastYaw = posYaw;
-                lastPitch = posPitch;
+            // Rotation hasn't changed
+            if (!packet.hasRotationChanged()) {
+                return;
             }
+
+            // lastYaw and lastPitch are identical
+            if (lastYaw == posYaw && lastPitch == posPitch) {
+                flagAndAlert("Sent Same Look");
+            }
+
+            lastYaw = posYaw;
+            lastPitch = posPitch;
         }
     }
 }

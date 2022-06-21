@@ -6,6 +6,7 @@ import com.github.retrooper.packetevents.util.Vector3d;
 // This is to keep all the packet data out of the main player class
 // Helps clean up the player class and makes devs aware they are sync'd to the netty thread
 public class PacketStateData {
+
     public boolean packetPlayerOnGround = false;
     public boolean lastPacketWasTeleport = false;
     public boolean lastPacketWasOnePointSeventeenDuplicate = false;
