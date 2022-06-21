@@ -1,40 +1,38 @@
-# \u00BB is » (double >>), ANSI and UTF-8 interpret this differently... you may even see ? due to this
-prefix: "&bGrim &8\u00BB"
+prefix: "&b[Grim] "
+alerts-enabled: "&aGrim alerts have been enabled."
+alerts-disabled: "&cGrim alerts have been disabled."
+client-brand-format: "%prefix% &f%player% &7joined using: &f%brand%"
+console-specify-target: "&cYou must specify a target as the console!"
+player-not-found: "&cPlayer not found."
+player-not-this-server: "&cPlayer is not on this server."
+spectate-return: "\n&aClick to return to previous location.\n"
+cannot-spectate-return: "&cYou are not spectating a player."
 
-alerts-enabled: "%prefix% &fAlerts enabled"
-alerts-disabled: "%prefix% &fAlerts disabled"
-client-brand-format: "%prefix% &f%player% joined using %brand%"
-console-specify-target: "%prefix% &cYou must specify a target as the console!"
-player-not-found: "%prefix% &cPlayer is exempt or offline!"
-player-not-this-server: "%prefix% &cPlayer is not on this server!"
-spectate-return: "\n%prefix% &fClick here to return to previous location\n"
-cannot-spectate-return: "%prefix% &cYou can only do this after spectating a player"
-
-# Valid placeholders:
+# Placeholders:
 # %prefix%
 # %player%
 # %check_name%
 # %vl% - violations
 # %verbose% - extra information from the check such as offsets, not all checks will add information
-alerts-format: "%prefix% &f%player% &bfailed &f%check_name% &f(x&c%vl%&f) &7%verbose%"
+alerts-format: "%prefix% &f%player% &7failed &f%check_name% &c(x%vl%) &7%verbose%"
 
 profile:
-  - "&7======================"
-  - "%prefix% &bProfile for &f%player%"
-  - "&bPing: &f%ping%"
-  - "&bVersion: &f%version%"
-  - "&bClient Brand: &f%brand%"
-  - "&bHorizontal Sensitivity: &f%h_sensitivity%%"
-  - "&bVertical Sensitivity: &f%v_sensitivity%%"
-  - "&bFastMath Enabled: &f%fast_math%"
-  - "&7======================"
+  - ""
+  - "&bProfile for: &c%player%"
+  - "&7Ping: &f%ping%"
+  - "&7Version: &f%version%"
+  - "&7Client Brand: &f%brand%"
+  - "&7Horizontal Sensitivity: &f%h_sensitivity%%"
+  - "&7Vertical Sensitivity: &f%v_sensitivity%%"
+  - "&7FastMath Enabled: &f%fast_math%"
+  - ""
 help:
-  - "&7======================"
-  - "/grim alerts &f- &7Toggle alerts"
-  - "/grim profile <player> &f- &7View player info"
-  - "/grim help &f- &7View this help message"
-  - "/grim debug <player> &f- &7Developer Prediction output"
-  - "/grim perf &f- &7Developer ms/prediction"
-  - "/grim reload &f- &7Reloads the config"
-  - "/grim spectate <player> &f- &7Spectate a player"
-  - "&7======================"
+  - ""
+  - "&bGrim Commands"
+  - "&f/grim alerts &7- Toggle alerts"
+  - "&f/grim profile <player> &7- View player info"
+  - "&f/grim spectate <player> &7- Spectate a player"
+  - "&f/grim reload &7- Reloads the config"
+  - "&8/grim debug <player> - Developer Prediction output"
+  - "&8/grim perf - Developer ms/prediction"
+  - ""

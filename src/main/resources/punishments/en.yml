@@ -20,7 +20,7 @@ Punishments:
     # - "100:0 kick %player% incorrect movement!"
     #
     commands:
-      - "100:40 [alert]"
+      - "5:5 [alert]"
       - "100:100 [webhook]"
   Knockback:
     remove-violations-after: 300
@@ -28,29 +28,28 @@ Punishments:
       - "Knockback"
       - "Explosion"
     commands:
-      - "5:5 [alert]"
+      - "1:0 [alert]"
       - "20:20 [webhook]"
   Post:
     remove-violations-after: 300
     checks:
       - "Post"
     commands:
-      - "20:20 [alert]"
+      - "1:0 [alert]"
       - "40:40 [webhook]"
   BadPackets:
     remove-violations-after: 300
     checks:
       - "BadPackets"
-      - "Crash"
-    command:
-      - "20:20 [alert]"
+    commands:
+      - "1:0 [alert]"
       - "40:40 [webhook]"
   Reach:
     remove-violations-after: 300
     checks:
       - "Reach"
     commands:
-      - "5:5 [alert]"
+      - "1:0 [alert]"
       - "5:5 [webhook]"
   Misc:
     remove-violations-after: 300
@@ -61,7 +60,7 @@ Punishments:
       - "Baritone"
       - "FastBreak"
     commands:
-      - "10:5 [alert]"
+      - "1:0 [alert]"
       - "20:10 [webhook]"
   Combat:
     remove-violations-after: 300
@@ -69,11 +68,4 @@ Punishments:
       - "Killaura"
       - "Aim"
     commands:
-      - "20:40 [alert]"
-  # As of 2.2.10, there are no AutoClicker checks and this is a placeholder. Grim will include AutoClicker checks in the future.
-  Autoclicker:
-    remove-violations-after: 300
-    checks:
-      - "Autoclicker"
-    commands:
-      - "20:40 [alert]"
+      - "1:0 [alert]"

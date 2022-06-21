@@ -34,7 +34,7 @@ Simulation:
   setback-decay-multiplier: 0.999
   # How large of an offset from the player's movement should we create a violation for?
   # Measured in blocks from the possible movement
-  # We account for Optifine by switching trig tables but dropping this to 0.001 will reduce FastMath
+  # We account for Optifine by switching trig tables but dropping this to 0.00122 will reduce FastMath
   # flagging the anticheat if this compensation doesn't work...
   threshold: 0.00122
   # How large of a violation in a tick before the player gets immediately setback?
