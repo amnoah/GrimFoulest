@@ -47,26 +47,27 @@ import org.bukkit.Bukkit;
 import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 // Inspired by https://github.com/GeyserMC/Geyser/blob/master/connector/src/main/java/org/geysermc/connector/network/session/cache/ChunkCache.java
 public class CompensatedWorld {
+
     public static final ClientVersion blockVersion = PacketEvents.getAPI().getServerManager().getVersion().toClientVersion();
     private static final WrappedBlockState airData = WrappedBlockState.getByGlobalId(blockVersion, 0);
     public final GrimPlayer player;
     public final Map<Long, Column> chunks;
+    // Packet locations for blocks
+    public final Set<PistonData> activePistons = new HashSet<>();
+    public final Set<ShulkerData> openShulkerBoxes = new HashSet<>();
     // When the player changes the blocks, they track what the server thinks the blocks are
     //
     // Pair of the block position and the owning list TO the actual block
     // The owning list is so that this info can be removed when the final list is processed
     private final Long2ObjectOpenHashMap<BlockPrediction> originalServerBlocks = new Long2ObjectOpenHashMap<>();
     private final Map<Integer, List<Vector3i>> serverIsCurrentlyProcessingThesePredictions = new HashMap<>();
-    // Packet locations for blocks
-    public final Set<PistonData> activePistons = ConcurrentHashMap.newKeySet();
-    public final Set<ShulkerData> openShulkerBoxes = ConcurrentHashMap.newKeySet();
     // 1.17 with datapacks, and 1.18, have negative world offset values
     private int minHeight = 0;
     private int maxHeight = 256;
+
     // Blocks the client changed while placing or breaking blocks
     private List<Vector3i> currentlyChangedBlocks = new LinkedList<>();
     private boolean isCurrentlyPredicting = false;
@@ -86,6 +87,7 @@ public class CompensatedWorld {
         } else if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_16)) {
             return new Chunk_v1_9(0, DataPalette.createForChunk());
         }
+
         return new Chunk_v1_9(0, new DataPalette(new ListPalette(4), new LegacyFlexibleStorage(4, 4096), PaletteType.CHUNK));
     }
 
@@ -93,23 +95,32 @@ public class CompensatedWorld {
         if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_18_2)) {
             return; // No predictions
         }
+
         isCurrentlyPredicting = true;
     }
 
     public void handlePredictionConfirmation(int prediction) {
-        List<Vector3i> changes = serverIsCurrentlyProcessingThesePredictions.remove(prediction);
-        if (changes == null) {
-            return;
+        for (Iterator<Map.Entry<Integer, List<Vector3i>>> it = serverIsCurrentlyProcessingThesePredictions.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<Integer, List<Vector3i>> iter = it.next();
+
+            if (iter.getKey() <= prediction) {
+                applyBlockChanges(iter.getValue());
+                it.remove();
+            } else {
+                break;
+            }
         }
-        applyBlockChanges(changes);
     }
 
     private void applyBlockChanges(List<Vector3i> toApplyBlocks) {
         player.sendTransaction();
+
         player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> toApplyBlocks.forEach(vector3i -> {
             BlockPrediction predictionData = originalServerBlocks.get(vector3i.getSerializedPosition());
 
-            if (predictionData.getForBlockUpdate() == toApplyBlocks) { // We are the last to care about this prediction, remove it to stop memory leak
+            // We are the last to care about this prediction, remove it to stop memory leak
+            // Block changes are allowed to execute out of order, because it actually doesn't matter
+            if (predictionData != null && predictionData.getForBlockUpdate() == toApplyBlocks) {
                 originalServerBlocks.remove(vector3i.getSerializedPosition());
 
                 // If we need to change the world block state
@@ -137,6 +148,7 @@ public class CompensatedWorld {
         if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_18_2)) {
             return; // No predictions
         }
+
         isCurrentlyPredicting = false; // We aren't in a block place or use item
 
         if (currentlyChangedBlocks.isEmpty()) {
@@ -150,6 +162,7 @@ public class CompensatedWorld {
         if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_19)) {
             // Pull the confirmation ID out of the packet
             int confirmationId = 0;
+
             if (wrapper instanceof WrapperPlayClientPlayerBlockPlacement) {
                 confirmationId = ((WrapperPlayClientPlayerBlockPlacement) wrapper).getSequence();
             } else if (wrapper instanceof WrapperPlayClientUseItem) {
@@ -159,6 +172,7 @@ public class CompensatedWorld {
             }
 
             serverIsCurrentlyProcessingThesePredictions.put(confirmationId, toApplyBlocks);
+
         } else if (!ViaBackwardsManager.didViaBreakBlockPredictions) {
             // ViaVersion is updated and runs tasks with bukkit which is correct (or we are 1.19 server)
             // So we must wait for the bukkit thread to start ticking so the server can confirm it
@@ -166,6 +180,7 @@ public class CompensatedWorld {
                 // And then we jump back to the netty thread to simulate that Via sent the confirmation
                 ChannelHelper.runInEventLoop(player.user.getChannel(), () -> applyBlockChanges(toApplyBlocks));
             });
+
         } else { // ViaVersion is being stupid and sending acks immediately
             applyBlockChanges(toApplyBlocks);
         }
@@ -175,6 +190,7 @@ public class CompensatedWorld {
         for (PacketEntity entity : player.compensatedEntities.entityMap.values()) {
             if ((EntityTypes.isTypeInstanceOf(entity.type, EntityTypes.BOAT) || entity.type == EntityTypes.SHULKER) && player.compensatedEntities.getSelf().getRiding() != entity) {
                 SimpleCollisionBox box = entity.getPossibleCollisionBoxes();
+
                 if (box.isIntersected(playerBox)) {
                     return true;
                 }
@@ -184,6 +200,7 @@ public class CompensatedWorld {
         // Also block entities
         for (ShulkerData data : openShulkerBoxes) {
             SimpleCollisionBox shulkerCollision = data.getCollision();
+
             if (playerBox.isCollided(shulkerCollision)) {
                 return true;
             }
@@ -203,15 +220,21 @@ public class CompensatedWorld {
 
     public void updateBlock(int x, int y, int z, int combinedID) {
         Vector3i asVector = new Vector3i(x, y, z);
+        BlockPrediction prediction = originalServerBlocks.get(asVector.getSerializedPosition());
 
         if (isCurrentlyPredicting) {
-            originalServerBlocks.put(asVector.getSerializedPosition(), new BlockPrediction(currentlyChangedBlocks, asVector, getWrappedBlockStateAt(asVector).getGlobalId(), new Vector3d(player.x, player.y, player.z))); // Remember server controlled block type
+            if (prediction == null) {
+                originalServerBlocks.put(asVector.getSerializedPosition(), new BlockPrediction(currentlyChangedBlocks, asVector, getWrappedBlockStateAt(asVector).getGlobalId(), new Vector3d(player.x, player.y, player.z))); // Remember server controlled block type
+            } else {
+                prediction.setForBlockUpdate(currentlyChangedBlocks); // Block existing there was placed by client, mark block to have a new prediction
+            }
+
             currentlyChangedBlocks.add(asVector);
         }
 
-        if (!isCurrentlyPredicting && originalServerBlocks.containsKey(asVector.getSerializedPosition())) {
-            // Server has a more up-to-date block, replace the original serialized position
-            originalServerBlocks.get(asVector.getSerializedPosition()).setOriginalBlockId(combinedID);
+        if (!isCurrentlyPredicting && prediction != null) {
+            // Server has a more up-to-date block, although client is more recent, replace the original serialized position
+            prediction.setOriginalBlockId(combinedID);
             return;
         }
 
@@ -256,8 +279,10 @@ public class CompensatedWorld {
                     otherDoor.setOpen(!otherDoor.isOpen());
                     player.compensatedWorld.updateBlock(blockX, blockY + (data.getHalf() == Half.LOWER ? 1 : -1), blockZ, otherDoor.getGlobalId());
                 }
+
                 data.setOpen(!data.isOpen());
                 player.compensatedWorld.updateBlock(blockX, blockY, blockZ, data.getGlobalId());
+
             } else {
                 // The doors seem connected (Remember this is 1.12- where doors are dependent on one another for data
                 if (otherDoor.getType() == data.getType()) {
@@ -267,12 +292,14 @@ public class CompensatedWorld {
                     if (!isBottom) {
                         data = otherDoor;
                     }
+
                     // 1.13+ - We need to grab the bukkit block data, flip the open state, then get combined ID
                     // 1.12- - We can just flip a bit in the lower door and call it a day
                     data.setOpen(!data.isOpen());
                     player.compensatedWorld.updateBlock(blockX, blockY + (isBottom ? 0 : -1), blockZ, data.getGlobalId());
                 }
             }
+
         } else if (BlockTags.TRAPDOORS.contains(data.getType()) || BlockTags.FENCE_GATES.contains(data.getType())) {
             // Take 12 most significant bytes -> the material ID.  Combine them with the new block magic data.
             data.setOpen(!data.isOpen());
@@ -282,12 +309,13 @@ public class CompensatedWorld {
 
     public void tickPlayerInPistonPushingArea() {
         player.uncertaintyHandler.tick();
+
         // Occurs on player login
         if (player.boundingBox == null) {
             return;
         }
-        SimpleCollisionBox playerBox = player.boundingBox.copy();
 
+        SimpleCollisionBox playerBox = player.boundingBox.copy();
         double modX = 0;
         double modY = 0;
         double modZ = 0;
@@ -305,7 +333,6 @@ public class CompensatedWorld {
                     if (data.hasSlimeBlock || (data.hasHoneyBlock && player.getClientVersion().isOlderThan(ClientVersion.V_1_15_2))) {
                         player.uncertaintyHandler.slimePistonBounces.add(data.direction);
                     }
-
                     break;
                 }
             }
@@ -313,8 +340,8 @@ public class CompensatedWorld {
 
         for (ShulkerData data : openShulkerBoxes) {
             SimpleCollisionBox shulkerCollision = data.getCollision();
-
             BlockFace direction;
+
             if (data.entity == null) {
                 WrappedBlockState state = player.compensatedWorld.getWrappedBlockStateAt(data.blockPos.getX(), data.blockPos.getY(), data.blockPos.getZ());
                 direction = state.getFacing();
@@ -352,6 +379,7 @@ public class CompensatedWorld {
         // Tick the pistons and remove them if they can no longer exist
         activePistons.removeIf(PistonData::tickIfGuaranteedFinished);
         openShulkerBoxes.removeIf(ShulkerData::tickIfGuaranteedFinished);
+
         // Remove if a shulker is not in this block position anymore
         openShulkerBoxes.removeIf(box -> {
             if (box.blockPos != null) { // Block is no longer valid
@@ -369,13 +397,14 @@ public class CompensatedWorld {
     public WrappedBlockState getWrappedBlockStateAt(int x, int y, int z) {
         try {
             Column column = getChunk(x >> 4, z >> 4);
-
             y -= minHeight;
+
             if (column == null || y < 0 || (y >> 4) >= column.getChunks().length) {
                 return airData;
             }
 
             BaseChunk chunk = column.getChunks()[y >> 4];
+
             if (chunk != null) {
                 return chunk.get(blockVersion, x & 0xF, y & 0xF, z & 0xF);
             }
@@ -393,43 +422,50 @@ public class CompensatedWorld {
 
         if (state.getType() == StateTypes.REDSTONE_BLOCK) {
             return 15;
+
         } else if (state.getType() == StateTypes.DETECTOR_RAIL) { // Rails have directional requirement
             return state.isPowered() ? 15 : 0;
+
         } else if (state.getType() == StateTypes.REDSTONE_TORCH) {
             return face != BlockFace.UP && state.isLit() ? 15 : 0;
+
         } else if (state.getType() == StateTypes.REDSTONE_WIRE) {
             BlockFace needed = face.getOppositeFace();
-
             BlockFace badOne = needed.getCW();
             BlockFace badTwo = needed.getCCW();
-
             boolean isPowered = false;
+
             if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_13)) {
                 switch (needed) {
                     case DOWN:
                         isPowered = true;
                         break;
+
                     case UP:
                         isPowered = state.isUp();
                         break;
+
                     case NORTH:
                         isPowered = state.getNorth() == North.TRUE;
                         if (isPowered && (badOne == BlockFace.NORTH || badTwo == BlockFace.NORTH)) {
                             return 0;
                         }
                         break;
+
                     case SOUTH:
                         isPowered = state.getSouth() == South.TRUE;
                         if (isPowered && (badOne == BlockFace.SOUTH || badTwo == BlockFace.SOUTH)) {
                             return 0;
                         }
                         break;
+
                     case WEST:
                         isPowered = state.getWest() == West.TRUE;
                         if (isPowered && (badOne == BlockFace.WEST || badTwo == BlockFace.WEST)) {
                             return 0;
                         }
                         break;
+
                     case EAST:
                         isPowered = state.getEast() == East.TRUE;
                         if (isPowered && (badOne == BlockFace.EAST || badTwo == BlockFace.EAST)) {
@@ -442,16 +478,22 @@ public class CompensatedWorld {
             }
 
             return isPowered ? state.getPower() : 0;
+
         } else if (state.getType() == StateTypes.REDSTONE_WALL_TORCH) {
             return state.getFacing() != face && state.isPowered() ? 15 : 0;
+
         } else if (state.getType() == StateTypes.DAYLIGHT_DETECTOR) {
             return state.getPower();
+
         } else if (state.getType() == StateTypes.OBSERVER) {
             return state.getFacing() == face && state.isPowered() ? 15 : 0;
+
         } else if (state.getType() == StateTypes.REPEATER) {
             return state.getFacing() == face && state.isPowered() ? state.getPower() : 0;
+
         } else if (state.getType() == StateTypes.LECTERN) {
             return state.isPowered() ? 15 : 0;
+
         } else if (state.getType() == StateTypes.TARGET) {
             return state.getPower();
         }
@@ -466,47 +508,57 @@ public class CompensatedWorld {
         if (state.getType() == StateTypes.DETECTOR_RAIL) { // Rails hard power block below itself
             boolean isPowered = (boolean) state.getInternalData().getOrDefault(StateValue.POWERED, false);
             return face == BlockFace.UP && isPowered ? 15 : 0;
+
         } else if (state.getType() == StateTypes.REDSTONE_TORCH) {
             return face != BlockFace.UP && state.isLit() ? 15 : 0;
+
         } else if (state.getType() == StateTypes.LEVER || BlockTags.BUTTONS.contains(state.getType())) {
             return state.getFacing().getOppositeFace() == face && state.isPowered() ? 15 : 0;
+
         } else if (state.getType() == StateTypes.REDSTONE_WALL_TORCH) {
             return face == BlockFace.DOWN && state.isPowered() ? 15 : 0;
+
         } else if (state.getType() == StateTypes.LECTERN) {
             return face == BlockFace.UP && state.isPowered() ? 15 : 0;
+
         } else if (state.getType() == StateTypes.OBSERVER) {
             return state.getFacing() == face && state.isPowered() ? 15 : 0;
+
         } else if (state.getType() == StateTypes.REPEATER) {
             return state.getFacing() == face && state.isPowered() ? state.getPower() : 0;
+
         } else if (state.getType() == StateTypes.REDSTONE_WIRE) {
             BlockFace needed = face.getOppositeFace();
-
             BlockFace badOne = needed.getCW();
             BlockFace badTwo = needed.getCCW();
-
             boolean isPowered = false;
+
             switch (needed) {
                 case DOWN:
                 case UP:
                     break;
+
                 case NORTH:
                     isPowered = state.getNorth() == North.TRUE;
                     if (isPowered && (badOne == BlockFace.NORTH || badTwo == BlockFace.NORTH)) {
                         return 0;
                     }
                     break;
+
                 case SOUTH:
                     isPowered = state.getSouth() == South.TRUE;
                     if (isPowered && (badOne == BlockFace.SOUTH || badTwo == BlockFace.SOUTH)) {
                         return 0;
                     }
                     break;
+
                 case WEST:
                     isPowered = state.getWest() == West.TRUE;
                     if (isPowered && (badOne == BlockFace.WEST || badTwo == BlockFace.WEST)) {
                         return 0;
                     }
                     break;
+
                 case EAST:
                     isPowered = state.getEast() == East.TRUE;
                     if (isPowered && (badOne == BlockFace.EAST || badTwo == BlockFace.EAST)) {
@@ -564,6 +616,7 @@ public class CompensatedWorld {
         if (magicBlockState.getType() != StateTypes.LAVA) {
             return 0;
         }
+
         if (magicBlockStateAbove.getType() == StateTypes.LAVA) {
             return 1;
         }

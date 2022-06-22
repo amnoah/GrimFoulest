@@ -2,7 +2,6 @@ package ac.grim.grimac.player;
 
 import ac.grim.grimac.GrimAC;
 import ac.grim.grimac.GrimAPI;
-import ac.grim.grimac.checks.Check;
 import ac.grim.grimac.events.packets.CheckManagerListener;
 import ac.grim.grimac.manager.ActionManager;
 import ac.grim.grimac.manager.CheckManager;
@@ -40,6 +39,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketTracker;
 import io.github.retrooper.packetevents.util.GeyserUtil;
 import io.github.retrooper.packetevents.util.viaversion.ViaVersionUtil;
+import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -192,6 +192,7 @@ public class GrimPlayer {
     public long lastBlockPlaceUseItem = 0;
     public Queue<PacketWrapper<?>> placeUseItemPackets = new LinkedBlockingQueue<>();
     PacketTracker packetTracker;
+    @Getter
     private int transactionPing = 0;
     private long playerClockAtLeast = System.nanoTime();
 
@@ -213,21 +214,17 @@ public class GrimPlayer {
         }
 
         boundingBox = GetBoundingBox.getBoundingBoxFromPosAndSize(x, y, z, 0.6f, 1.8f);
-
         compensatedFireworks = new CompensatedFireworks(this); // Must be before checkmanager
-
         checkManager = new CheckManager(this);
         actionManager = new ActionManager(this);
         punishmentManager = new PunishmentManager(this);
         movementCheckRunner = new MovementCheckRunner(this);
-
         compensatedWorld = new CompensatedWorld(this);
         compensatedEntities = new CompensatedEntities(this);
         latencyUtils = new LatencyUtils(this);
         trigHandler = new TrigHandler(this);
         uncertaintyHandler = new UncertaintyHandler(this); // must be after checkmanager
         pointThreeEstimator = new PointThreeEstimator(this);
-
         packetStateData = new PacketStateData();
 
         uncertaintyHandler.collidingEntities.add(0);
@@ -278,8 +275,10 @@ public class GrimPlayer {
             for (BlockFace direction : uncertaintyHandler.slimePistonBounces) {
                 if (direction.getModX() != 0) {
                     possibleMovements.add(data.returnNewModified(data.vector.clone().setX(direction.getModX()), VectorData.VectorType.SlimePistonBounce));
+
                 } else if (direction.getModY() != 0) {
                     possibleMovements.add(data.returnNewModified(data.vector.clone().setY(direction.getModY()), VectorData.VectorType.SlimePistonBounce));
+
                 } else if (direction.getModZ() != 0) {
                     possibleMovements.add(data.returnNewModified(data.vector.clone().setZ(direction.getModZ()), VectorData.VectorType.SlimePistonBounce));
                 }
@@ -296,6 +295,7 @@ public class GrimPlayer {
     public boolean addTransactionResponse(short id) {
         Pair<Short, Long> data = null;
         boolean hasID = false;
+
         for (Pair<Short, Long> iterator : transactionsSent) {
             if (iterator.getFirst() == id) {
                 hasID = true;
@@ -316,6 +316,7 @@ public class GrimPlayer {
 
             do {
                 data = transactionsSent.poll();
+
                 if (data == null) {
                     break;
                 }
@@ -373,10 +374,12 @@ public class GrimPlayer {
 
         lastTransSent = System.currentTimeMillis();
         short transactionID = (short) (-1 * (transactionIDCounter.getAndIncrement() & 0x7FFF));
+
         try {
             addTransactionSend(transactionID);
 
             PacketWrapper<?> packet;
+
             if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_17)) {
                 packet = new WrapperPlayServerPing(transactionID);
             } else {
@@ -389,7 +392,7 @@ public class GrimPlayer {
                 user.writePacket(packet);
             }
         } catch (
-                Exception ignored) { // Fix protocollib + viaversion support by ignoring any errors :) // TODO: Fix this
+                Exception ignored) { // Fix ProtocolLib + ViaVersion support by ignoring any errors :) // TODO: Fix this
             // recompile
         }
     }
@@ -415,16 +418,20 @@ public class GrimPlayer {
         if (lastTransSent != 0 && lastTransSent + 80 < System.currentTimeMillis()) {
             sendTransaction(true); // send on netty thread
         }
+
         if ((System.nanoTime() - getPlayerClockAtLeast()) > GrimAPI.INSTANCE.getConfigManager().getMaxPingTransaction() * 1e9) {
             try {
                 user.sendPacket(new WrapperPlayServerDisconnect(Component.text("Timed out!")));
             } catch (Exception ignored) { // There may (?) be an exception if the player is in the wrong state...
                 LogUtil.warn("Failed to send disconnect packet to time out " + user.getProfile().getName() + "! Disconnecting anyways.");
             }
+
             user.closeConnection();
         }
+
         if (playerUUID == null) {
             playerUUID = user.getUUID();
+
             if (playerUUID != null) {
                 // Geyser players don't have Java movement
                 // Floodgate is the authentication system for Geyser on servers that use Geyser as a proxy instead of installing it as a plugin directly on the server
@@ -432,12 +439,14 @@ public class GrimPlayer {
                     GrimAPI.INSTANCE.getPlayerDataManager().remove(user);
                     return true;
                 }
+
                 // Geyser formatted player string
                 // This will never happen for Java players, as the first character in the 3rd group is always 4 (xxxxxxxx-xxxx-4xxx-xxxx-xxxxxxxxxxxx)
                 if (playerUUID.toString().startsWith("00000000-0000-0000-0009")) {
                     GrimAPI.INSTANCE.getPlayerDataManager().remove(user);
                     return true;
                 }
+
                 if (ViaVersionUtil.isAvailable() && playerUUID != null) {
                     UserConnection connection = Via.getManager().getConnectionManager().getConnectedClient(playerUUID);
                     packetTracker = connection != null ? connection.getPacketTracker() : null;
@@ -453,6 +462,7 @@ public class GrimPlayer {
             GrimAPI.INSTANCE.getPlayerDataManager().remove(user);
             return true;
         }
+
         return false;
     }
 
@@ -499,15 +509,13 @@ public class GrimPlayer {
     public List<Double> getPossibleEyeHeights() { // We don't return sleeping eye height
         if (getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_14)) { // Elytra, sneaking (1.14), standing
             return Arrays.asList(0.4, 1.27, 1.62);
+
         } else if (getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9)) { // Elytra, sneaking, standing
             return Arrays.asList(0.4, 1.54, 1.62);
+
         } else { // Only sneaking or standing
             return Arrays.asList((double) (1.62f - 0.08f), (double) (1.62f));
         }
-    }
-
-    public int getTransactionPing() {
-        return transactionPing;
     }
 
     public long getPlayerClockAtLeast() {
@@ -574,10 +582,12 @@ public class GrimPlayer {
         sendTransaction();
 
         compensatedEntities.serverPlayerVehicle = null;
+
         event.getPostTasks().add(() -> {
             if (compensatedEntities.getSelf().getRiding() != null) {
                 int ridingId = getRidingVehicleId();
                 TrackerData data = compensatedEntities.serverPositionsMap.get(ridingId);
+
                 if (data != null) {
                     user.writePacket(new WrapperPlayServerEntityTeleport(ridingId, new Vector3d(data.getX(), data.getY(), data.getZ()), data.getXRot(), data.getYRot(), false));
                 }
@@ -586,6 +596,7 @@ public class GrimPlayer {
 
         latencyUtils.addRealTimeTask(lastTransactionSent.get(), () -> {
             vehicleData.wasVehicleSwitch = true;
+
             // Pre-1.14 players desync sprinting attribute when in vehicle to be false, sprinting itself doesn't change
             if (getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_14)) {
                 compensatedEntities.hasSprintingAttributeEnabled = false;

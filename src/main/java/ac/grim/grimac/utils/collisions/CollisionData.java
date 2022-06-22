@@ -1087,12 +1087,18 @@ public enum CollisionData {
 
     LARGE_AMETHYST_BUD((player, version, data, x, y, z) -> getAmethystBox(version, data.getFacing(), 5, 3), StateTypes.LARGE_AMETHYST_BUD),
 
-    MUD_BLOCK(new HexCollisionBox(0.0D, 0.0D, 0.0D, 16.0D, 14.0D, 16.0D), StateTypes.MUD),
+    MUD_BLOCK((player, version, data, x, y, z) -> {
+        if (version.isNewerThanOrEquals(ClientVersion.V_1_19)) {
+            return new HexCollisionBox(0.0D, 0.0D, 0.0D, 16.0D, 14.0D, 16.0D);
+        }
+        return new SimpleCollisionBox(0, 0, 0, 1, 1, 1);
+    }, StateTypes.MUD),
 
     MANGROVE_PROPAGULE_BLOCK((player, version, data, x, y, z) -> {
         if (!data.isHanging()) {
             return new HexCollisionBox(7.0D, 0.0D, 7.0D, 9.0D, 16.0D, 9.0D);
         }
+
         switch (data.getAge()) {
             case 0:
                 return new HexCollisionBox(7.0D, 13.0D, 7.0D, 9.0D, 16.0D, 9.0D);
