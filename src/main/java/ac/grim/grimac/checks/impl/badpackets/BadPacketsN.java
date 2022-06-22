@@ -30,10 +30,11 @@ public class BadPacketsN extends PacketCheck {
                 return;
             }
 
-            // Player location is above max value (max world border)
+            // Player location is above the max world border value
             if (Math.abs(packet.getLocation().getX()) > HARD_CODED_BORDER
                     || Math.abs(packet.getLocation().getZ()) > HARD_CODED_BORDER) {
-                flagAndAlert("Max Value", true);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "Outside Border");
             }
         }
     }

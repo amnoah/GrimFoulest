@@ -7,7 +7,7 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-@CheckData(name = "BadPacketsE")
+@CheckData(name = "BadPackets E")
 public class BadPacketsE extends PacketCheck {
 
     private int noReminderTicks;
@@ -32,7 +32,8 @@ public class BadPacketsE extends PacketCheck {
         }
 
         if (noReminderTicks > 20) {
-            flagAndAlert("", false); // ban? I don't know how this would false
+            event.setCancelled(true);
+            player.kick(getCheckName(), String.valueOf(noReminderTicks));
         }
     }
 }

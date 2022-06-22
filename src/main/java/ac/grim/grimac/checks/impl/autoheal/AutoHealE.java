@@ -42,7 +42,8 @@ public class AutoHealE extends PacketCheck {
         }
 
         if (streak == 3) {
-            flagAndAlert("", false);
+            event.setCancelled(true);
+            player.kick(getCheckName(), "");
         }
     }
 }

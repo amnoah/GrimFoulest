@@ -1,6 +1,8 @@
 package ac.grim.grimac.player;
 
+import ac.grim.grimac.GrimAC;
 import ac.grim.grimac.GrimAPI;
+import ac.grim.grimac.checks.Check;
 import ac.grim.grimac.events.packets.CheckManagerListener;
 import ac.grim.grimac.manager.ActionManager;
 import ac.grim.grimac.manager.CheckManager;
@@ -42,6 +44,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
@@ -86,6 +89,7 @@ public class GrimPlayer {
     public boolean canSwimHop = false;
     public int riptideSpinAttackTicks = 0;
     public int powderSnowFrozenTicks = 0;
+    public boolean isKicking;
     public boolean hasGravity = true;
     public boolean playerEntityHasGravity = true;
     public VectorData predictedVelocity = new VectorData(new Vector(), VectorData.VectorType.Normal);
@@ -462,10 +466,12 @@ public class GrimPlayer {
 
     public ClientVersion getClientVersion() {
         ClientVersion ver = user.getClientVersion();
+
         if (ver == null) {
             // If temporarily null, assume server version...
             return ClientVersion.getById(PacketEvents.getAPI().getServerManager().getVersion().getProtocolVersion());
         }
+
         return ver;
     }
 
@@ -591,5 +597,27 @@ public class GrimPlayer {
         // This check was added in 1.11
         // 1.11+ players must be in creative and have a permission level at or above 2
         return getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_10) || (gamemode == GameMode.CREATIVE && compensatedEntities.getSelf().getOpLevel() >= 2);
+    }
+
+    public void kick(String reason, String verbose) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (isKicking) {
+                    return;
+                }
+
+                isKicking = true;
+
+                // TODO: Sync with prefix & shit
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "grim sendalert &b[Grim] &f"
+                        + bukkitPlayer.getName() + " &7was kicked for: &f" + reason
+                        + (Objects.equals(verbose, "") ? "" : " &7(" + verbose + ")"));
+
+                if (bukkitPlayer.isOnline()) {
+                    bukkitPlayer.kickPlayer("You are sending too many packets!");
+                }
+            }
+        }.runTask(GrimAC.instance);
     }
 }

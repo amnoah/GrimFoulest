@@ -479,6 +479,8 @@ public class CheckManagerListener extends PacketListenerAbstract {
             return;
         }
 
+        player.isKicking = false;
+
         // Determine if teleport BEFORE we call the pre-prediction vehicle
         if (event.getPacketType() == PacketType.Play.Client.VEHICLE_MOVE) {
             WrapperPlayClientVehicleMove move = new WrapperPlayClientVehicleMove(event);
@@ -504,9 +506,8 @@ public class CheckManagerListener extends PacketListenerAbstract {
                         || Double.isInfinite(pos.getX()) || Double.isInfinite(pos.getY()) || Double.isInfinite(pos.getZ())
                         || Float.isNaN(pos.getYaw()) || Float.isNaN(pos.getPitch())
                         || Float.isInfinite(pos.getYaw()) || Float.isInfinite(pos.getPitch())) {
-                    player.checkManager.getPacketCheck(BadPacketsN.class).flagAndAlert("Infinite (xyzYP: " + pos.getX()
-                            + ", " + pos.getY() + ", " + pos.getZ() + ", " + pos.getYaw() + ", " + pos.getPitch() + ")", true);
                     event.setCancelled(true);
+                    player.kick("Illegal Position", "");
                     return;
                 }
             }
@@ -628,7 +629,9 @@ public class CheckManagerListener extends PacketListenerAbstract {
 
         // Call the packet checks last as they can modify the contents of the packet
         // Such as the NoFall check setting the player to not be on the ground
-        player.checkManager.onPacketReceive(event);
+        if (!player.isKicking) {
+            player.checkManager.onPacketReceive(event);
+        }
     }
 
     private void handleFlying(GrimPlayer player, double x, double y, double z, float yaw, float pitch,

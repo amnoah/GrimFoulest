@@ -8,7 +8,7 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-@CheckData(name = "BadPacketsM")
+@CheckData(name = "BadPackets M")
 public class BadPacketsM extends PacketCheck {
 
     boolean sentHeldItem = false;
@@ -23,7 +23,9 @@ public class BadPacketsM extends PacketCheck {
             // Instead, we must tick "using item" with flying packets like the server does
             if (sentHeldItem && player.isTickingReliablyFor(3)
                     && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9)) {
-                flagAndAlert("", true);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "");
+                return;
             } else {
                 sentHeldItem = true;
             }

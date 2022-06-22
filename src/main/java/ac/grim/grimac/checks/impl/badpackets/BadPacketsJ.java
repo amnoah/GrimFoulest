@@ -7,27 +7,28 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-// Detects FDPClient's ComboOneHit
-@CheckData(name = "BadPackets U")
-public class BadPacketsU extends PacketCheck {
+@CheckData(name = "BadPackets J")
+public class BadPacketsJ extends PacketCheck {
 
     private int streak;
 
-    public BadPacketsU(GrimPlayer player) {
+    public BadPacketsJ(GrimPlayer player) {
         super(player);
     }
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
+        if (event.getPacketType() == PacketType.Play.Client.WINDOW_CONFIRMATION) {
             streak++;
 
         } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             streak = 0;
-        }
 
-        if (streak >= 2) {
-            flagAndAlert("Streak: " + streak, false);
+        } else if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
+            if (streak >= 10) {
+                event.setCancelled(true);
+                player.kick(getCheckName(), "Fake Lag");
+            }
         }
     }
 }

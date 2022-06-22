@@ -13,14 +13,14 @@ import ac.grim.grimac.checks.impl.combat.Hitbox;
 import ac.grim.grimac.checks.impl.combat.Reach;
 import ac.grim.grimac.checks.impl.badpackets.BadPacketsR;
 import ac.grim.grimac.checks.impl.groundspoof.GroundSpoofB;
-import ac.grim.grimac.checks.impl.freecam.Freecam;
+import ac.grim.grimac.checks.impl.badpackets.BadPacketsJ;
 import ac.grim.grimac.checks.impl.misc.ClientBrand;
 import ac.grim.grimac.checks.impl.misc.FastBreak;
 import ac.grim.grimac.checks.impl.misc.PacketSniffer;
 import ac.grim.grimac.checks.impl.movement.*;
-import ac.grim.grimac.checks.impl.movement.noslowdown.NoSlowdownB;
-import ac.grim.grimac.checks.impl.movement.noslowdown.NoSlowdownA;
-import ac.grim.grimac.checks.impl.post.PostCheck;
+import ac.grim.grimac.checks.impl.movement.noslowdown.NoSlowdown;
+import ac.grim.grimac.checks.impl.badpackets.BadPacketsT;
+import ac.grim.grimac.checks.impl.badpackets.BadPacketsQ;
 import ac.grim.grimac.checks.impl.movement.prediction.DebugHandler;
 import ac.grim.grimac.checks.impl.groundspoof.GroundSpoofA;
 import ac.grim.grimac.checks.impl.movement.prediction.Simulation;
@@ -85,13 +85,11 @@ public class CheckManager {
                 .put(BadPacketsM.class, new BadPacketsM(player))
                 .put(BadPacketsN.class, new BadPacketsN(player))
                 .put(BadPacketsO.class, new BadPacketsO(player))
-                .put(BadPacketsQ.class, new BadPacketsQ(player))
                 .put(BadPacketsR.class, new BadPacketsR(player))
-                .put(NoSlowdownB.class, new NoSlowdownB(player))
+                .put(BadPacketsS.class, new BadPacketsS(player))
                 .put(BadPacketsT.class, new BadPacketsT(player))
-                .put(BadPacketsU.class, new BadPacketsU(player))
-                .put(BadPacketsV.class, new BadPacketsV(player))
-                .put(Freecam.class, new Freecam(player))
+                .put(BadPacketsP.class, new BadPacketsP(player))
+                .put(BadPacketsJ.class, new BadPacketsJ(player))
                 .put(AutoHealA.class, new AutoHealA(player))
                 .put(AutoHealB.class, new AutoHealB(player))
                 .put(AutoHealC.class, new AutoHealC(player))
@@ -99,7 +97,7 @@ public class CheckManager {
                 .put(AutoHealE.class, new AutoHealE(player))
                 .put(AutoHealF.class, new AutoHealF(player))
                 .put(AutoHealG.class, new AutoHealG(player))
-                .put(PostCheck.class, new PostCheck(player))
+                .put(BadPacketsQ.class, new BadPacketsQ(player))
                 .put(FastBreak.class, new FastBreak(player))
                 .put(SetbackBlocker.class, new SetbackBlocker(player)) // Must be last class otherwise we can't check while blocking packets
                 .build();
@@ -129,7 +127,7 @@ public class CheckManager {
                 .put(Simulation.class, new Simulation(player))
                 .put(DebugHandler.class, new DebugHandler(player))
                 .put(EntityControl.class, new EntityControl(player))
-                .put(NoSlowdownA.class, new NoSlowdownA(player))
+                .put(NoSlowdown.class, new NoSlowdown(player))
                 .put(SetbackTeleportUtil.class, new SetbackTeleportUtil(player)) // Avoid teleporting to new position, update safe pos last
                 .put(CompensatedFireworks.class, player.compensatedFireworks)
                 .put(SneakingEstimator.class, new SneakingEstimator(player))
@@ -239,8 +237,8 @@ public class CheckManager {
         return getPositionCheck(CompensatedCooldown.class);
     }
 
-    public NoSlowdownA getNoSlow() {
-        return getPostPredictionCheck(NoSlowdownA.class);
+    public NoSlowdown getNoSlow() {
+        return getPostPredictionCheck(NoSlowdown.class);
     }
 
     public SetbackTeleportUtil getSetbackUtil() {

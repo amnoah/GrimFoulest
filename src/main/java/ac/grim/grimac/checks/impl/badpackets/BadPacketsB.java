@@ -7,7 +7,7 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientHeldItemChange;
 
-@CheckData(name = "BadPacketsB")
+@CheckData(name = "BadPackets B")
 public class BadPacketsB extends PacketCheck {
 
     int lastSlot = -1;
@@ -22,11 +22,15 @@ public class BadPacketsB extends PacketCheck {
             WrapperPlayClientHeldItemChange packet = new WrapperPlayClientHeldItemChange(event);
 
             if (packet.getSlot() == lastSlot) {
-                flagAndAlert("Sent Same Slot", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "Sent Same Slot");
+                return;
             }
 
             if (packet.getSlot() < 0 || packet.getSlot() > 8) {
-                flagAndAlert("Invalid Slot", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "Invalid Slot");
+                return;
             }
 
             lastSlot = packet.getSlot();

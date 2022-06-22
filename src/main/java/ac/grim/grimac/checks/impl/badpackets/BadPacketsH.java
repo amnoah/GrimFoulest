@@ -7,10 +7,10 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 
-@CheckData(name = "BadPacketsH")
+@CheckData(name = "BadPackets H")
 public class BadPacketsH extends PacketCheck {
 
-    private int hits;
+    private int streak;
 
     public BadPacketsH(GrimPlayer player) {
         super(player);
@@ -25,12 +25,13 @@ public class BadPacketsH extends PacketCheck {
                 return;
             }
 
-            if (++hits > 2) {
-                flagAndAlert("", false);
+            if (++streak > 2) {
+                event.setCancelled(true);
+                player.kick(getCheckName(), "NoSwing");
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
-            hits = 0;
+            streak = 0;
         }
     }
 }

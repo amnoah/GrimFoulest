@@ -34,11 +34,11 @@ public class AimAssistA extends RotationCheck {
         int yawDecimal = GrimMath.countDecimalPlaces(yawDiff);
         int pitchDecimal = GrimMath.countDecimalPlaces(pitchDiff);
 
-        if (yawDiff > 0.08 && yawDiff == lastYawDiff && yawDecimal <= 7) {
+        if (yawDiff > 0.08 && yawDiff == lastYawDiff && yawDecimal <= 5) {
             flagAndAlert("YawDiff: " + yawDiff + " Decimal: " + GrimMath.countDecimalPlaces(yawDiff), false);
         }
 
-        if (pitchDiff > 0.08 && pitchDiff == lastPitchDiff && pitchDecimal <= 7) {
+        if (pitchDiff > 0.08 && pitchDiff == lastPitchDiff && pitchDecimal <= 5) {
             flagAndAlert("PitchDiff: " + pitchDiff + " Decimal: " + GrimMath.countDecimalPlaces(pitchDiff), false);
         }
 

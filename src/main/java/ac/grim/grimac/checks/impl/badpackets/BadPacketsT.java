@@ -7,7 +7,7 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-// Detects ETB 0.1's SkinFlash
+// Detects sending multiple packets in-between Flying
 @CheckData(name = "BadPackets T")
 public class BadPacketsT extends PacketCheck {
 
@@ -19,15 +19,20 @@ public class BadPacketsT extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.CLIENT_SETTINGS) {
+        if (!WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())
+                && event.getPacketType() != PacketType.Play.Client.WINDOW_CONFIRMATION
+                && event.getPacketType() != PacketType.Play.Client.PLUGIN_MESSAGE
+                && event.getPacketType() != PacketType.Play.Client.KEEP_ALIVE
+                && event.getPacketType() != PacketType.Play.Client.CREATIVE_INVENTORY_ACTION) {
             streak++;
+
+            if (streak >= 4) {
+                event.setCancelled(true);
+                player.kick(getCheckName(), event.getPacketType().getName());
+            }
 
         } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             streak = 0;
-        }
-
-        if (streak >= 3) {
-            flagAndAlert("Streak: " + streak, false);
         }
     }
 }

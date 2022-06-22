@@ -13,7 +13,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerKe
 import java.util.LinkedList;
 import java.util.Queue;
 
-@CheckData(name = "BadPacketsK")
+@CheckData(name = "BadPackets K")
 public class BadPacketsK extends PacketCheck {
 
     final Queue<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
@@ -34,7 +34,6 @@ public class BadPacketsK extends PacketCheck {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
             WrapperPlayClientKeepAlive packet = new WrapperPlayClientKeepAlive(event);
-
             long id = packet.getId();
             boolean hasID = false;
 
@@ -46,7 +45,8 @@ public class BadPacketsK extends PacketCheck {
             }
 
             if (!hasID) {
-                flagAndAlert("KeepAlive (ID: " + id + ")", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "Invalid KeepAlive: " + id);
             } else { // Found the ID, remove stuff until we get to it (to stop very slow memory leaks)
                 Pair<Long, Long> data;
                 do {

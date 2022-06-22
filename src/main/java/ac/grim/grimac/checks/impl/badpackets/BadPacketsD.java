@@ -7,7 +7,7 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-@CheckData(name = "BadPacketsD")
+@CheckData(name = "BadPackets D")
 public class BadPacketsD extends PacketCheck {
 
     public BadPacketsD(GrimPlayer player) {
@@ -24,7 +24,8 @@ public class BadPacketsD extends PacketCheck {
             WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
 
             if (packet.hasRotationChanged() && Math.abs(packet.getLocation().getPitch()) > 90) {
-                flagAndAlert("", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "Invalid Pitch");
             }
         }
     }

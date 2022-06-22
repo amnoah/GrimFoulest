@@ -28,7 +28,8 @@ public class BadPacketsA extends PacketCheck {
                     && packet.getBlockPosition().getX() == 0.0
                     && packet.getBlockPosition().getY() == 0.0
                     && packet.getBlockPosition().getZ() == 0.0) {
-                flagAndAlert("Block Place", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "BLOCK_PLACE");
                 return;
             }
         }
@@ -42,7 +43,9 @@ public class BadPacketsA extends PacketCheck {
                         || packet.getBlockPosition().getX() != 0
                         || packet.getBlockPosition().getY() != 0
                         || packet.getBlockPosition().getZ() != 0) {
-                    flagAndAlert("Use Item", false);
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "USE_ITEM");
+                    return;
                 }
             }
         }
@@ -50,7 +53,9 @@ public class BadPacketsA extends PacketCheck {
         // Invalid Spectate
         if (event.getPacketType() == PacketType.Play.Client.SPECTATE) {
             if (player.gamemode != GameMode.SPECTATOR) {
-                flagAndAlert("Spectate", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "SPECTATE");
+                return;
             }
         }
 
@@ -59,7 +64,9 @@ public class BadPacketsA extends PacketCheck {
             WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
 
             if (packet.getEntityId() == player.entityID) {
-                flagAndAlert("Self Interact", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "Self Interact");
+                return;
             }
         }
 
@@ -70,11 +77,15 @@ public class BadPacketsA extends PacketCheck {
             float sideways = Math.abs(packet.getSideways());
 
             if (!player.compensatedEntities.getSelf().inVehicle()) {
-                flagAndAlert("Not in Vehicle", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "Not In Vehicle");
+                return;
             }
 
             if (forwards > 0.98f || sideways > 0.98f) {
-                flagAndAlert("Vehicle Speed", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "Vehicle Speed");
+                return;
             }
         }
 
@@ -84,16 +95,18 @@ public class BadPacketsA extends PacketCheck {
             String message = packet.getText();
 
             if (message.equals("")) {
-                flagAndAlert("Tab Complete", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "TAB_COMPLETE");
                 return;
             }
         }
 
         // Invalid Creative Slot
         if (event.getPacketType() == PacketType.Play.Client.CREATIVE_INVENTORY_ACTION) {
-            // Could be transaction split
             if (player.gamemode != GameMode.CREATIVE) {
-                flagAndAlert("Creative Slot", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "CREATIVE_SLOT");
+                return;
             }
         }
 
@@ -104,7 +117,8 @@ public class BadPacketsA extends PacketCheck {
             // Player Inventory
             if (packet.getWindowId() == 0) {
                 if (packet.getSlot() > 44 || (packet.getSlot() != -999 && packet.getSlot() < 0)) {
-                    flagAndAlert("WindowClick Slot (" + packet.getSlot() + ")", false);
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "WINDOW_CLICK, SLOT=" + packet.getSlot());
                     return;
                 }
             }
@@ -112,14 +126,16 @@ public class BadPacketsA extends PacketCheck {
             switch (packet.getPacketId()) {
                 case 0:
                     if (packet.getButton() != 0 && packet.getButton() != 1) {
-                        flagAndAlert("Window Click (0)", false);
+                        event.setCancelled(true);
+                        player.kick(getCheckName(), "WINDOW_CLICK (0)");
                         return;
                     }
                     break;
 
                 case 1:
                     if (packet.getButton() != 0 && packet.getButton() != 1) {
-                        flagAndAlert("Window Click (1)", false);
+                        event.setCancelled(true);
+                        player.kick(getCheckName(), "WINDOW_CLICK (1)");
                         return;
                     }
                     break;
@@ -127,21 +143,24 @@ public class BadPacketsA extends PacketCheck {
                 case 2:
                     if (packet.getButton() != 0 && packet.getButton() != 1 && packet.getButton() != 2
                             && packet.getButton() != 8 && packet.getButton() != 40) {
-                        flagAndAlert("Window Click (2)", false);
+                        event.setCancelled(true);
+                        player.kick(getCheckName(), "WINDOW_CLICK (2)");
                         return;
                     }
                     break;
 
                 case 3:
                     if (packet.getButton() != 2) {
-                        flagAndAlert("Window Click (3)", false);
+                        event.setCancelled(true);
+                        player.kick(getCheckName(), "WINDOW_CLICK (3)");
                         return;
                     }
                     break;
 
                 case 4:
                     if (packet.getButton() != 0 && packet.getButton() != 1) {
-                        flagAndAlert("Window Click (4)", false);
+                        event.setCancelled(true);
+                        player.kick(getCheckName(), "WINDOW_CLICK (4)");
                         return;
                     }
                     break;
@@ -150,14 +169,16 @@ public class BadPacketsA extends PacketCheck {
                     if (packet.getButton() != 0 && packet.getButton() != 1 && packet.getButton() != 2
                             && packet.getButton() != 4 && packet.getButton() != 5 && packet.getButton() != 6
                             && packet.getButton() != 8 && packet.getButton() != 9 && packet.getButton() != 10) {
-                        flagAndAlert("Window Click (5)", false);
+                        event.setCancelled(true);
+                        player.kick(getCheckName(), "WINDOW_CLICK (5)");
                         return;
                     }
                     break;
 
                 case 6:
                     if (packet.getButton() != 0) {
-                        flagAndAlert("Window Click (6)", false);
+                        event.setCancelled(true);
+                        player.kick(getCheckName(), "WINDOW_CLICK (6)");
                         return;
                     }
                     break;
@@ -169,31 +190,29 @@ public class BadPacketsA extends PacketCheck {
             WrapperPlayClientEntityAction packet = new WrapperPlayClientEntityAction(event);
 
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.LEAVE_BED && !player.isInBed) {
-                flagAndAlert("Entity Action (Sleeping)", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "ENTITY_ACTION (LEAVE_BED)");
                 return;
             }
 
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.OPEN_HORSE_INVENTORY
                     && !player.compensatedEntities.getSelf().inVehicle()) {
-                flagAndAlert("Entity Action (Horse Inventory)", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "ENTITY_ACTION (HORSE_INVENTORY)");
                 return;
             }
 
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_JUMPING_WITH_HORSE
                     && !player.compensatedEntities.getSelf().inVehicle()) {
-                flagAndAlert("Entity Action (Horse Start Jump)", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "ENTITY_ACTION (START_HORSE_JUMP)");
                 return;
             }
 
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_JUMPING_WITH_HORSE
                     && !player.compensatedEntities.getSelf().inVehicle()) {
-                flagAndAlert("Entity Action (Horse Stop Jump)", false);
-                return;
-            }
-
-            if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_JUMPING_WITH_HORSE
-                    && !player.compensatedEntities.getSelf().inVehicle()) {
-                flagAndAlert("Entity Action (Horse Stop Jump)", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "ENTITY_ACTION (STOP_HORSE_JUMP)");
                 return;
             }
         }
@@ -209,28 +228,33 @@ public class BadPacketsA extends PacketCheck {
             if (isFlying == player.isFlying && isInGodMode == player.isInGodMode
                     && isFlightAllowed == player.isFlightAllowed && isInCreative == player.isInCreative
                     && !isFlying && !isInGodMode && !isFlightAllowed && !isInCreative) {
-                flagAndAlert("Abilities (All)", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "ABILITIES (ALL)");
                 return;
             }
 
             if (isFlying && !player.isFlightAllowed) {
-                flagAndAlert("Abilities (Flight Allowed)", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "ABILITIES (FLIGHT_ALLOWED)");
                 return;
             }
 
             if (player.gamemode != GameMode.CREATIVE) {
                 if (isInGodMode != player.isInGodMode) {
-                    flagAndAlert("Abilities (GodMode)", false);
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "ABILITIES (GOD_MODE)");
                     return;
                 }
 
                 if (isFlying && !player.isFlying) {
-                    flagAndAlert("Abilities (Flying)", false);
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "ABILITIES (FLYING)");
                     return;
                 }
 
                 if (isInCreative && !player.isInCreative) {
-                    flagAndAlert("Abilities (Creative)", false);
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "ABILITIES (CREATIVE)");
                 }
             }
         }

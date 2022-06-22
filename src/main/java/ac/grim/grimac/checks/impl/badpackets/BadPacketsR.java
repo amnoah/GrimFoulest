@@ -27,7 +27,8 @@ public class BadPacketsR extends PacketCheck {
         }
 
         if (streak >= 15) {
-            flagAndAlert("Streak: " + streak, false);
+            event.setCancelled(true);
+            player.kick(getCheckName(), "Ping Spoof");
         }
     }
 }

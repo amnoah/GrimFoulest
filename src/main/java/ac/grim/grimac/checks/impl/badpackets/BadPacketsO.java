@@ -50,7 +50,8 @@ public class BadPacketsO extends PacketCheck {
         }
 
         if (streak == 4) {
-            flagAndAlert("", false);
+            event.setCancelled(true);
+            player.kick(getCheckName(), "Infinite Durability");
         }
     }
 }

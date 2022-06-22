@@ -13,7 +13,6 @@ Punishments:
       - "GroundSpoof"
       - "Phase"
       - "NoSlowdown"
-      - "Timer"
     # Threshold:Interval Command
     #
     # Example, to kick the player with the message "incorrect movement!" after 100 violations, with no interval
@@ -44,6 +43,20 @@ Punishments:
       - "Post"
     commands:
       - "1:0 [alert]"
+      - "40:40 [webhook]"
+  PacketFlood:
+    remove-violations-after: 300
+    checks:
+      - "PacketFlood"
+    commands:
+      - "5:5 [alert]"
+      - "25:25 kick %player% You are sending too many packets!"
+  Timer:
+    remove-violations-after: 300
+    checks:
+      - "Timer"
+    commands:
+      - "5:5 [alert]"
       - "40:40 [webhook]"
   Freecam:
     remove-violations-after: 300

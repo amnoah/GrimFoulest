@@ -7,7 +7,7 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEntityAction;
 
-@CheckData(name = "BadPacketsG")
+@CheckData(name = "BadPackets G")
 public class BadPacketsG extends PacketCheck {
 
     boolean wasTeleport;
@@ -26,14 +26,16 @@ public class BadPacketsG extends PacketCheck {
 
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SNEAKING) {
                 if (lastSneaking && !wasTeleport) {
-                    flagAndAlert("", false);
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "START_SNEAKING");
                 } else {
                     lastSneaking = true;
                 }
 
             } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SNEAKING) {
                 if (!lastSneaking && !wasTeleport) {
-                    flagAndAlert("", false);
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "STOP_SNEAKING");
                 } else {
                     lastSneaking = false;
                 }

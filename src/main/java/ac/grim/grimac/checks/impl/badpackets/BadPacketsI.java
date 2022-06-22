@@ -6,6 +6,7 @@ import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
+// Detects sending same yaw & pitch twice
 @CheckData(name = "BadPackets I")
 public class BadPacketsI extends PacketCheck {
 
@@ -33,6 +34,11 @@ public class BadPacketsI extends PacketCheck {
                 return;
             }
 
+            // Player is in vehicle
+            if (player.compensatedEntities.getSelf().inVehicle()) {
+                return;
+            }
+
             // Rotation hasn't changed
             if (!packet.hasRotationChanged()) {
                 return;
@@ -40,7 +46,9 @@ public class BadPacketsI extends PacketCheck {
 
             // lastYaw and lastPitch are identical
             if (lastYaw == posYaw && lastPitch == posPitch) {
-                flagAndAlert("Sent Same Look", false);
+                event.setCancelled(true);
+                player.kick(getCheckName(), "Identical Rotation");
+                return;
             }
 
             lastYaw = posYaw;

@@ -72,7 +72,7 @@ public class TimerCheck extends PacketCheck {
         if (timerBalanceRealTime > System.nanoTime()) {
             if (flag()) {
                 event.setCancelled(true);
-                flagAndAlert("", true);
+                player.kick(getCheckName(), "");
             }
 
             // Reset the violation by 1 movement
@@ -83,8 +83,8 @@ public class TimerCheck extends PacketCheck {
     }
 
     public boolean checkForTransaction(PacketTypeCommon packetType) {
-        return packetType == PacketType.Play.Client.PONG ||
-                packetType == PacketType.Play.Client.WINDOW_CONFIRMATION;
+        return packetType == PacketType.Play.Client.PONG
+                || packetType == PacketType.Play.Client.WINDOW_CONFIRMATION;
     }
 
     public boolean shouldCountPacketForTimer(PacketTypeCommon packetType) {

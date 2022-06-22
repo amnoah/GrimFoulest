@@ -7,7 +7,7 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEntityAction;
 
-@CheckData(name = "BadPacketsF")
+@CheckData(name = "BadPackets F")
 public class BadPacketsF extends PacketCheck {
 
     public boolean lastSprinting;
@@ -29,7 +29,9 @@ public class BadPacketsF extends PacketCheck {
                         return;
                     }
 
-                    flagAndAlert("", false);
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "START_SPRINTING");
+                    return;
                 }
 
                 lastSprinting = true;
@@ -41,7 +43,9 @@ public class BadPacketsF extends PacketCheck {
                         return;
                     }
 
-                    flagAndAlert("", false);
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "STOP_SPRINTING");
+                    return;
                 }
 
                 lastSprinting = false;

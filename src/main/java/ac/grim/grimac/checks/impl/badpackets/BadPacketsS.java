@@ -7,13 +7,13 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-// Detects sending packets en-masse
-@CheckData(name = "BadPackets V")
-public class BadPacketsV extends PacketCheck {
+// Detects sending packets in-sync with Flying
+@CheckData(name = "BadPackets S")
+public class BadPacketsS extends PacketCheck {
 
     private int streak;
 
-    public BadPacketsV(GrimPlayer player) {
+    public BadPacketsS(GrimPlayer player) {
         super(player);
     }
 
@@ -21,16 +21,24 @@ public class BadPacketsV extends PacketCheck {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (!WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())
                 && event.getPacketType() != PacketType.Play.Client.WINDOW_CONFIRMATION
-                && event.getPacketType() != PacketType.Play.Client.PLUGIN_MESSAGE) {
-            streak++;
+                && event.getPacketType() != PacketType.Play.Client.STEER_VEHICLE) {
+            if (streak % 2 == 0) {
+                streak++;
+
+                if (streak >= 10) {
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), event.getPacketType().getName());
+                }
+            } else {
+                streak = 0;
+            }
 
         } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            streak = 0;
-        }
-
-        if (streak >= 4) {
-            flagAndAlert("Streak: " + streak
-                    + " Packet: " + event.getPacketType().getName(), false);
+            if (streak % 2 != 0) {
+                streak++;
+            } else {
+                streak = 0;
+            }
         }
     }
 }

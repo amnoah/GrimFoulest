@@ -6,8 +6,8 @@ import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.update.PredictionComplete;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 
-@CheckData(name = "NoSlowdown A", setback = 5)
-public class NoSlowdownA extends PostPredictionCheck {
+@CheckData(name = "NoSlowdown", setback = 5)
+public class NoSlowdown extends PostPredictionCheck {
 
     // The player sends that they switched items the next tick if they switch
     // from a usable item to another usable item. Affects 1.8 (and most likely 1.7) clients.
@@ -16,7 +16,7 @@ public class NoSlowdownA extends PostPredictionCheck {
     double offsetToFlag;
     double bestOffset = 1;
 
-    public NoSlowdownA(GrimPlayer player) {
+    public NoSlowdown(GrimPlayer player) {
         super(player);
     }
 

@@ -40,7 +40,8 @@ public class AutoHealB extends PacketCheck {
         }
 
         if (streak == 6) {
-            flagAndAlert("", false);
+            event.setCancelled(true);
+            player.kick(getCheckName(), "");
         }
     }
 }
