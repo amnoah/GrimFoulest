@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.badpackets;
+package ac.grim.grimac.checks.impl.pingspoof;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
@@ -8,12 +8,12 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientKeepAlive;
 
 // Detects sending multiple negative KeepAlive packets in a row
-@CheckData(name = "BadPackets P")
-public class BadPacketsP extends PacketCheck {
+@CheckData(name = "PingSpoof B")
+public class PingSpoofB extends PacketCheck {
 
     public int streak;
 
-    public BadPacketsP(GrimPlayer player) {
+    public PingSpoofB(GrimPlayer player) {
         super(player);
     }
 
@@ -28,9 +28,9 @@ public class BadPacketsP extends PacketCheck {
                 streak = 0;
             }
 
-            if (streak >= 2) {
+            if (streak >= 3) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "Illegal KeepAlive");
+                player.kick(getCheckName(), "NEGATIVE");
             }
         }
     }

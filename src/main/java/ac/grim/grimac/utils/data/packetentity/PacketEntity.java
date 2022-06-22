@@ -31,9 +31,10 @@ import java.util.List;
 
 // You may not copy this check unless your anticheat is licensed under GPL
 public class PacketEntity {
+
     public Vector3d desyncClientPos;
     public final EntityType type;
-
+    @lombok.Getter
     public PacketEntity riding;
     public final List<PacketEntity> passengers = new ArrayList<>(0);
     public boolean isDead = false;
@@ -49,9 +50,11 @@ public class PacketEntity {
 
     public PacketEntity(GrimPlayer player, EntityType type, double x, double y, double z) {
         desyncClientPos = new Vector3d(x, y, z);
+
         if (player.getClientVersion().isOlderThan(ClientVersion.V_1_9)) { // Thanks ViaVersion
             desyncClientPos = new Vector3d(((int) (desyncClientPos.getX() * 32)) / 32d, ((int) (desyncClientPos.getY() * 32)) / 32d, ((int) (desyncClientPos.getZ() * 32)) / 32d);
         }
+
         this.type = type;
         newPacketLocation = new ReachInterpolationData(player, GetBoundingBox.getPacketEntityBoundingBox(player, x, y, z, this),
                 desyncClientPos.getX(), desyncClientPos.getY(), desyncClientPos.getZ(), !player.compensatedEntities.getSelf().inVehicle() && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9), this);
@@ -128,6 +131,7 @@ public class PacketEntity {
         if (riding != null) {
             eject();
         }
+
         vehicle.passengers.add(this);
         riding = vehicle;
     }
@@ -136,6 +140,7 @@ public class PacketEntity {
         if (riding != null) {
             riding.passengers.remove(this);
         }
+
         riding = null;
     }
 
@@ -156,14 +161,11 @@ public class PacketEntity {
         return ReachInterpolationData.combineCollisionBox(oldPacketLocation.getPossibleLocationCombined(), newPacketLocation.getPossibleLocationCombined());
     }
 
-    public PacketEntity getRiding() {
-        return riding;
-    }
-
     public void addPotionEffect(PotionType effect, int amplifier) {
         if (potionsMap == null) {
             potionsMap = new HashMap<>();
         }
+
         potionsMap.put(effect, amplifier);
     }
 
@@ -171,6 +173,7 @@ public class PacketEntity {
         if (potionsMap == null) {
             return;
         }
+
         potionsMap.remove(effect);
     }
 }

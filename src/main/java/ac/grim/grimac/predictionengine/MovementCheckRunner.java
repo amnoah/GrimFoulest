@@ -1,6 +1,6 @@
 package ac.grim.grimac.predictionengine;
 
-import ac.grim.grimac.checks.impl.movement.EntityControl;
+import ac.grim.grimac.checks.impl.movement.entitycontrol.EntityControl;
 import ac.grim.grimac.checks.type.PositionCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.predictionengine.movementtick.MovementTickerHorse;

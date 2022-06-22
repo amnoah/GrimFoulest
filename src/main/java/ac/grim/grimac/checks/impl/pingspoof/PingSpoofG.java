@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.badpackets;
+package ac.grim.grimac.checks.impl.pingspoof;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
@@ -7,27 +7,34 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-// Detects sending Rotation packets with an invalid pitch
-@CheckData(name = "BadPackets D")
-public class BadPacketsD extends PacketCheck {
+// Detects delaying the Position idle packet
+@CheckData(name = "PingSpoof G")
+public class PingSpoofG extends PacketCheck {
 
-    public BadPacketsD(GrimPlayer player) {
+    private int noReminderTicks;
+
+    public PingSpoofG(GrimPlayer player) {
         super(player);
     }
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (player.packetStateData.lastPacketWasTeleport) {
-            return;
-        }
-
         if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
 
-            if (packet.hasRotationChanged() && Math.abs(packet.getLocation().getPitch()) > 90) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "Invalid Pitch");
+            if (packet.hasPositionChanged()) {
+                noReminderTicks = 0;
+            } else {
+                noReminderTicks++;
             }
+
+        } else if (event.getPacketType() == PacketType.Play.Client.STEER_VEHICLE) {
+            noReminderTicks = 0; // Exempt vehicles
+        }
+
+        if (noReminderTicks > 20) {
+            event.setCancelled(true);
+            player.kick(getCheckName(), "POSITION");
         }
     }
 }

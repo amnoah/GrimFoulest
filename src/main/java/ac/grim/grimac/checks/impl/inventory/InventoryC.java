@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.autoheal;
+package ac.grim.grimac.checks.impl.inventory;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
@@ -8,39 +8,34 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClickWindow;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-// Detects Dortware's AutoPot
-@CheckData(name = "AutoHeal A")
-public class AutoHealA extends PacketCheck {
+// Detects ETB 0.1's AutoPot
+@CheckData(name = "Inventory C")
+public class InventoryC extends PacketCheck {
 
     private int streak;
 
-    public AutoHealA(GrimPlayer player) {
+    public InventoryC(GrimPlayer player) {
         super(player);
     }
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.CLICK_WINDOW) { // Streak: 1
+        if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) { // Streak: 1, 4
+            if (streak == 0 || streak == 3) {
+                ++streak;
+            }
+
+        } else if (event.getPacketType() == PacketType.Play.Client.CLICK_WINDOW) { // Streak: 2, 3
             WrapperPlayClientClickWindow packet = new WrapperPlayClientClickWindow(event);
             WrapperPlayClientClickWindow.WindowClickType clickType = packet.getWindowClickType();
 
-            if (packet.getWindowId() == 0 && clickType == WrapperPlayClientClickWindow.WindowClickType.QUICK_MOVE) {
-                if (streak == 0) {
+            if (packet.getWindowId() == 0 && clickType == WrapperPlayClientClickWindow.WindowClickType.SWAP) {
+                if (streak == 1 || streak == 2) {
                     ++streak;
                 }
             }
 
-        } else if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) { // Streak: 2, 4
-            if (streak == 1 || streak == 3) {
-                ++streak;
-            }
-
-        } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) { // Streak: 3
-            if (streak == 2) {
-                ++streak;
-            }
-
-        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) { // Reset Streak
             streak = 0;
         }
 

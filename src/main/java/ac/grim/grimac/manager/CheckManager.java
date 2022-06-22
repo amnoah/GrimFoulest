@@ -6,26 +6,29 @@ import ac.grim.grimac.checks.impl.aim.AimAssistB;
 import ac.grim.grimac.checks.impl.aim.AimAssistC;
 import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
 import ac.grim.grimac.checks.impl.aim.processor.Cinematic;
-import ac.grim.grimac.checks.impl.autoheal.*;
 import ac.grim.grimac.checks.impl.badpackets.*;
+import ac.grim.grimac.checks.impl.badpackets.BadPacketsB;
 import ac.grim.grimac.checks.impl.baritone.Baritone;
 import ac.grim.grimac.checks.impl.combat.Hitbox;
 import ac.grim.grimac.checks.impl.combat.Reach;
-import ac.grim.grimac.checks.impl.badpackets.BadPacketsR;
+import ac.grim.grimac.checks.impl.inventory.*;
+import ac.grim.grimac.checks.impl.movement.entitycontrol.EntityControl;
+import ac.grim.grimac.checks.impl.movement.timer.Timer;
+import ac.grim.grimac.checks.impl.movement.timer.VehicleTimer;
+import ac.grim.grimac.checks.impl.pingspoof.*;
 import ac.grim.grimac.checks.impl.groundspoof.GroundSpoofB;
-import ac.grim.grimac.checks.impl.badpackets.BadPacketsJ;
 import ac.grim.grimac.checks.impl.misc.ClientBrand;
 import ac.grim.grimac.checks.impl.misc.FastBreak;
 import ac.grim.grimac.checks.impl.misc.PacketSniffer;
 import ac.grim.grimac.checks.impl.movement.*;
 import ac.grim.grimac.checks.impl.movement.noslowdown.NoSlowdown;
-import ac.grim.grimac.checks.impl.badpackets.BadPacketsT;
-import ac.grim.grimac.checks.impl.badpackets.BadPacketsQ;
+import ac.grim.grimac.checks.impl.badpackets.BadPacketsN;
+import ac.grim.grimac.checks.impl.badpackets.BadPacketsK;
 import ac.grim.grimac.checks.impl.movement.prediction.DebugHandler;
 import ac.grim.grimac.checks.impl.groundspoof.GroundSpoofA;
 import ac.grim.grimac.checks.impl.movement.prediction.Simulation;
 import ac.grim.grimac.checks.impl.movement.prediction.Phase;
-import ac.grim.grimac.checks.impl.scaffolding.*;
+import ac.grim.grimac.checks.impl.scaffold.*;
 import ac.grim.grimac.checks.impl.velocity.ExplosionHandler;
 import ac.grim.grimac.checks.impl.velocity.KnockbackHandler;
 import ac.grim.grimac.checks.type.*;
@@ -80,24 +83,29 @@ public class CheckManager {
                 .put(BadPacketsG.class, new BadPacketsG(player))
                 .put(BadPacketsH.class, new BadPacketsH(player))
                 .put(BadPacketsI.class, new BadPacketsI(player))
+                .put(BadPacketsJ.class, new BadPacketsJ(player))
                 .put(BadPacketsK.class, new BadPacketsK(player))
                 .put(BadPacketsL.class, new BadPacketsL(player))
                 .put(BadPacketsM.class, new BadPacketsM(player))
                 .put(BadPacketsN.class, new BadPacketsN(player))
-                .put(BadPacketsO.class, new BadPacketsO(player))
-                .put(BadPacketsR.class, new BadPacketsR(player))
-                .put(BadPacketsS.class, new BadPacketsS(player))
-                .put(BadPacketsT.class, new BadPacketsT(player))
-                .put(BadPacketsP.class, new BadPacketsP(player))
-                .put(BadPacketsJ.class, new BadPacketsJ(player))
-                .put(AutoHealA.class, new AutoHealA(player))
-                .put(AutoHealB.class, new AutoHealB(player))
-                .put(AutoHealC.class, new AutoHealC(player))
-                .put(AutoHealD.class, new AutoHealD(player))
-                .put(AutoHealE.class, new AutoHealE(player))
-                .put(AutoHealF.class, new AutoHealF(player))
-                .put(AutoHealG.class, new AutoHealG(player))
-                .put(BadPacketsQ.class, new BadPacketsQ(player))
+                .put(InventoryA.class, new InventoryA(player))
+                .put(InventoryB.class, new InventoryB(player))
+                .put(InventoryC.class, new InventoryC(player))
+                .put(InventoryD.class, new InventoryD(player))
+                .put(InventoryE.class, new InventoryE(player))
+                .put(InventoryF.class, new InventoryF(player))
+                .put(InventoryG.class, new InventoryG(player))
+                .put(InventoryH.class, new InventoryH(player))
+                .put(InventoryI.class, new InventoryI(player))
+                .put(InventoryJ.class, new InventoryJ(player))
+                .put(InventoryK.class, new InventoryK(player))
+                .put(InventoryL.class, new InventoryL(player))
+                .put(PingSpoofA.class, new PingSpoofA(player))
+                .put(PingSpoofC.class, new PingSpoofC(player))
+                .put(PingSpoofD.class, new PingSpoofD(player))
+                .put(PingSpoofE.class, new PingSpoofE(player))
+                .put(PingSpoofF.class, new PingSpoofF(player))
+                .put(PingSpoofG.class, new PingSpoofG(player))
                 .put(FastBreak.class, new FastBreak(player))
                 .put(SetbackBlocker.class, new SetbackBlocker(player)) // Must be last class otherwise we can't check while blocking packets
                 .build();
@@ -143,7 +151,7 @@ public class CheckManager {
                 .build();
 
         timerCheck = new ImmutableClassToInstanceMap.Builder<PacketCheck>()
-                .put(TimerCheck.class, new TimerCheck(player))
+                .put(Timer.class, new Timer(player))
                 .put(VehicleTimer.class, new VehicleTimer(player))
                 .build();
 

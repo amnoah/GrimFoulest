@@ -37,14 +37,15 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
             }
 
             // 1.14 and below players cannot eat in creative, exceptions are potions or milk
-            if ((player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_15) ||
-                    player.gamemode != GameMode.CREATIVE && material.hasAttribute(ItemTypes.ItemAttribute.EDIBLE))
+            if ((player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_15)
+                    || player.gamemode != GameMode.CREATIVE && material.hasAttribute(ItemTypes.ItemAttribute.EDIBLE))
                     || material == ItemTypes.POTION || material == ItemTypes.MILK_BUCKET) {
 
                 // Pls have this mapped correctly retrooper
                 if (item.getType() == ItemTypes.SPLASH_POTION) {
                     return;
                 }
+
                 // 1.8 splash potion
                 if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9) && item.getLegacyData() > 16384) {
                     return;
@@ -56,15 +57,14 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
                         || material == ItemTypes.HONEY_BOTTLE) {
                     player.packetStateData.slowedByUsingItem = true;
                     player.packetStateData.eatingHand = hand;
-
                     return;
                 }
 
                 // The other items that do require it
-                if (item.getType().hasAttribute(ItemTypes.ItemAttribute.EDIBLE) && ((player.bukkitPlayer != null && player.food < 20) || player.gamemode == GameMode.CREATIVE)) {
+                if (item.getType().hasAttribute(ItemTypes.ItemAttribute.EDIBLE)
+                        && ((player.bukkitPlayer != null && player.food < 20) || player.gamemode == GameMode.CREATIVE)) {
                     player.packetStateData.slowedByUsingItem = true;
                     player.packetStateData.eatingHand = hand;
-
                     return;
                 }
 
@@ -75,7 +75,6 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
             if (material == ItemTypes.SHIELD) {
                 player.packetStateData.slowedByUsingItem = true;
                 player.packetStateData.eatingHand = hand;
-
                 return;
             }
 
@@ -94,11 +93,6 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
             // Players in survival can't use a bow without an arrow
             // Crossbow charge checked previously
             if (material == ItemTypes.BOW || material == ItemTypes.CROSSBOW) {
-                    /*player.packetStateData.slowedByUsingItem = player.gamemode == GameMode.CREATIVE ||
-                            player.getInventory().hasItemType(ItemTypes.ARROW) ||
-                            player.getInventory().hasItemType(ItemTypes.TIPPED_ARROW) ||
-                            player.getInventory().hasItemType(ItemTypes.SPECTRAL_ARROW);
-                    player.packetStateData.eatingHand = place.getHand();*/
                 // TODO: How do we lag compensate arrows? Mojang removed idle packet.
                 // I think we may have to cancel the bukkit event if the player isn't slowed
                 // On 1.8, it wouldn't be too bad to handle bows correctly
@@ -124,8 +118,8 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
-
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
             if (player == null) {
                 return;
             }
@@ -157,6 +151,7 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
 
         if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
             if (player == null) {
                 return;
             }
@@ -172,13 +167,14 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
                 player.packetStateData.slowedByUsingItem = false; // TODO: Send a STOP_USE_ITEM on behalf of the player
                 player.checkManager.getPostPredictionCheck(NoSlowdown.class).didSlotChangeLastTick = true;
             }
+
             player.packetStateData.lastSlotSelected = slot.getSlot();
         }
 
         if (event.getPacketType() == PacketType.Play.Client.USE_ITEM) {
             WrapperPlayClientUseItem place = new WrapperPlayClientUseItem(event);
-
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
             if (player == null) {
                 return;
             }
@@ -189,7 +185,7 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
             }
 
             // This was an interaction with a block, not a use item
-            // TODO: What is 1.8 doing with packets?  I think it's BLOCK_PLACE not USE_ITEM
+            // TODO: What is 1.8 doing with packets? I think it's BLOCK_PLACE not USE_ITEM
             if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9)) {
                 return;
             }

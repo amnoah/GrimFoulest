@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.autoheal;
+package ac.grim.grimac.checks.impl.inventory;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
@@ -9,37 +9,37 @@ import com.github.retrooper.packetevents.protocol.player.DiggingAction;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-// Detects Dortware's AutoSoup
-@CheckData(name = "AutoHeal B")
-public class AutoHealB extends PacketCheck {
+// Detects FDPClient's AutoSoup
+@CheckData(name = "Inventory F")
+public class InventoryF extends PacketCheck {
 
     private int streak;
 
-    public AutoHealB(GrimPlayer player) {
+    public InventoryF(GrimPlayer player) {
         super(player);
     }
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) { // Streak: 1
-            if (streak == 0 || streak == 2 || streak == 3 || streak == 4) {
+        if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) { // Streak: 1, 3
+            if (streak == 0 || streak == 2) {
                 ++streak;
             }
 
-        } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) { // Streak: 2, 4
+        } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) { // Streak: 2
             WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
 
-            if (packet.getAction() == DiggingAction.RELEASE_USE_ITEM) {
-                if (streak == 1 || streak == 5) {
+            if (packet.getAction() == DiggingAction.DROP_ITEM) {
+                if (streak == 1) {
                     ++streak;
                 }
             }
 
-        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) { // Reset Streak
             streak = 0;
         }
 
-        if (streak == 6) {
+        if (streak == 3) {
             event.setCancelled(true);
             player.kick(getCheckName(), "");
         }

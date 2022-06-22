@@ -3,58 +3,90 @@ package ac.grim.grimac.checks.impl.badpackets;
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
-import ac.grim.grimac.utils.data.Pair;
+import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.event.PacketSendEvent;
-import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientKeepAlive;
-import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerKeepAlive;
+import com.github.retrooper.packetevents.manager.server.ServerVersion;
+import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
+import com.github.retrooper.packetevents.protocol.player.ClientVersion;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 
+import static com.github.retrooper.packetevents.protocol.packettype.PacketType.Play.Client.*;
+
+// Detects "post" packets
 @CheckData(name = "BadPackets K")
 public class BadPacketsK extends PacketCheck {
 
-    final Queue<Pair<Long, Long>> keepaliveMap = new LinkedList<>();
+    private final ArrayDeque<PacketTypeCommon> postPackets = new ArrayDeque<>();
+    // Due to 1.9+ missing the idle packet, we must queue flags
+    // 1.8 clients will have the same logic for simplicity, although it's not needed
+    private final List<String> flags = new ArrayList<>();
+    private boolean sentFlying = false;
 
-    public BadPacketsK(GrimPlayer player) {
-        super(player);
-    }
-
-    @Override
-    public void onPacketSend(PacketSendEvent event) {
-        if (event.getPacketType() == PacketType.Play.Server.KEEP_ALIVE) {
-            WrapperPlayServerKeepAlive packet = new WrapperPlayServerKeepAlive(event);
-            keepaliveMap.add(new Pair<>(packet.getId(), System.nanoTime()));
-        }
+    public BadPacketsK(GrimPlayer playerData) {
+        super(playerData);
     }
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
-            WrapperPlayClientKeepAlive packet = new WrapperPlayClientKeepAlive(event);
-            long id = packet.getId();
-            boolean hasID = false;
-
-            for (Pair<Long, Long> iterator : keepaliveMap) {
-                if (iterator.getFirst() == id) {
-                    hasID = true;
-                    break;
-                }
+        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            // Don't count teleports or duplicates as movements
+            if (player.packetStateData.lastPacketWasTeleport
+                    || player.packetStateData.lastPacketWasOnePointSeventeenDuplicate) {
+                return;
             }
 
-            if (!hasID) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "Invalid KeepAlive: " + id);
-            } else { // Found the ID, remove stuff until we get to it (to stop very slow memory leaks)
-                Pair<Long, Long> data;
-                do {
-                    data = keepaliveMap.poll();
-                    if (data == null) {
-                        break;
+            if (!flags.isEmpty()) {
+                // Okay, the user might be cheating, let's double check
+                // 1.8 clients have the idle packet, and this shouldn't false on 1.8 clients
+                // 1.9+ clients have predictions, which will determine if hidden tick skipping occurred
+                if (player.isTickingReliablyFor(3)) {
+                    for (String flag : flags) {
+                        event.setCancelled(true);
+                        player.kick(getCheckName(), flag + " (" + player.getClientVersion().name() + ")");
+                        return;
                     }
-                } while (data.getFirst() != id);
+                }
+
+                flags.clear();
+            }
+
+            postPackets.clear();
+            sentFlying = true;
+
+        } else {
+            PacketTypeCommon packetType = event.getPacketType();
+
+            if (WINDOW_CONFIRMATION.equals(packetType) || PONG.equals(packetType)) {
+                if (sentFlying && !postPackets.isEmpty()) {
+                    flags.add(postPackets.getFirst().toString());
+                }
+
+                postPackets.clear();
+                sentFlying = false;
+
+            } else if (PLAYER_ABILITIES.equals(packetType) || INTERACT_ENTITY.equals(packetType)
+                    || PLAYER_BLOCK_PLACEMENT.equals(packetType) || USE_ITEM.equals(packetType)
+                    || PLAYER_DIGGING.equals(packetType)) {
+                if (sentFlying) {
+                    postPackets.add(event.getPacketType());
+                }
+
+            } else if (CLICK_WINDOW.equals(packetType) && player.getClientVersion().isOlderThan(ClientVersion.V_1_15)) {
+                // Why do 1.15+ players send the click window packet whenever? This doesn't make sense.
+                if (sentFlying) {
+                    postPackets.add(event.getPacketType());
+                }
+
+            } else if ((ENTITY_ACTION.equals(packetType) || ANIMATION.equals(packetType)) // ViaRewind sends START_FALL_FLYING packets async for 1.8 clients on 1.9+ servers
+                    && (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9) // ViaVersion delays animations for 1.8 clients on 1.9+ servers
+                    || PacketEvents.getAPI().getServerManager().getVersion().isOlderThanOrEquals(ServerVersion.V_1_8_8))) {
+                if (sentFlying) {
+                    postPackets.add(event.getPacketType());
+                }
             }
         }
     }

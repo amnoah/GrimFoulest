@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.badpackets;
+package ac.grim.grimac.checks.impl.pingspoof;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
@@ -7,13 +7,13 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-// Detects Dortware's Verus Disabler
-@CheckData(name = "BadPackets R")
-public class BadPacketsR extends PacketCheck {
+// Detects delaying Transaction packets
+@CheckData(name = "PingSpoof D")
+public class PingSpoofD extends PacketCheck {
 
     private int streak;
 
-    public BadPacketsR(GrimPlayer player) {
+    public PingSpoofD(GrimPlayer player) {
         super(player);
     }
 
@@ -28,7 +28,7 @@ public class BadPacketsR extends PacketCheck {
 
         if (streak >= 15) {
             event.setCancelled(true);
-            player.kick(getCheckName(), "Ping Spoof");
+            player.kick(getCheckName(), "DELAY");
         }
     }
 }

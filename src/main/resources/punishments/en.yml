@@ -37,31 +37,24 @@ Punishments:
     commands:
       - "1:0 [alert]"
       - "40:40 [webhook]"
-  Post:
+  PingSpoof:
     remove-violations-after: 300
     checks:
-      - "Post"
+      - "PingSpoof"
     commands:
       - "1:0 [alert]"
       - "40:40 [webhook]"
-  PacketFlood:
+  Inventory:
     remove-violations-after: 300
     checks:
-      - "PacketFlood"
+      - "Inventory"
     commands:
-      - "5:5 [alert]"
-      - "25:25 kick %player% You are sending too many packets!"
+      - "1:0 [alert]"
+      - "40:40 [webhook]"
   Timer:
     remove-violations-after: 300
     checks:
       - "Timer"
-    commands:
-      - "5:5 [alert]"
-      - "40:40 [webhook]"
-  Freecam:
-    remove-violations-after: 300
-    checks:
-      - "Freecam"
     commands:
       - "1:0 [alert]"
       - "40:40 [webhook]"
@@ -81,6 +74,5 @@ Punishments:
       - "AimAssist"
       - "Reach"
       - "Hitbox"
-      - "AutoHeal"
     commands:
       - "1:0 [alert]"

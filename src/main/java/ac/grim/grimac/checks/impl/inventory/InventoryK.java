@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.badpackets;
+package ac.grim.grimac.checks.impl.inventory;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
@@ -10,12 +10,12 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientIn
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
 // Detects Dortware's Infinite Durability
-@CheckData(name = "BadPackets O")
-public class BadPacketsO extends PacketCheck {
+@CheckData(name = "Inventory K")
+public class InventoryK extends PacketCheck {
 
     private int streak;
 
-    public BadPacketsO(GrimPlayer player) {
+    public InventoryK(GrimPlayer player) {
         super(player);
     }
 

@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.movement;
+package ac.grim.grimac.checks.impl.movement.timer;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
@@ -9,7 +9,7 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
 @CheckData(name = "Timer", configName = "TimerA", setback = 10)
-public class TimerCheck extends PacketCheck {
+public class Timer extends PacketCheck {
 
     long timerBalanceRealTime = 0;
 
@@ -50,7 +50,7 @@ public class TimerCheck extends PacketCheck {
     //
     // We then take the last transaction before this to increase stability with these lag spikes and
     // to guarantee that we are at least 50 ms back before adding the time
-    public TimerCheck(GrimPlayer player) {
+    public Timer(GrimPlayer player) {
         super(player);
     }
 

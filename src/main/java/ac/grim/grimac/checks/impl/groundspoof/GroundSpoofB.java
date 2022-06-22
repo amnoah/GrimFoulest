@@ -48,7 +48,7 @@ public class GroundSpoofB extends PacketCheck {
                 if (!isNearGround(wrapper.isOnGround())) { // If player isn't near ground
                     // 1.8 boats have a mind on their own... only flag if they're not near a boat or are on 1.9+
                     if (!GhostBlockDetector.isGhostBlock(player)) {
-                        flagAndSetback();
+                        flagAndAlert("", true);
                     }
 
                     if (!player.disableGrim) {

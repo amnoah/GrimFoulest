@@ -4,14 +4,15 @@ import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEntityAction;
+import com.github.retrooper.packetevents.protocol.player.ClientVersion;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-@CheckData(name = "BadPackets G")
+// Detects sending same yaw & pitch twice
+@CheckData(name = "BadPackets H")
 public class BadPacketsG extends PacketCheck {
 
-    boolean wasTeleport;
-    boolean lastSneaking;
+    private double lastYaw;
+    private double lastPitch;
 
     public BadPacketsG(GrimPlayer player) {
         super(player);
@@ -19,27 +20,45 @@ public class BadPacketsG extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        wasTeleport = player.packetStateData.lastPacketWasTeleport || wasTeleport;
+        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
+            float posYaw = packet.getLocation().getYaw();
+            float posPitch = packet.getLocation().getPitch();
 
-        if (event.getPacketType() == PacketType.Play.Client.ENTITY_ACTION) {
-            WrapperPlayClientEntityAction packet = new WrapperPlayClientEntityAction(event);
-
-            if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SNEAKING) {
-                if (lastSneaking && !wasTeleport) {
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "START_SNEAKING");
-                } else {
-                    lastSneaking = true;
-                }
-
-            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SNEAKING) {
-                if (!lastSneaking && !wasTeleport) {
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "STOP_SNEAKING");
-                } else {
-                    lastSneaking = false;
-                }
+            // Player is inside unloaded chunk
+            if (player.getSetbackTeleportUtil().insideUnloadedChunk()) {
+                return;
             }
+
+            // Player just teleported
+            if (player.packetStateData.lastPacketWasTeleport) {
+                return;
+            }
+
+            // Player is in vehicle
+            if (player.compensatedEntities.getSelf().inVehicle()) {
+                return;
+            }
+
+            // Rotation hasn't changed
+            if (!packet.hasRotationChanged()) {
+                return;
+            }
+
+            // Ignore players newer than 1.9+
+            if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9)) {
+                return;
+            }
+
+            // lastYaw and lastPitch are identical
+            if (lastYaw == posYaw && lastPitch == posPitch) {
+                event.setCancelled(true);
+                player.kick(getCheckName(), "Identical Rotation");
+                return;
+            }
+
+            lastYaw = posYaw;
+            lastPitch = posPitch;
         }
     }
 }

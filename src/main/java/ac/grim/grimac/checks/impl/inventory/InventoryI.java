@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.autoheal;
+package ac.grim.grimac.checks.impl.inventory;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
@@ -8,38 +8,31 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClickWindow;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-// Detects ETB 0.1's AutoPot
-@CheckData(name = "AutoHeal C")
-public class AutoHealC extends PacketCheck {
+// Detects Envy's InvCleaner generically
+@CheckData(name = "Inventory I")
+public class InventoryI extends PacketCheck {
 
     private int streak;
 
-    public AutoHealC(GrimPlayer player) {
+    public InventoryI(GrimPlayer player) {
         super(player);
     }
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) { // Streak: 1, 4
-            if (streak == 0 || streak == 3) {
-                ++streak;
-            }
-
-        } else if (event.getPacketType() == PacketType.Play.Client.CLICK_WINDOW) { // Streak: 2, 3
+        if (event.getPacketType() == PacketType.Play.Client.CLICK_WINDOW) { // Sets Streak
             WrapperPlayClientClickWindow packet = new WrapperPlayClientClickWindow(event);
             WrapperPlayClientClickWindow.WindowClickType clickType = packet.getWindowClickType();
 
-            if (packet.getWindowId() == 0 && clickType == WrapperPlayClientClickWindow.WindowClickType.SWAP) {
-                if (streak == 1 || streak == 2) {
-                    ++streak;
-                }
+            if (packet.getWindowId() == 0 && clickType == WrapperPlayClientClickWindow.WindowClickType.PICKUP) {
+                ++streak;
             }
 
         } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) { // Reset Streak
             streak = 0;
         }
 
-        if (streak == 4) {
+        if (streak == 2) {
             event.setCancelled(true);
             player.kick(getCheckName(), "");
         }

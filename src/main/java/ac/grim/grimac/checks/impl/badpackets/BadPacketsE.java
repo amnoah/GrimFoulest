@@ -5,12 +5,14 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEntityAction;
 
+// Detects sending two Sneak packets with the same state
 @CheckData(name = "BadPackets E")
 public class BadPacketsE extends PacketCheck {
 
-    private int noReminderTicks;
+    boolean wasTeleport;
+    boolean lastSneaking;
 
     public BadPacketsE(GrimPlayer player) {
         super(player);
@@ -18,22 +20,27 @@ public class BadPacketsE extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
+        wasTeleport = player.packetStateData.lastPacketWasTeleport || wasTeleport;
 
-            if (packet.hasPositionChanged()) {
-                noReminderTicks = 0;
-            } else {
-                noReminderTicks++;
+        if (event.getPacketType() == PacketType.Play.Client.ENTITY_ACTION) {
+            WrapperPlayClientEntityAction packet = new WrapperPlayClientEntityAction(event);
+
+            if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SNEAKING) {
+                if (lastSneaking && !wasTeleport) {
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "START_SNEAKING");
+                } else {
+                    lastSneaking = true;
+                }
+
+            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SNEAKING) {
+                if (!lastSneaking && !wasTeleport) {
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "STOP_SNEAKING");
+                } else {
+                    lastSneaking = false;
+                }
             }
-
-        } else if (event.getPacketType() == PacketType.Play.Client.STEER_VEHICLE) {
-            noReminderTicks = 0; // Exempt vehicles
-        }
-
-        if (noReminderTicks > 20) {
-            event.setCancelled(true);
-            player.kick(getCheckName(), String.valueOf(noReminderTicks));
         }
     }
 }

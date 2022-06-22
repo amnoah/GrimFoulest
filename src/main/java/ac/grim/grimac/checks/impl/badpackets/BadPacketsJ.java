@@ -4,13 +4,13 @@ import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
+// Detects moving outside of the world border
 @CheckData(name = "BadPackets J")
 public class BadPacketsJ extends PacketCheck {
 
-    private int streak;
+    private static final double HARD_CODED_BORDER = 2.9999999E7D;
 
     public BadPacketsJ(GrimPlayer player) {
         super(player);
@@ -18,16 +18,24 @@ public class BadPacketsJ extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.WINDOW_CONFIRMATION) {
-            streak++;
+        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
 
-        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            streak = 0;
+            // Player just teleported
+            if (player.packetStateData.lastPacketWasTeleport) {
+                return;
+            }
 
-        } else if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
-            if (streak >= 10) {
+            // Position hasn't changed
+            if (!packet.hasPositionChanged()) {
+                return;
+            }
+
+            // Player location is above the max world border value
+            if (Math.abs(packet.getLocation().getX()) > HARD_CODED_BORDER
+                    || Math.abs(packet.getLocation().getZ()) > HARD_CODED_BORDER) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "Fake Lag");
+                player.kick(getCheckName(), "Outside Border");
             }
         }
     }

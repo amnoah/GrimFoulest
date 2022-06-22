@@ -4,12 +4,14 @@ import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
+// Detects sending multiple packets in-between Flying
 @CheckData(name = "BadPackets N")
 public class BadPacketsN extends PacketCheck {
 
-    private static final double HARD_CODED_BORDER = 2.9999999E7D;
+    private int streak;
 
     public BadPacketsN(GrimPlayer player) {
         super(player);
@@ -17,25 +19,20 @@ public class BadPacketsN extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
+        if (!WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())
+                && event.getPacketType() != PacketType.Play.Client.WINDOW_CONFIRMATION
+                && event.getPacketType() != PacketType.Play.Client.PLUGIN_MESSAGE
+                && event.getPacketType() != PacketType.Play.Client.KEEP_ALIVE
+                && event.getPacketType() != PacketType.Play.Client.CREATIVE_INVENTORY_ACTION) {
+            streak++;
 
-            // Player just teleported
-            if (player.packetStateData.lastPacketWasTeleport) {
-                return;
-            }
-
-            // Position hasn't changed
-            if (!packet.hasPositionChanged()) {
-                return;
-            }
-
-            // Player location is above the max world border value
-            if (Math.abs(packet.getLocation().getX()) > HARD_CODED_BORDER
-                    || Math.abs(packet.getLocation().getZ()) > HARD_CODED_BORDER) {
+            if (streak >= 6) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "Outside Border");
+                player.kick(getCheckName(), event.getPacketType().getName());
             }
+
+        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            streak = 0;
         }
     }
 }

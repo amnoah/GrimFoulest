@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.scaffolding;
+package ac.grim.grimac.checks.impl.scaffold;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.BlockPlaceCheck;

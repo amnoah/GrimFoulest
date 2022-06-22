@@ -77,14 +77,17 @@ public class Reach extends PacketCheck {
                 return;
             }
 
+            // Ignores players in Creative
             if (player.gamemode == GameMode.CREATIVE) {
                 return;
             }
 
+            // Ignores players in vehicles
             if (player.compensatedEntities.getSelf().inVehicle()) {
                 return;
             }
 
+            // Ignores targets riding an entity (?)
             if (entity.riding != null) {
                 return;
             }
@@ -98,7 +101,8 @@ public class Reach extends PacketCheck {
 
         if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             // Teleports don't interpolate, duplicate 1.17 packets don't interpolate
-            if (player.packetStateData.lastPacketWasTeleport || player.packetStateData.lastPacketWasOnePointSeventeenDuplicate) {
+            if (player.packetStateData.lastPacketWasTeleport
+                    || player.packetStateData.lastPacketWasOnePointSeventeenDuplicate) {
                 return;
             }
 
@@ -119,14 +123,17 @@ public class Reach extends PacketCheck {
                 || player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9);
 
         // If the entity doesn't exist, or if it is exempt, or if it is dead
-        if ((blacklisted.contains(reachEntity.type) || !reachEntity.isLivingEntity()) && reachEntity.type != EntityTypes.END_CRYSTAL) {
-            return false; // exempt
+        if ((blacklisted.contains(reachEntity.type) || !reachEntity.isLivingEntity())
+                && reachEntity.type != EntityTypes.END_CRYSTAL) {
+            return false;
         }
 
+        // Ignores players in Creative
         if (player.gamemode == GameMode.CREATIVE) {
             return false;
         }
 
+        // Ignores players in vehicles
         if (player.compensatedEntities.getSelf().inVehicle()) {
             return false;
         }

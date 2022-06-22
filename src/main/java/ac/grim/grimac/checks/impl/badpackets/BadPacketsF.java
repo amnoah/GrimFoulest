@@ -5,13 +5,13 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEntityAction;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 
-@CheckData(name = "BadPackets F")
+// Detects attacking entities without swinging
+@CheckData(name = "BadPackets H")
 public class BadPacketsF extends PacketCheck {
 
-    public boolean lastSprinting;
-    boolean thanksMojang; // Support 1.14+ clients starting on either true or false sprinting, we don't know
+    private int streak;
 
     public BadPacketsF(GrimPlayer player) {
         super(player);
@@ -19,37 +19,20 @@ public class BadPacketsF extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.ENTITY_ACTION) {
-            WrapperPlayClientEntityAction packet = new WrapperPlayClientEntityAction(event);
+        if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
+            WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
 
-            if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SPRINTING) {
-                if (lastSprinting) {
-                    if (!thanksMojang) {
-                        thanksMojang = true;
-                        return;
-                    }
-
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "START_SPRINTING");
-                    return;
-                }
-
-                lastSprinting = true;
-
-            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SPRINTING) {
-                if (!lastSprinting) {
-                    if (!thanksMojang) {
-                        thanksMojang = true;
-                        return;
-                    }
-
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "STOP_SPRINTING");
-                    return;
-                }
-
-                lastSprinting = false;
+            if (packet.getAction() != WrapperPlayClientInteractEntity.InteractAction.ATTACK) {
+                return;
             }
+
+            if (++streak > 2) {
+                event.setCancelled(true);
+                player.kick(getCheckName(), "NoSwing");
+            }
+
+        } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
+            streak = 0;
         }
     }
 }

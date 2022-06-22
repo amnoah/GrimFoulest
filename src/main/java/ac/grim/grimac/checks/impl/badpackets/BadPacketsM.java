@@ -5,34 +5,42 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
+// Detects sending packets in opposite sync with Flying
 @CheckData(name = "BadPackets M")
 public class BadPacketsM extends PacketCheck {
 
-    boolean sentHeldItem = false;
+    private int streak;
 
-    public BadPacketsM(GrimPlayer playerData) {
-        super(playerData);
+    public BadPacketsM(GrimPlayer player) {
+        super(player);
     }
 
+    @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) { // idle packet
-            // Due to a bug in 1.8 clients, this check isn't possible for 1.8 clients
-            // Instead, we must tick "using item" with flying packets like the server does
-            if (sentHeldItem && player.isTickingReliablyFor(3)
-                    && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9)) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "");
-                return;
-            } else {
-                sentHeldItem = true;
-            }
-        }
+        if (!WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())
+                && event.getPacketType() != PacketType.Play.Client.PLAYER_DIGGING
+                && event.getPacketType() != PacketType.Play.Client.ANIMATION
+                && event.getPacketType() != PacketType.Play.Client.CLICK_WINDOW
+                && event.getPacketType() != PacketType.Play.Client.INTERACT_ENTITY) {
+            if (streak % 2 != 0) {
+                streak++;
 
-        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            sentHeldItem = false;
+                if (streak >= 10) {
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), event.getPacketType().getName());
+                }
+            } else {
+                streak = 0;
+            }
+
+        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            if (streak % 2 == 0) {
+                streak++;
+            } else {
+                streak = 0;
+            }
         }
     }
 }

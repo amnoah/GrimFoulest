@@ -10,6 +10,7 @@ import com.github.retrooper.packetevents.protocol.player.GameMode;
 import com.github.retrooper.packetevents.protocol.world.BlockFace;
 import com.github.retrooper.packetevents.wrapper.play.client.*;
 
+// Mother of all BadPackets checks
 @CheckData(name = "BadPackets A")
 public class BadPacketsA extends PacketCheck {
 
@@ -23,7 +24,7 @@ public class BadPacketsA extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) {
             WrapperPlayClientPlayerBlockPlacement packet = new WrapperPlayClientPlayerBlockPlacement(event);
 
-            // TODO: May fail on lily-pads for 1.9+ players
+            // TODO: May fail on lily-pads for 1.9+ players; need to test
             if (packet.getFace() == BlockFace.UP
                     && packet.getBlockPosition().getX() == 0.0
                     && packet.getBlockPosition().getY() == 0.0
@@ -118,7 +119,7 @@ public class BadPacketsA extends PacketCheck {
             if (packet.getWindowId() == 0) {
                 if (packet.getSlot() > 44 || (packet.getSlot() != -999 && packet.getSlot() < 0)) {
                     event.setCancelled(true);
-                    player.kick(getCheckName(), "WINDOW_CLICK, SLOT=" + packet.getSlot());
+                    player.kick(getCheckName(), "WINDOW_CLICK (SLOT=" + packet.getSlot() + ")");
                     return;
                 }
             }

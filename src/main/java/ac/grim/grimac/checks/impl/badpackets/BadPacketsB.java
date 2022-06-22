@@ -5,12 +5,15 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientHeldItemChange;
+import com.github.retrooper.packetevents.protocol.player.DiggingAction;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
+// Detects swinging after destroying a block in the same tick
 @CheckData(name = "BadPackets B")
 public class BadPacketsB extends PacketCheck {
 
-    int lastSlot = -1;
+    private boolean sentAnimation;
 
     public BadPacketsB(GrimPlayer player) {
         super(player);
@@ -18,22 +21,19 @@ public class BadPacketsB extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) {
-            WrapperPlayClientHeldItemChange packet = new WrapperPlayClientHeldItemChange(event);
+        if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
+            WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
 
-            if (packet.getSlot() == lastSlot) {
+            if (sentAnimation && packet.getAction() == DiggingAction.FINISHED_DIGGING) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "Sent Same Slot");
-                return;
+                player.kick(getCheckName(), "Swing After Destroy");
             }
 
-            if (packet.getSlot() < 0 || packet.getSlot() > 8) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "Invalid Slot");
-                return;
-            }
+        } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
+            sentAnimation = true;
 
-            lastSlot = packet.getSlot();
+        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            sentAnimation = false;
         }
     }
 }

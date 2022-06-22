@@ -1,7 +1,7 @@
 package ac.grim.grimac.manager;
 
 import ac.grim.grimac.GrimAPI;
-import ac.grim.grimac.checks.impl.badpackets.BadPacketsL;
+import ac.grim.grimac.checks.impl.badpackets.BadPacketsH;
 import ac.grim.grimac.checks.type.PostPredictionCheck;
 import ac.grim.grimac.events.packets.patch.ResyncWorldUtil;
 import ac.grim.grimac.player.GrimPlayer;
@@ -24,7 +24,6 @@ import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.play.server.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
@@ -328,7 +327,7 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
                 // Mainly so people stop reporting "disablers" when they just enable ping spoof
                 // And for debugging purposes... so misbehaving clients can be tested
                 if (teleports.size() == 1) {
-                    player.checkManager.getPacketCheck(BadPacketsL.class).flagAndAlert("Transaction", false);
+                    player.checkManager.getPacketCheck(BadPacketsH.class).flagAndAlert("Transaction", false);
                     sendSetback(requiredSetBack);
                 }
 

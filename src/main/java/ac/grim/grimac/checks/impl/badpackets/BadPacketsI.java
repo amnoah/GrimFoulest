@@ -4,55 +4,35 @@ import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-// Detects sending same yaw & pitch twice
 @CheckData(name = "BadPackets I")
 public class BadPacketsI extends PacketCheck {
 
-    private double lastYaw;
-    private double lastPitch;
+    boolean sentHeldItem = false;
 
-    public BadPacketsI(GrimPlayer player) {
-        super(player);
+    public BadPacketsI(GrimPlayer playerData) {
+        super(playerData);
     }
 
-    @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
-            float posYaw = packet.getLocation().getYaw();
-            float posPitch = packet.getLocation().getPitch();
-
-            // Player is inside unloaded chunk
-            if (player.getSetbackTeleportUtil().insideUnloadedChunk()) {
-                return;
-            }
-
-            // Player just teleported
-            if (player.packetStateData.lastPacketWasTeleport) {
-                return;
-            }
-
-            // Player is in vehicle
-            if (player.compensatedEntities.getSelf().inVehicle()) {
-                return;
-            }
-
-            // Rotation hasn't changed
-            if (!packet.hasRotationChanged()) {
-                return;
-            }
-
-            // lastYaw and lastPitch are identical
-            if (lastYaw == posYaw && lastPitch == posPitch) {
+        if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) { // idle packet
+            // Due to a bug in 1.8 clients, this check isn't possible for 1.8 clients
+            // Instead, we must tick "using item" with flying packets like the server does
+            if (sentHeldItem && player.isTickingReliablyFor(3)
+                    && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9)) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "Identical Rotation");
+                player.kick(getCheckName(), "");
                 return;
+            } else {
+                sentHeldItem = true;
             }
+        }
 
-            lastYaw = posYaw;
-            lastPitch = posPitch;
+        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            sentHeldItem = false;
         }
     }
 }

@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.movement;
+package ac.grim.grimac.checks.impl.movement.timer;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.player.GrimPlayer;
@@ -6,7 +6,7 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 
 @CheckData(name = "Timer - Vehicle", configName = "TimerVehicle", setback = 10)
-public class VehicleTimer extends TimerCheck {
+public class VehicleTimer extends Timer {
 
     boolean isDummy = false;
 
