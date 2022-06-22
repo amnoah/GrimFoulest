@@ -22,7 +22,7 @@ public class PingSpoofE extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.WINDOW_CONFIRMATION) {
             WrapperPlayClientWindowConfirmation packet = new WrapperPlayClientWindowConfirmation(event);
 
-            if (packet.getActionId() + 1 != lastID && lastID != 0) {
+            if (Math.abs(packet.getActionId() - lastID) >= 3 && lastID != 0) {
                 event.setCancelled(true);
                 player.kick(getCheckName(), "MODIFY (ID=" + packet.getActionId() + ", LAST=" + lastID + ")");
                 return;
