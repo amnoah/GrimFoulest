@@ -11,6 +11,8 @@ Punishments:
     checks:
       - "Simulation"
       - "GroundSpoof"
+      - "Phase"
+      - "NoSlowdown"
       - "Timer"
     # Threshold:Interval Command
     #
@@ -29,13 +31,6 @@ Punishments:
     commands:
       - "1:0 [alert]"
       - "20:20 [webhook]"
-  Post:
-    remove-violations-after: 300
-    checks:
-      - "Post"
-    commands:
-      - "1:0 [alert]"
-      - "40:40 [webhook]"
   BadPackets:
     remove-violations-after: 300
     checks:
@@ -43,11 +38,24 @@ Punishments:
     commands:
       - "1:0 [alert]"
       - "40:40 [webhook]"
+  Post:
+    remove-violations-after: 300
+    checks:
+      - "Post"
+    commands:
+      - "1:0 [alert]"
+      - "40:40 [webhook]"
+  Freecam:
+    remove-violations-after: 300
+    checks:
+      - "Freecam"
+    commands:
+      - "1:0 [alert]"
+      - "40:40 [webhook]"
   Misc:
     remove-violations-after: 300
     checks:
       - "EntityControl"
-      - "NoSlow"
       - "Place"
       - "Baritone"
       - "FastBreak"
@@ -57,8 +65,9 @@ Punishments:
   Combat:
     remove-violations-after: 300
     checks:
-      - "Aim"
+      - "AimAssist"
       - "Reach"
       - "Hitbox"
+      - "AutoHeal"
     commands:
       - "1:0 [alert]"

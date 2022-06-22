@@ -11,22 +11,16 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
-import com.github.puregero.multilib.MultiLib;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 @CommandAlias("grim|grimac")
 public class GrimProfile extends BaseCommand {
+
     @Subcommand("profile")
     @CommandPermission("grim.profile")
     @CommandCompletion("@players")
     public void onConsoleDebug(CommandSender sender, OnlinePlayer target) {
-        Player player = null;
-        if (sender instanceof Player) {
-            player = (Player) sender;
-        }
-
-        if (MultiLib.isExternalPlayer(target.getPlayer())) {
+        if (target == null) {
             String alertString = GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("player-not-this-server", "%prefix% &cPlayer isn't on this server!");
             sender.sendMessage(MessageUtil.format(alertString));
             return;
@@ -40,7 +34,6 @@ public class GrimProfile extends BaseCommand {
 
         ClientBrand brand = grimPlayer.checkManager.getPacketCheck(ClientBrand.class);
         AimProcessor aimProcessor = grimPlayer.checkManager.getRotationCheck(AimProcessor.class);
-
 
         String hSens = String.valueOf((int) Math.round(aimProcessor.sensitivityX * 200));
         String vSens = String.valueOf((int) Math.round(aimProcessor.sensitivityY * 200));

@@ -29,6 +29,7 @@ public class PacketPingListener extends PacketListenerAbstract {
             // Vanilla always uses an ID starting from 1
             if (id <= 0) {
                 GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
                 if (player == null) {
                     return;
                 }
@@ -48,9 +49,11 @@ public class PacketPingListener extends PacketListenerAbstract {
             // If it wasn't in short range, it wasn't us either
             if (id == (short) id) {
                 GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
                 if (player == null) {
                     return;
                 }
+
                 if (player.addTransactionResponse((short) id)) {
                     // Not needed for vanilla as vanilla ignores this packet, needed for packet limiters
                     event.setCancelled(true);

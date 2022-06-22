@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.prediction;
+package ac.grim.grimac.checks.impl.movement.prediction;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PostPredictionCheck;
@@ -8,7 +8,7 @@ import ac.grim.grimac.utils.events.CompletePredictionEvent;
 import org.bukkit.Bukkit;
 
 @CheckData(name = "Simulation", configName = "Simulation", decay = 0.02)
-public class OffsetHandler extends PostPredictionCheck {
+public class Simulation extends PostPredictionCheck {
 
     // Config
     double setbackDecayMultiplier;
@@ -20,7 +20,7 @@ public class OffsetHandler extends PostPredictionCheck {
     // Current advantage gained
     double advantageGained = 0;
 
-    public OffsetHandler(GrimPlayer player) {
+    public Simulation(GrimPlayer player) {
         super(player);
     }
 

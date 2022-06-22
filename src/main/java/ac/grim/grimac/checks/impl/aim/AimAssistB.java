@@ -5,12 +5,12 @@ import ac.grim.grimac.checks.type.RotationCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.update.RotationUpdate;
 
-@CheckData(name = "AimDuplicateLook")
-public class AimDuplicateLook extends RotationCheck {
+@CheckData(name = "AimAssist B")
+public class AimAssistB extends RotationCheck {
 
     boolean exempt = false;
 
-    public AimDuplicateLook(GrimPlayer playerData) {
+    public AimAssistB(GrimPlayer playerData) {
         super(playerData);
     }
 

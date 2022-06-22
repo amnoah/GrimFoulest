@@ -1,7 +1,6 @@
 package ac.grim.grimac.utils.anticheat;
 
 import ac.grim.grimac.player.GrimPlayer;
-import com.github.puregero.multilib.MultiLib;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.player.User;
 import org.bukkit.entity.Player;
@@ -11,10 +10,11 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerDataManager {
+
     private final ConcurrentHashMap<User, GrimPlayer> playerDataMap = new ConcurrentHashMap<>();
 
     public GrimPlayer getPlayer(Player player) {
-        if (MultiLib.isExternalPlayer(player)) {
+        if (player == null) {
             return null;
         }
 

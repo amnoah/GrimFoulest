@@ -14,11 +14,11 @@ import org.bukkit.command.CommandSender;
 
 @CommandAlias("grim|grimac")
 public class GrimReload extends BaseCommand {
+
     @Subcommand("reload")
     @CommandPermission("grim.reload")
     public void onReload(CommandSender sender) {
-
-        //reload config
+        // Reload config
         try {
             GrimAPI.INSTANCE.getConfigManager().reload();
         } catch (RuntimeException e) {
@@ -26,7 +26,7 @@ public class GrimReload extends BaseCommand {
             return;
         }
 
-        //Reload checks for all players
+        // Reload checks for all players
         for (GrimPlayer grimPlayer : GrimAPI.INSTANCE.getPlayerDataManager().getEntries()) {
             ChannelHelper.runInEventLoop(grimPlayer.user.getChannel(), () -> {
                 grimPlayer.punishmentManager.reload();
@@ -36,12 +36,12 @@ public class GrimReload extends BaseCommand {
             });
         }
 
-        //restart discord manager
+        // Restart Discord manager
         GrimAPI.INSTANCE.getDiscordManager().start();
-        //
+
+        // Restart spectate manager
         GrimAPI.INSTANCE.getSpectateManager().start();
 
-        sender.sendMessage(MessageUtil.format("%prefix% &fConfig has been reloaded."));
+        sender.sendMessage(MessageUtil.format("&aConfig has been reloaded."));
     }
-
 }

@@ -239,10 +239,10 @@ public class PacketSelfMetadataListener extends PacketListenerAbstract {
 
         if (event.getPacketType() == PacketType.Play.Server.ENTITY_ANIMATION) {
             WrapperPlayServerEntityAnimation animation = new WrapperPlayServerEntityAnimation(event);
-
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
             if (player != null && player.entityID == animation.getEntityId()
-                    && animation.getType() == WrapperPlayServerEntityAnimation.EntityAnimationType.LEAVE_BED) {
+                    && animation.getType() == WrapperPlayServerEntityAnimation.EntityAnimationType.WAKE_UP) {
                 // Split so packet received before transaction
                 player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get() + 1, () -> player.isInBed = false);
                 event.getPostTasks().add(player::sendTransaction);

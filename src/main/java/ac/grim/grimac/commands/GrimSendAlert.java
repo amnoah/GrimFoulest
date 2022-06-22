@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 @CommandAlias("grim|grimac")
 public class GrimSendAlert extends BaseCommand {
+
     @Subcommand("sendalert")
     @CommandPermission("grim.sendalert")
     public void sendAlert(String string) {

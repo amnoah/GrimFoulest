@@ -31,20 +31,25 @@ public class PacketEntityAction extends PacketListenerAbstract {
                 case START_SPRINTING:
                     player.isSprinting = true;
                     break;
+
                 case STOP_SPRINTING:
                     player.isSprinting = false;
                     break;
+
                 case START_SNEAKING:
                     player.isSneaking = true;
                     break;
+
                 case STOP_SNEAKING:
                     player.isSneaking = false;
                     break;
+
                 case START_FLYING_WITH_ELYTRA:
                     // Starting fall flying is server sided on 1.14 and below
                     if (player.getClientVersion().isOlderThan(ClientVersion.V_1_15)) {
                         return;
                     }
+
                     ItemStack chestPlate = player.getInventory().getChestplate();
 
                     // This shouldn't be needed with latency compensated inventories
@@ -56,13 +61,16 @@ public class PacketEntityAction extends PacketListenerAbstract {
                     } else {
                         // A client is flying with a ghost elytra, resync
                         player.getSetbackTeleportUtil().executeForceResync();
+
                         if (player.bukkitPlayer != null) {
                             // Client ignores sneaking, use it to resync
                             player.bukkitPlayer.setSneaking(!player.bukkitPlayer.isSneaking());
                         }
+
                         event.setCancelled(true);
                     }
                     break;
+
                 case START_JUMPING_WITH_HORSE:
                     if (action.getJumpBoost() >= 90) {
                         player.vehicleData.nextHorseJump = 1;

@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 
 @CommandAlias("grim|grimac")
 public class GrimHelp extends BaseCommand {
+
     @Default
     @Subcommand("help")
     @CommandPermission("grim.help")

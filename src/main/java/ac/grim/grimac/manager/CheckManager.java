@@ -1,24 +1,30 @@
 package ac.grim.grimac.manager;
 
 import ac.grim.grimac.checks.Check;
-import ac.grim.grimac.checks.impl.aim.AimDuplicateLook;
-import ac.grim.grimac.checks.impl.aim.AimModulo360;
+import ac.grim.grimac.checks.impl.aim.AimAssistA;
+import ac.grim.grimac.checks.impl.aim.AimAssistB;
+import ac.grim.grimac.checks.impl.aim.AimAssistC;
 import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
 import ac.grim.grimac.checks.impl.aim.processor.Cinematic;
+import ac.grim.grimac.checks.impl.autoheal.*;
 import ac.grim.grimac.checks.impl.badpackets.*;
 import ac.grim.grimac.checks.impl.baritone.Baritone;
 import ac.grim.grimac.checks.impl.combat.Hitbox;
 import ac.grim.grimac.checks.impl.combat.Reach;
-import ac.grim.grimac.checks.impl.groundspoof.GroundSpoofC;
+import ac.grim.grimac.checks.impl.badpackets.BadPacketsR;
 import ac.grim.grimac.checks.impl.groundspoof.GroundSpoofB;
+import ac.grim.grimac.checks.impl.freecam.Freecam;
 import ac.grim.grimac.checks.impl.misc.ClientBrand;
 import ac.grim.grimac.checks.impl.misc.FastBreak;
+import ac.grim.grimac.checks.impl.misc.PacketSniffer;
 import ac.grim.grimac.checks.impl.movement.*;
+import ac.grim.grimac.checks.impl.movement.noslowdown.NoSlowdownB;
+import ac.grim.grimac.checks.impl.movement.noslowdown.NoSlowdownA;
 import ac.grim.grimac.checks.impl.post.PostCheck;
-import ac.grim.grimac.checks.impl.prediction.DebugHandler;
+import ac.grim.grimac.checks.impl.movement.prediction.DebugHandler;
 import ac.grim.grimac.checks.impl.groundspoof.GroundSpoofA;
-import ac.grim.grimac.checks.impl.prediction.OffsetHandler;
-import ac.grim.grimac.checks.impl.prediction.Phase;
+import ac.grim.grimac.checks.impl.movement.prediction.Simulation;
+import ac.grim.grimac.checks.impl.movement.prediction.Phase;
 import ac.grim.grimac.checks.impl.scaffolding.*;
 import ac.grim.grimac.checks.impl.velocity.ExplosionHandler;
 import ac.grim.grimac.checks.impl.velocity.KnockbackHandler;
@@ -53,6 +59,7 @@ public class CheckManager {
     public CheckManager(GrimPlayer player) {
         // Include post checks in the packet check too
         packetChecks = new ImmutableClassToInstanceMap.Builder<PacketCheck>()
+                .put(PacketSniffer.class, new PacketSniffer(player))
                 .put(Reach.class, new Reach(player))
                 .put(Hitbox.class, new Hitbox(player))
                 .put(PacketEntityReplication.class, new PacketEntityReplication(player))
@@ -64,7 +71,6 @@ public class CheckManager {
                 .put(PacketWorldBorder.class, new PacketWorldBorder(player))
                 .put(ClientBrand.class, new ClientBrand(player))
                 .put(GroundSpoofB.class, new GroundSpoofB(player))
-                .put(GroundSpoofC.class, new GroundSpoofC(player))
                 .put(BadPacketsA.class, new BadPacketsA(player))
                 .put(BadPacketsB.class, new BadPacketsB(player))
                 .put(BadPacketsC.class, new BadPacketsC(player))
@@ -78,6 +84,21 @@ public class CheckManager {
                 .put(BadPacketsL.class, new BadPacketsL(player))
                 .put(BadPacketsM.class, new BadPacketsM(player))
                 .put(BadPacketsN.class, new BadPacketsN(player))
+                .put(BadPacketsO.class, new BadPacketsO(player))
+                .put(BadPacketsQ.class, new BadPacketsQ(player))
+                .put(BadPacketsR.class, new BadPacketsR(player))
+                .put(NoSlowdownB.class, new NoSlowdownB(player))
+                .put(BadPacketsT.class, new BadPacketsT(player))
+                .put(BadPacketsU.class, new BadPacketsU(player))
+                .put(BadPacketsV.class, new BadPacketsV(player))
+                .put(Freecam.class, new Freecam(player))
+                .put(AutoHealA.class, new AutoHealA(player))
+                .put(AutoHealB.class, new AutoHealB(player))
+                .put(AutoHealC.class, new AutoHealC(player))
+                .put(AutoHealD.class, new AutoHealD(player))
+                .put(AutoHealE.class, new AutoHealE(player))
+                .put(AutoHealF.class, new AutoHealF(player))
+                .put(AutoHealG.class, new AutoHealG(player))
                 .put(PostCheck.class, new PostCheck(player))
                 .put(FastBreak.class, new FastBreak(player))
                 .put(SetbackBlocker.class, new SetbackBlocker(player)) // Must be last class otherwise we can't check while blocking packets
@@ -91,8 +112,9 @@ public class CheckManager {
         rotationCheck = new ImmutableClassToInstanceMap.Builder<RotationCheck>()
                 .put(AimProcessor.class, new AimProcessor(player))
                 .put(Cinematic.class, new Cinematic(player))
-                .put(AimModulo360.class, new AimModulo360(player))
-                .put(AimDuplicateLook.class, new AimDuplicateLook(player))
+                .put(AimAssistA.class, new AimAssistA(player))
+                .put(AimAssistB.class, new AimAssistB(player))
+                .put(AimAssistC.class, new AimAssistC(player))
                 .put(Baritone.class, new Baritone(player))
                 .build();
 
@@ -104,10 +126,10 @@ public class CheckManager {
                 .put(GhostBlockDetector.class, new GhostBlockDetector(player))
                 .put(Phase.class, new Phase(player))
                 .put(GroundSpoofA.class, new GroundSpoofA(player))
-                .put(OffsetHandler.class, new OffsetHandler(player))
+                .put(Simulation.class, new Simulation(player))
                 .put(DebugHandler.class, new DebugHandler(player))
                 .put(EntityControl.class, new EntityControl(player))
-                .put(NoSlow.class, new NoSlow(player))
+                .put(NoSlowdownA.class, new NoSlowdownA(player))
                 .put(SetbackTeleportUtil.class, new SetbackTeleportUtil(player)) // Avoid teleporting to new position, update safe pos last
                 .put(CompensatedFireworks.class, player.compensatedFireworks)
                 .put(SneakingEstimator.class, new SneakingEstimator(player))
@@ -217,8 +239,8 @@ public class CheckManager {
         return getPositionCheck(CompensatedCooldown.class);
     }
 
-    public NoSlow getNoSlow() {
-        return getPostPredictionCheck(NoSlow.class);
+    public NoSlowdownA getNoSlow() {
+        return getPostPredictionCheck(NoSlowdownA.class);
     }
 
     public SetbackTeleportUtil getSetbackUtil() {
@@ -229,8 +251,8 @@ public class CheckManager {
         return getPostPredictionCheck(DebugHandler.class);
     }
 
-    public OffsetHandler getOffsetHandler() {
-        return getPostPredictionCheck(OffsetHandler.class);
+    public Simulation getOffsetHandler() {
+        return getPostPredictionCheck(Simulation.class);
     }
 
     @SuppressWarnings("unchecked")

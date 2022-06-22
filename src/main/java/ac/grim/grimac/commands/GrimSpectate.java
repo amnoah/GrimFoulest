@@ -9,7 +9,6 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
-import com.github.puregero.multilib.MultiLib;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -20,6 +19,7 @@ import org.bukkit.entity.Player;
 
 @CommandAlias("grim|grimac")
 public class GrimSpectate extends BaseCommand {
+
     @Subcommand("spectate")
     @CommandPermission("grim.spectate")
     @CommandCompletion("@players")
@@ -27,13 +27,15 @@ public class GrimSpectate extends BaseCommand {
         if (!(sender instanceof Player)) {
             return;
         }
+
         Player player = (Player) sender;
 
-        if (target == null || MultiLib.isExternalPlayer(target.getPlayer())) {
+        if (target == null) {
             String message = GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("player-not-this-server", "%prefix% &cPlayer isn't on this server!");
             sender.sendMessage(MessageUtil.format(message));
             return;
         }
+
         //hide player from tab list
         if (GrimAPI.INSTANCE.getSpectateManager().enable(player)) {
             GrimPlayer grimPlayer = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(player);

@@ -28,9 +28,11 @@ public class PacketSetWrapperNull extends PacketListenerAbstract {
     public void onPacketSend(PacketSendEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.ENTITY_METADATA) {
             WrapperPlayServerEntityMetadata wrapper = new WrapperPlayServerEntityMetadata(event);
+
             if (wrapper.getEntityId() != event.getUser().getEntityId()) {
                 event.setLastUsedWrapper(null);
             }
+
         } else if (event.getPacketType() == PacketType.Play.Server.PLAYER_INFO) {
             //iterate through players and fake their game mode if they are spectating via grim spectate
             if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThanOrEquals(ServerVersion.V_1_12_2)) {
@@ -47,11 +49,12 @@ public class PacketSetWrapperNull extends PacketListenerAbstract {
 
             if (info.getAction() == WrapperPlayServerPlayerInfo.Action.UPDATE_GAME_MODE || info.getAction() == WrapperPlayServerPlayerInfo.Action.ADD_PLAYER) {
                 List<WrapperPlayServerPlayerInfo.PlayerData> nmsPlayerInfoDataList = info.getPlayerDataList();
-
                 int hideCount = 0;
+
                 for (WrapperPlayServerPlayerInfo.PlayerData playerData : nmsPlayerInfoDataList) {
                     if (GrimAPI.INSTANCE.getSpectateManager().shouldHidePlayer(receiver, playerData)) {
                         hideCount++;
+
                         if (playerData.getGameMode() == GameMode.SPECTATOR) {
                             playerData.setGameMode(GameMode.SURVIVAL);
                         }

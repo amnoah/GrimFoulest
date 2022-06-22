@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.bukkit.util.Vector;
 
 public class TrigHandler {
+
     final GrimPlayer player;
     private double buffer = 0;
     @Getter
@@ -18,20 +19,16 @@ public class TrigHandler {
     public Vector getVanillaMathMovement(Vector wantedMovement, float f, float f2) {
         float f3 = VanillaMath.sin(f2 * 0.017453292f);
         float f4 = VanillaMath.cos(f2 * 0.017453292f);
-
         float bestTheoreticalX = (float) (f3 * wantedMovement.getZ() + f4 * wantedMovement.getX()) / (f3 * f3 + f4 * f4) / f;
         float bestTheoreticalZ = (float) (-f3 * wantedMovement.getX() + f4 * wantedMovement.getZ()) / (f3 * f3 + f4 * f4) / f;
-
         return new Vector(bestTheoreticalX, 0, bestTheoreticalZ);
     }
 
     public Vector getFastMathMovement(Vector wantedMovement, float f, float f2) {
         float f3 = player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_8) ? OptifineFastMath.sin(f2 * 0.017453292f) : LegacyFastMath.sin(f2 * 0.017453292f);
         float f4 = player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_8) ? OptifineFastMath.cos(f2 * 0.017453292f) : LegacyFastMath.cos(f2 * 0.017453292f);
-
         float bestTheoreticalX = (float) (f3 * wantedMovement.getZ() + f4 * wantedMovement.getX()) / (f3 * f3 + f4 * f4) / f;
         float bestTheoreticalZ = (float) (-f3 * wantedMovement.getX() + f4 * wantedMovement.getZ()) / (f3 * f3 + f4 * f4) / f;
-
         return new Vector(bestTheoreticalX, 0, bestTheoreticalZ);
     }
 
@@ -64,7 +61,6 @@ public class TrigHandler {
             Vector trueMovement = player.actualMovement.clone().subtract(oldVel);
             Vector correctMath = getVanillaMathMovement(trueMovement, 0.1f, player.xRot);
             Vector fastMath = getFastMathMovement(trueMovement, 0.1f, player.xRot);
-
             correctMath = new Vector(Math.abs(correctMath.getX()), 0, Math.abs(correctMath.getZ()));
             fastMath = new Vector(Math.abs(fastMath.getX()), 0, Math.abs(fastMath.getZ()));
 
@@ -77,7 +73,6 @@ public class TrigHandler {
             minFastMathHorizontal = Math.min(minFastMathHorizontal, Math.abs(fastMath.getX() - fastMath.getZ()));
 
             boolean newVanilla = minCorrectHorizontal < minFastMathHorizontal;
-
             buffer += newVanilla != isVanillaMath ? 1 : -0.25;
 
             if (buffer > 5) {

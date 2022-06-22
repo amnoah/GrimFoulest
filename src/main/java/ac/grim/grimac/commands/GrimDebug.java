@@ -12,16 +12,19 @@ import org.bukkit.entity.Player;
 
 @CommandAlias("grim|grimac")
 public class GrimDebug extends BaseCommand {
+
     @Subcommand("debug")
     @CommandPermission("grim.debug")
     @CommandCompletion("@players")
     public void onDebug(CommandSender sender, @Optional OnlinePlayer target) {
         Player player = null;
+
         if (sender instanceof Player) {
             player = (Player) sender;
         }
 
         GrimPlayer grimPlayer = parseTarget(sender, player, target);
+
         if (grimPlayer == null) {
             return;
         }
@@ -35,12 +38,14 @@ public class GrimDebug extends BaseCommand {
 
     private GrimPlayer parseTarget(CommandSender sender, Player player, OnlinePlayer target) {
         Player targetPlayer = target == null ? player : target.getPlayer();
+
         if (player == null && target == null) {
             sender.sendMessage(ChatColor.RED + "You must specify a target as the console!");
             return null;
         }
 
         GrimPlayer grimPlayer = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(targetPlayer);
+
         if (grimPlayer == null) {
             sender.sendMessage(ChatColor.RED + "This player is exempt from all checks!");
         }
@@ -53,11 +58,13 @@ public class GrimDebug extends BaseCommand {
     @CommandCompletion("@players")
     public void onConsoleDebug(CommandSender sender, @Optional OnlinePlayer target) {
         Player player = null;
+
         if (sender instanceof Player) {
             player = (Player) sender;
         }
 
         GrimPlayer grimPlayer = parseTarget(sender, player, target);
+
         if (grimPlayer == null) {
             return;
         }

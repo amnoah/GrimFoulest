@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.prediction;
+package ac.grim.grimac.checks.impl.movement.prediction;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PostPredictionCheck;

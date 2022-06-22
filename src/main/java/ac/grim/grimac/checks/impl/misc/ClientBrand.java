@@ -26,7 +26,7 @@ public class ClientBrand extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.PLUGIN_MESSAGE) {
             WrapperPlayClientPluginMessage packet = new WrapperPlayClientPluginMessage(event);
 
-            if (packet.getChannelName().equalsIgnoreCase("minecraft:brand") || // 1.13+
+            if (packet.getChannelName().toString().equalsIgnoreCase("minecraft:brand") || // 1.13+
                     packet.getChannelName().equals("MC|Brand")) { // 1.12-
                 byte[] data = packet.getData();
 

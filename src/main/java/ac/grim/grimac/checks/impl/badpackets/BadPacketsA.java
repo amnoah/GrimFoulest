@@ -101,13 +101,13 @@ public class BadPacketsA extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.CLICK_WINDOW) {
             WrapperPlayClientClickWindow packet = new WrapperPlayClientClickWindow(event);
 
-            System.out.println("[WindowClick] Button=" + packet.getButton()
-                    + ", WindowClickType=" + packet.getWindowClickType()
-                    + ", Slot=" + packet.getSlot()
-                    + ", Slots=" + packet.getSlots()
-                    + ", Item=" + packet.getCarriedItemStack()
-                    + ", StateId=" + packet.getStateId()
-                    + ", WindowId=" + packet.getWindowId());
+            // Player Inventory
+            if (packet.getWindowId() == 0) {
+                if (packet.getSlot() > 44 || (packet.getSlot() != -999 && packet.getSlot() < 0)) {
+                    flagAndAlert("WindowClick Slot (" + packet.getSlot() + ")", false);
+                    return;
+                }
+            }
 
             switch (packet.getPacketId()) {
                 case 0:

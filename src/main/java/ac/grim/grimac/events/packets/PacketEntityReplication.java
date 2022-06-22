@@ -117,7 +117,6 @@ public class PacketEntityReplication extends PacketCheck {
 
         if (event.getPacketType() == PacketType.Play.Server.ENTITY_EFFECT) {
             WrapperPlayServerEntityEffect effect = new WrapperPlayServerEntityEffect(event);
-
             PotionType type = effect.getPotionType();
 
             // ViaVersion tries faking levitation effects and fails badly lol, flagging the anticheat

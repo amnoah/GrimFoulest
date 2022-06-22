@@ -19,6 +19,7 @@ public class CommandRegister implements Initable {
         commandManager.registerCommand(new GrimAlerts());
         commandManager.registerCommand(new GrimProfile());
         commandManager.registerCommand(new GrimSendAlert());
+        commandManager.registerCommand(new GrimSniff());
         commandManager.registerCommand(new GrimHelp());
         commandManager.registerCommand(new GrimReload());
         commandManager.registerCommand(new GrimSpectate());

@@ -1,4 +1,4 @@
-package ac.grim.grimac.checks.impl.movement;
+package ac.grim.grimac.checks.impl.movement.noslowdown;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PostPredictionCheck;
@@ -6,17 +6,17 @@ import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.update.PredictionComplete;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 
-@CheckData(name = "NoSlow (Prediction)", configName = "NoSlow", setback = 5)
-public class NoSlow extends PostPredictionCheck {
+@CheckData(name = "NoSlowdown A", setback = 5)
+public class NoSlowdownA extends PostPredictionCheck {
 
-    // The player sends that they switched items the next tick if they switch from an item that can be used
-    // to another item that can be used. What the fuck mojang. Affects 1.8 (and most likely 1.7) clients.
+    // The player sends that they switched items the next tick if they switch
+    // from a usable item to another usable item. Affects 1.8 (and most likely 1.7) clients.
     public boolean didSlotChangeLastTick = false;
     public boolean flaggedLastTick = false;
     double offsetToFlag;
     double bestOffset = 1;
 
-    public NoSlow(GrimPlayer player) {
+    public NoSlowdownA(GrimPlayer player) {
         super(player);
     }
 
@@ -34,7 +34,6 @@ public class NoSlow extends PostPredictionCheck {
                 if (flaggedLastTick) {
                     flagAndAlert("", true);
                 }
-
                 flaggedLastTick = true;
 
             } else {
@@ -53,6 +52,6 @@ public class NoSlow extends PostPredictionCheck {
     @Override
     public void reload() {
         super.reload();
-        offsetToFlag = getConfig().getDoubleElse("NoSlow.threshold", 0.00001);
+        offsetToFlag = getConfig().getDoubleElse("NoSlowdown.threshold", 0.00001);
     }
 }

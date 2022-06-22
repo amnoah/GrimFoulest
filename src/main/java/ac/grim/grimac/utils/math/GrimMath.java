@@ -283,4 +283,10 @@ public class GrimMath {
         }
         return marks.isEmpty() ? 0 : 1.0 * sum / marks.size();
     }
+
+    public static int countDecimalPlaces(double d) {
+        String text = Double.toString(Math.abs(d));
+        int integerPlaces = text.indexOf('.');
+        return text.length() - integerPlaces - 1;
+    }
 }
