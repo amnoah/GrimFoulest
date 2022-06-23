@@ -23,6 +23,7 @@ public class BadPacketsN extends PacketCheck {
                 && event.getPacketType() != PacketType.Play.Client.WINDOW_CONFIRMATION
                 && event.getPacketType() != PacketType.Play.Client.PLUGIN_MESSAGE
                 && event.getPacketType() != PacketType.Play.Client.KEEP_ALIVE
+                && event.getPacketType() != PacketType.Play.Client.CLICK_WINDOW
                 && event.getPacketType() != PacketType.Play.Client.CREATIVE_INVENTORY_ACTION) {
             streak++;
 

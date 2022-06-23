@@ -189,6 +189,7 @@ public class GrimPlayer {
     public GameMode gamemode;
     public Dimension dimension;
     public Vector3d bedPosition;
+    public double ping;
     public long lastBlockPlaceUseItem = 0;
     public Queue<PacketWrapper<?>> placeUseItemPackets = new LinkedBlockingQueue<>();
     PacketTracker packetTracker;

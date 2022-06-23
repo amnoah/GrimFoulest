@@ -77,12 +77,14 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
             // Teleport, let velocity be reset
             safeTeleportPosition = new SetbackLocationVelocity(new Vector3d(player.x, player.y, player.z));
             blockOffsets = false;
+
         } else if (requiredSetBack == null || requiredSetBack.isComplete()) {
             setbackConfirmTicksAgo++;
             cheatVehicleInterpolationDelay--;
             // No simulation... we can do that later. We just need to know the valid position.
             // As we didn't setback here, the new position is known to be safe!
             safeTeleportPosition = new SetbackLocationVelocity(new Vector3d(player.x, player.y, player.z), player.clientVelocity.clone());
+
         } else {
             setbackConfirmTicksAgo = 0; // Pending setback
         }
@@ -227,6 +229,7 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
             // Player is in a vehicle
             if (player.compensatedEntities.getSelf().getRiding() != null) {
                 int vehicleId = player.compensatedEntities.getPacketEntityID(player.compensatedEntities.getSelf().getRiding());
+
                 if (player.compensatedEntities.serverPlayerVehicle != null) {
                     // Dismount player from vehicle
                     if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_9)) {
@@ -251,15 +254,20 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
             }
 
             player.sendTransaction();
+
             double y = position.getY();
             if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThanOrEquals(ServerVersion.V_1_7_10)) {
                 y += 1.62; // 1.7 teleport offset if grim ever supports 1.7 again
             }
+
             addSentTeleport(new Location(null, position.getX(), y, position.getZ(), player.xRot % 360, player.yRot % 360), player.lastTransactionSent.get(), new RelativeFlag(0b11000), false);
+
             // This must be done after setting the sent teleport, otherwise we lose velocity data
             requiredSetBack = data;
+
             // Send after tracking to fix race condition
             PacketEvents.getAPI().getProtocolManager().sendPacketSilently(player.user.getChannel(), new WrapperPlayServerPlayerPositionAndLook(position.getX(), position.getY(), position.getZ(), 0, 0, data.getTeleportData().getFlags().getMask(), new Random().nextInt(), false));
+
             player.sendTransaction();
 
             if (data.getVelocity() != null) {
@@ -284,6 +292,7 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
 
         while (true) {
             TeleportData teleportPos = teleports.peek();
+
             if (teleportPos == null) {
                 break;
             }
@@ -352,18 +361,21 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
 
         while (true) {
             Pair<Integer, Vector3d> teleportPos = player.vehicleData.vehicleTeleports.peek();
+
             if (teleportPos == null) {
                 break;
             }
+
             if (lastTransaction < teleportPos.getFirst()) {
                 break;
             }
 
             Vector3d position = teleportPos.getSecond();
+
             if (position.getX() == x && position.getY() == y && position.getZ() == z) {
                 player.vehicleData.vehicleTeleports.poll();
-
                 return true;
+
             } else if (lastTransaction > teleportPos.getFirst() + 1) {
                 player.vehicleData.vehicleTeleports.poll();
 
@@ -400,7 +412,6 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
         int transaction = player.lastTransactionReceived.get();
         double playerX = player.x;
         double playerZ = player.z;
-
         Column column = player.compensatedWorld.getChunk(GrimMath.floor(playerX) >> 4, GrimMath.floor(playerZ) >> 4);
 
         // The player is in an unloaded chunk
@@ -441,9 +452,11 @@ public class SetbackTeleportUtil extends PostPredictionCheck {
         if (data.isRelativeX()) {
             realPosition = realPosition.add(player.x, 0, 0);
         }
+
         if (data.isRelativeY()) {
             realPosition = realPosition.add(0, player.y, 0);
         }
+
         if (data.isRelativeZ()) {
             realPosition = realPosition.add(0, 0, player.z);
         }

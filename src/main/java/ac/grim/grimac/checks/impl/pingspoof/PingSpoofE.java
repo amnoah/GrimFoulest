@@ -21,10 +21,11 @@ public class PingSpoofE extends PacketCheck {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.WINDOW_CONFIRMATION) {
             WrapperPlayClientWindowConfirmation packet = new WrapperPlayClientWindowConfirmation(event);
+            int diff = packet.getActionId() - lastID;
 
-            if (Math.abs(packet.getActionId() - lastID) >= 3 && lastID != 0) {
+            if (Math.abs(diff) >= 7 && lastID != 0 && Math.abs(packet.getActionId()) >= 30) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "MODIFY (ID=" + packet.getActionId() + ", LAST=" + lastID + ")");
+                player.kick(getCheckName(), "MODIFY (DIFF=" + diff + ", ID=" + packet.getActionId() + ")");
                 return;
             }
 

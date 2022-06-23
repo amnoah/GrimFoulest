@@ -25,6 +25,7 @@ public class DiscordManager implements Initable {
             }
 
             client = WebhookClient.withUrl(GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("webhook", ""));
+
             if (client.getUrl().isEmpty()) {
                 LogUtil.warn("Discord webhook is empty, disabling Discord alerts");
                 client = null;

@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class AlertManager {
+
     @Getter
     private final Set<Player> enabledAlerts = new CopyOnWriteArraySet<>(new HashSet<>());
 
@@ -18,8 +19,8 @@ public class AlertManager {
             String alertString = GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("alerts-enabled", "%prefix% &fAlerts enabled");
             alertString = MessageUtil.format(alertString);
             player.sendMessage(alertString);
-
             enabledAlerts.add(player);
+
         } else {
             String alertString = GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("alerts-disabled", "%prefix% &fAlerts disabled");
             alertString = MessageUtil.format(alertString);

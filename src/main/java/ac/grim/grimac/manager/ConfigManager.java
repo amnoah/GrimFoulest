@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class ConfigManager {
+
     @Getter
     private final DynamicConfig config;
     @Getter
@@ -71,8 +72,10 @@ public class ConfigManager {
         } catch (Exception e) {
             throw new RuntimeException("Failed to load config", e);
         }
+
         maxPingTransaction = config.getIntElse("max-ping.transaction", 120);
         ignoredClientPatterns.clear();
+
         for (String string : config.getStringList("client-brand.ignored-clients")) {
             try {
                 ignoredClientPatterns.add(Pattern.compile(string));
@@ -88,27 +91,27 @@ public class ConfigManager {
                 return true;
             }
         }
+
         return false;
     }
 
     private void upgrade() {
         File config = new File(GrimAPI.INSTANCE.getPlugin().getDataFolder(), "config.yml");
+
         if (config.exists()) {
             try {
                 String configString = new String(Files.readAllBytes(config.toPath()));
-
                 int configVersion = configString.indexOf("config-version: ");
 
                 if (configVersion != -1) {
                     String configStringVersion = configString.substring(configVersion + "config-version: ".length());
                     configStringVersion = configStringVersion.substring(0, !configStringVersion.contains("\n") ? configStringVersion.length() : configStringVersion.indexOf("\n"));
                     configStringVersion = configStringVersion.replaceAll("\\D", "");
-
                     configVersion = Integer.parseInt(configStringVersion);
                     // TODO: Do we have to hardcode this?
                     configString = configString.replaceAll("config-version: " + configStringVersion, "config-version: 3");
-                    Files.write(config.toPath(), configString.getBytes());
 
+                    Files.write(config.toPath(), configString.getBytes());
                     upgradeModernConfig(config, configString, configVersion);
                 } else {
                     removeLegacyTwoPointOne(config);
@@ -124,9 +127,11 @@ public class ConfigManager {
         if (configVersion < 1) {
             addMaxPing(config, configString);
         }
+
         if (configVersion < 2) {
             addMissingPunishments();
         }
+
         if (configVersion < 3) {
             addBaritoneCheck();
         }
@@ -149,6 +154,7 @@ public class ConfigManager {
     private void addMissingPunishments() {
         File config = new File(GrimAPI.INSTANCE.getPlugin().getDataFolder(), "punishments.yml");
         String configString;
+
         if (config.exists()) {
             try {
                 configString = new String(Files.readAllBytes(config.toPath()));
@@ -183,6 +189,7 @@ public class ConfigManager {
     private void addBaritoneCheck() {
         File config = new File(GrimAPI.INSTANCE.getPlugin().getDataFolder(), "punishments.yml");
         String configString;
+
         if (config.exists()) {
             try {
                 configString = new String(Files.readAllBytes(config.toPath()));

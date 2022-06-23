@@ -9,6 +9,7 @@ import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableClassToInstanceMap;
 
 public class InitManager {
+
     final ClassToInstanceMap<Initable> initializersOnLoad;
     final ClassToInstanceMap<Initable> initializersOnStart;
     final ClassToInstanceMap<Initable> initializersOnStop;

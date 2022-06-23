@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LastInstanceManager extends PostPredictionCheck {
+
     private final List<LastInstance> instances = new ArrayList<>();
 
     public LastInstanceManager(GrimPlayer player) {

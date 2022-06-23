@@ -100,6 +100,7 @@ public class CheckManager {
                 .put(InventoryJ.class, new InventoryJ(player))
                 .put(InventoryK.class, new InventoryK(player))
                 .put(InventoryL.class, new InventoryL(player))
+                .put(InventoryM.class, new InventoryM(player))
                 .put(PingSpoofA.class, new PingSpoofA(player))
                 .put(PingSpoofC.class, new PingSpoofC(player))
                 .put(PingSpoofD.class, new PingSpoofD(player))

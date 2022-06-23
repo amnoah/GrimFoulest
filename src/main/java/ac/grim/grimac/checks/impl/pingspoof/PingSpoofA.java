@@ -56,6 +56,7 @@ public class PingSpoofA extends PacketCheck {
             WrapperPlayClientKeepAlive packet = new WrapperPlayClientKeepAlive(event);
             long receivedID = packet.getId();
             long receivedTime = System.nanoTime();
+            player.ping = (double) (receivedTime - lastSentTime) / 1000000; // Calculates player ping
 
 //            System.out.println("(Received)"
 //                    + " receivedID=" + receivedID
@@ -66,7 +67,7 @@ public class PingSpoofA extends PacketCheck {
 //                    + " lastSentTime=" + lastSentTime
 //                    + " timeDiff=" + (receivedTime - lastSentTime));
 
-            if (receivedID != lastSentID) {
+            if (receivedID != lastSentID && receivedID != -1) {
                 event.setCancelled(true);
                 player.kick(getCheckName(), "RECEIVED (S=" + lastSentID + ", R=" + receivedID + ")");
                 return;

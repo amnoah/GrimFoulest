@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import java.util.*;
 
 public class PunishmentManager {
+
     final GrimPlayer player;
     final List<PunishGroup> groups = new ArrayList<>();
 
@@ -41,8 +42,7 @@ public class PunishmentManager {
                     command = command.toLowerCase(Locale.ROOT);
 
                     for (Check check : player.checkManager.allChecks.values()) { // o(n) * o(n)?
-                        if (check.getCheckName() != null
-                                && (check.getCheckName().toLowerCase(Locale.ROOT).contains(command)
+                        if (check.getCheckName() != null && (check.getCheckName().toLowerCase(Locale.ROOT).contains(command)
                                 || check.getAlternativeName().toLowerCase(Locale.ROOT).contains(command))) { // Some checks have equivalent names like AntiKB and AntiKnockback
                             checksList.add(check);
                         }
@@ -94,6 +94,7 @@ public class PunishmentManager {
 
                             CommandExecuteEvent executeEvent = new CommandExecuteEvent(check, cmd);
                             Bukkit.getPluginManager().callEvent(executeEvent);
+
                             if (executeEvent.isCancelled()) {
                                 continue;
                             }

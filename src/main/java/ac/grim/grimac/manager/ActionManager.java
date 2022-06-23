@@ -10,6 +10,7 @@ import lombok.Getter;
 
 @Getter
 public class ActionManager extends PacketCheck {
+
     private boolean attacking = false;
     private long lastAttack = 0;
 
@@ -25,6 +26,7 @@ public class ActionManager extends PacketCheck {
 
         if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
             WrapperPlayClientInteractEntity interact = new WrapperPlayClientInteractEntity(event);
+
             if (interact.getAction() == WrapperPlayClientInteractEntity.InteractAction.ATTACK) {
                 attacking = true;
                 lastAttack = System.currentTimeMillis();
