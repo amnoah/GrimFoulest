@@ -8,7 +8,7 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-@CheckData(name = "Timer", configName = "TimerA", setback = 10)
+@CheckData(name = "Timer", setback = 10)
 public class Timer extends PacketCheck {
 
     long timerBalanceRealTime = 0;

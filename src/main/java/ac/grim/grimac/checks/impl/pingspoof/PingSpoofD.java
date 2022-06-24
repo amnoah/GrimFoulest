@@ -26,7 +26,7 @@ public class PingSpoofD extends PacketCheck {
             streak = 0;
         }
 
-        if (streak >= 15) {
+        if (streak >= 20) {
             event.setCancelled(true);
             player.kick(getCheckName(), "DELAY");
         }

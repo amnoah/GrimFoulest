@@ -22,6 +22,7 @@ public class BadPacketsL extends PacketCheck {
         if (!WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())
                 && event.getPacketType() != PacketType.Play.Client.WINDOW_CONFIRMATION
                 && event.getPacketType() != PacketType.Play.Client.STEER_VEHICLE
+                && event.getPacketType() != PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT
                 && event.getPacketType() != PacketType.Play.Client.ANIMATION
                 && event.getPacketType() != PacketType.Play.Client.CLICK_WINDOW) {
             if (streak % 2 == 0) {

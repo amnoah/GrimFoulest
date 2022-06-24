@@ -9,14 +9,13 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientKeepAlive;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerKeepAlive;
 
-// Detects delaying & modifying KeepAlive packets
+// Detects modifying KeepAlive packets
 @CheckData(name = "PingSpoof A")
 public class PingSpoofA extends PacketCheck {
 
     public long lastSentID;
-    public long lastSentTime;
     public long lastReceivedID;
-    public long lastReceivedTime;
+    public long sentKeepAliveTime;
     public long streak;
 
     public PingSpoofA(GrimPlayer player) {
@@ -28,25 +27,17 @@ public class PingSpoofA extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Server.KEEP_ALIVE) {
             WrapperPlayServerKeepAlive packet = new WrapperPlayServerKeepAlive(event);
             long sentID = packet.getId();
-            long sentTime = System.nanoTime();
 
-//            System.out.println("(Send)"
-//                    + " sentID=" + sentID
-//                    + " sentTime=" + sentTime
-//                    + " lastSentID=" + lastSentID
-//                    + " lastSentTime=" + lastSentTime
-//                    + " lastReceivedID=" + lastReceivedID
-//                    + " lastReceivedTime=" + lastReceivedTime
-//                    + " timeDiff=" + (sentTime - lastReceivedTime));
+            // For calculating player ping
+            sentKeepAliveTime = System.nanoTime();
 
-            if (lastSentID != lastReceivedID) {
+            if (lastSentID != lastReceivedID && lastSentID != -1) {
                 event.setCancelled(true);
                 player.kick(getCheckName(), "SENT (S=" + lastSentID + ", R=" + lastReceivedID + ")");
                 return;
             }
 
             lastSentID = sentID;
-            lastSentTime = sentTime;
         }
     }
 
@@ -55,17 +46,9 @@ public class PingSpoofA extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
             WrapperPlayClientKeepAlive packet = new WrapperPlayClientKeepAlive(event);
             long receivedID = packet.getId();
-            long receivedTime = System.nanoTime();
-            player.ping = (double) (receivedTime - lastSentTime) / 1000000; // Calculates player ping
 
-//            System.out.println("(Received)"
-//                    + " receivedID=" + receivedID
-//                    + " receivedTime=" + receivedTime
-//                    + " lastReceivedID=" + lastReceivedID
-//                    + " lastReceivedTime=" + lastReceivedTime
-//                    + " lastSentID=" + lastSentID
-//                    + " lastSentTime=" + lastSentTime
-//                    + " timeDiff=" + (receivedTime - lastSentTime));
+            // For calculating player ping
+            player.keepAlivePing = (int) (System.nanoTime() - sentKeepAliveTime) / 1000000;
 
             if (receivedID != lastSentID && receivedID != -1) {
                 event.setCancelled(true);
@@ -74,7 +57,6 @@ public class PingSpoofA extends PacketCheck {
             }
 
             lastReceivedID = receivedID;
-            lastReceivedTime = receivedTime;
         }
     }
 }

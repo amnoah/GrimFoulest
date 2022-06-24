@@ -102,11 +102,13 @@ public class CheckManager {
                 .put(InventoryL.class, new InventoryL(player))
                 .put(InventoryM.class, new InventoryM(player))
                 .put(PingSpoofA.class, new PingSpoofA(player))
+                .put(PingSpoofB.class, new PingSpoofB(player))
                 .put(PingSpoofC.class, new PingSpoofC(player))
                 .put(PingSpoofD.class, new PingSpoofD(player))
                 .put(PingSpoofE.class, new PingSpoofE(player))
                 .put(PingSpoofF.class, new PingSpoofF(player))
                 .put(PingSpoofG.class, new PingSpoofG(player))
+                .put(PingSpoofH.class, new PingSpoofH(player))
                 .put(FastBreak.class, new FastBreak(player))
                 .put(SetbackBlocker.class, new SetbackBlocker(player)) // Must be last class otherwise we can't check while blocking packets
                 .build();
