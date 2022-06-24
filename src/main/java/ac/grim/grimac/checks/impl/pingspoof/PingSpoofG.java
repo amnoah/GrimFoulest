@@ -12,8 +12,6 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerKe
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerResourcePackSend;
 import net.kyori.adventure.text.Component;
 
-import java.util.Objects;
-
 // Detects PingSpoof using the ResourcePackStatus packet
 @CheckData(name = "PingSpoof G")
 public class PingSpoofG extends PacketCheck {
@@ -23,7 +21,8 @@ public class PingSpoofG extends PacketCheck {
     private long keepAliveID;
     private int resourcePackPing = -1;
     private int keepAlivePing = -1;
-    boolean clientBlocksPacket = false;
+    private int lastKeepAlivePing = -1;
+    private boolean clientBlocksPacket = false;
 
     public PingSpoofG(GrimPlayer player) {
         super(player);
@@ -73,6 +72,8 @@ public class PingSpoofG extends PacketCheck {
                 keepAlivePing = (int) (System.nanoTime() - keepAliveTime) / 1000000;
                 checkPing();
             }
+
+            lastKeepAlivePing = keepAlivePing;
         }
     }
 
@@ -85,7 +86,7 @@ public class PingSpoofG extends PacketCheck {
                 flagAndAlert("REAL=" + resourcePackPing + " FAKE=" + keepAlivePing, false);
             }
 
-        } else if (resourcePackPing == -1 && keepAlivePing != -1) {
+        } else if (resourcePackPing == -1 && keepAlivePing != -1 && lastKeepAlivePing != -1) {
             clientBlocksPacket = true;
         }
     }
