@@ -31,6 +31,7 @@ public class PacketSniffer extends PacketCheck {
     public static boolean sniffingOutgoing;
     public static boolean sniffingFlying;
     public static boolean sniffingWindowConfirmation;
+    public static boolean sniffingResourcePackStatus;
 
     public PacketSniffer(GrimPlayer player) {
         super(player);

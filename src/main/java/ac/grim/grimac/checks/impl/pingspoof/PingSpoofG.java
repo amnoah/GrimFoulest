@@ -57,9 +57,9 @@ public class PingSpoofG extends PacketCheck {
             // Calculate ping via the ResourcePackStatus packet.
             // Never spoofed using hacked clients.
             if (packet.getHash().equals("")
-                    && (!clientBlocksPacket && packet.getResult() == WrapperPlayClientResourcePackStatus.Result.FAILED_DOWNLOAD)
-                    || (clientBlocksPacket && packet.getResult() == WrapperPlayClientResourcePackStatus.Result.ACCEPTED
-                    || packet.getResult() == WrapperPlayClientResourcePackStatus.Result.DECLINED)) {
+                    && packet.getResult() == WrapperPlayClientResourcePackStatus.Result.FAILED_DOWNLOAD
+                    || packet.getResult() == WrapperPlayClientResourcePackStatus.Result.ACCEPTED
+                    || packet.getResult() == WrapperPlayClientResourcePackStatus.Result.DECLINED) {
                 resourcePackPing = (int) (System.nanoTime() - resourcePackTime) / 1000000;
                 checkPing();
             }
