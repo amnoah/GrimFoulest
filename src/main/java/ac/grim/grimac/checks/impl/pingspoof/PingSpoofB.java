@@ -28,7 +28,7 @@ public class PingSpoofB extends PacketCheck {
                 streak = 0;
             }
 
-            if (streak >= 3) {
+            if (streak >= 5) {
                 event.setCancelled(true);
                 player.kick(getCheckName(), "NEGATIVE");
             }

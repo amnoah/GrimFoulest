@@ -28,6 +28,10 @@ spectators:
 # How long should players have until we keep them for timing out? Default = 2 minutes
 max-ping: 120
 
+# Set to false if your server uses custom resource packs
+# Example: Cops & Robbers on Hypixel
+using-custom-resource-packs: false
+
 Simulation:
   # How much should we multiply total advantage by when the player is legit
   # This is what the default config looks like (x axis = seconds, y axis = 1/1000 block): https://www.desmos.com/calculator/d4ufgxrxer

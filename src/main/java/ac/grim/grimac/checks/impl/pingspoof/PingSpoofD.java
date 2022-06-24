@@ -8,6 +8,7 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
 // Detects delaying Transaction packets
+// Note: may falsely kick players with lag spikes
 @CheckData(name = "PingSpoof D")
 public class PingSpoofD extends PacketCheck {
 
@@ -26,7 +27,7 @@ public class PingSpoofD extends PacketCheck {
             streak = 0;
         }
 
-        if (streak >= 20) {
+        if (streak >= 40) {
             event.setCancelled(true);
             player.kick(getCheckName(), "DELAY");
         }

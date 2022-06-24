@@ -22,6 +22,7 @@ public class ExplosionHandler extends PacketCheck {
     boolean wasKbZeroPointZeroThree = false;
     double offsetToFlag;
     double setbackVL;
+    long explosionTime;
 
     public ExplosionHandler(GrimPlayer player) {
         super(player);
@@ -36,6 +37,7 @@ public class ExplosionHandler extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Server.EXPLOSION) {
             WrapperPlayServerExplosion explosion = new WrapperPlayServerExplosion(event);
             Vector3f velocity = explosion.getPlayerMotion();
+            explosionTime = System.nanoTime();
 
             if (!explosion.getRecords().isEmpty()) {
                 player.sendTransaction();
@@ -121,7 +123,8 @@ public class ExplosionHandler extends PacketCheck {
         int kbTrans = Math.max(player.likelyKB != null ? player.likelyKB.transaction : Integer.MIN_VALUE,
                 player.firstBreadKB != null ? player.firstBreadKB.transaction : Integer.MIN_VALUE);
 
-        if (!wasZero && player.predictedVelocity.isKnockback() && player.likelyExplosions == null && player.firstBreadExplosion != null) {
+        if (!wasZero && player.predictedVelocity.isKnockback() && player.likelyExplosions == null
+                && player.firstBreadExplosion != null) {
             // The player took this knockback, this tick, 100%
             // Fixes exploit that would allow players to take explosions an infinite number of times
             if (player.firstBreadExplosion.offset < offsetToFlag) {

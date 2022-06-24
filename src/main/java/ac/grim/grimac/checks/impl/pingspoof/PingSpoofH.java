@@ -61,28 +61,34 @@ public class PingSpoofH extends PacketCheck {
         } else if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
             if (!transactionCountList.isEmpty() && !flyingCountList.isEmpty()
                     && (flyingCount != 0 && transactionCount != 0)) {
-                boolean inTransactionRange = transactionCount >= 20 && transactionCount <= 25;
-                boolean lastInTransactionRange = transactionCountList.getLast() >= 20 && transactionCountList.getLast() <= 25;
+                boolean inTransactionRange = Math.abs(lastAverageTransactionTimePercent) <= 5.0
+                        && transactionCount >= 20 && transactionCount <= 25;
+                boolean lastInTransactionRange = Math.abs(lastAverageTransactionTimePercent) <= 5.0
+                        && transactionCountList.getLast() >= 20 && transactionCountList.getLast() <= 25;
 
+                // Detects sending higher amount of Flying packets per KeepAlive
                 if (flyingCount > 41 && flyingCountList.getLast() > 41
                         && inTransactionRange && lastInTransactionRange) {
                     flagAndAlert("(High Count F) " + "[FLYING] " + lastAverageFlyingTimePercent + "% (" + flyingCount + ") "
                             + " [TRANS] " + lastAverageTransactionTimePercent + "% (" + transactionCount + ")", false);
                 }
 
+                // Detects sending lower amount of Flying packets per KeepAlive
                 if (!player.user.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9)) {
-                    if (flyingCount < 41 && flyingCountList.getLast() < 41 && flyingCount != 0
+                    if (flyingCount < 40 && flyingCountList.getLast() < 40 && flyingCount != 0
                             && inTransactionRange && lastInTransactionRange) {
                         flagAndAlert("(Low Count F) " + "[FLYING] " + lastAverageFlyingTimePercent + "% (" + flyingCount + ") "
                                 + " [TRANS] " + lastAverageTransactionTimePercent + "% (" + transactionCount + ")", false);
                     }
                 }
 
+                // Detects sending zero Flying packets per KeepAlive
                 if (flyingCount == 0 && transactionCount != 0) {
                     flagAndAlert("(Zero Count F) " + "[FLYING] " + lastAverageFlyingTimePercent + "% (" + flyingCount + ") "
                             + " [TRANS] " + lastAverageTransactionTimePercent + "% (" + transactionCount + ")", false);
                 }
 
+                // Detects sending higher amount of Transaction packets per KeepAlive
                 if (transactionCountList.size() - 2 >= 0) {
                     if (transactionCount > 25 && transactionCountList.getLast() > 25
                             && transactionCountList.get(transactionCountList.size() - 2) > 25
@@ -92,12 +98,14 @@ public class PingSpoofH extends PacketCheck {
                     }
                 }
 
+                // Detects sending lower amount of Transaction packets per KeepAlive
                 if (transactionCount < 20 && transactionCountList.getLast() < 20 && transactionCount != 0
                         && flyingCount == 41 && flyingCountList.getLast() == 41) {
                     flagAndAlert("(Low Count T) " + "[FLYING] " + lastAverageFlyingTimePercent + "% (" + flyingCount + ") "
                             + " [TRANS] " + lastAverageTransactionTimePercent + "% (" + transactionCount + ")", false);
                 }
 
+                // Detects sending zero Transaction packets per KeepAlive
                 if (transactionCount == 0 && flyingCount != 0) {
                     flagAndAlert("(Zero Count T) " + "[FLYING] " + lastAverageFlyingTimePercent + "% (" + flyingCount + ") "
                             + " [TRANS] " + lastAverageTransactionTimePercent + "% (" + transactionCount + ")", false);

@@ -31,14 +31,19 @@ public class GrimSniff extends BaseCommand {
                 sender.sendMessage(MessageUtil.format("&cPacket sniffing has been disabled."));
                 break;
 
-            case "in windowconfirmation":
+            case "windowconfirmation":
                 PacketSniffer.sniffingWindowConfirmation = !PacketSniffer.sniffingWindowConfirmation;
                 sender.sendMessage(MessageUtil.format("&eSniffing WindowConfirmation: &f" + PacketSniffer.sniffingWindowConfirmation));
                 break;
 
-            case "in flying":
+            case "flying":
                 PacketSniffer.sniffingFlying = !PacketSniffer.sniffingFlying;
                 sender.sendMessage(MessageUtil.format("&eSniffing Flying: &f" + PacketSniffer.sniffingFlying));
+                break;
+
+            case "resourcepack":
+                PacketSniffer.sniffingFlying = !PacketSniffer.sniffingResourcePack;
+                sender.sendMessage(MessageUtil.format("&eSniffing ResourcePack: &f" + PacketSniffer.sniffingResourcePack));
                 break;
 
             default:

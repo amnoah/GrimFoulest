@@ -7,21 +7,18 @@ import ac.grim.grimac.utils.anticheat.LogUtil;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.handshaking.client.WrapperHandshakingClientHandshake;
 import com.github.retrooper.packetevents.wrapper.login.client.WrapperLoginClientEncryptionResponse;
 import com.github.retrooper.packetevents.wrapper.login.client.WrapperLoginClientLoginStart;
 import com.github.retrooper.packetevents.wrapper.login.client.WrapperLoginClientPluginResponse;
+import com.github.retrooper.packetevents.wrapper.login.server.WrapperLoginServerDisconnect;
+import com.github.retrooper.packetevents.wrapper.login.server.WrapperLoginServerLoginSuccess;
+import com.github.retrooper.packetevents.wrapper.login.server.WrapperLoginServerPluginRequest;
 import com.github.retrooper.packetevents.wrapper.play.client.*;
 import com.github.retrooper.packetevents.wrapper.play.server.*;
 import com.github.retrooper.packetevents.wrapper.status.client.WrapperStatusClientPing;
-import com.github.retrooper.packetevents.wrapper.status.client.WrapperStatusClientRequest;
-import com.github.retrooper.packetevents.wrapper.status.server.WrapperStatusServerPong;
-import com.github.retrooper.packetevents.wrapper.status.server.WrapperStatusServerResponse;
-import org.bukkit.Bukkit;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Base64;
 
 // Basic packet sniffer for debugging purposes
 @SuppressWarnings("ConstantConditions")
@@ -31,7 +28,7 @@ public class PacketSniffer extends PacketCheck {
     public static boolean sniffingOutgoing;
     public static boolean sniffingFlying;
     public static boolean sniffingWindowConfirmation;
-    public static boolean sniffingResourcePackStatus;
+    public static boolean sniffingResourcePack;
 
     public PacketSniffer(GrimPlayer player) {
         super(player);
@@ -175,13 +172,6 @@ public class PacketSniffer extends PacketCheck {
                     + " [DISCONNECT]"
                     + " REASON=" + packet.getReason());
 
-//        } else if (event.getPacketType() == PacketType.Play.Server.DESTROY_ENTITIES) {
-//            WrapperPlayServerDestroyEntities packet = new WrapperPlayServerDestroyEntities(event);
-//
-//            LogUtil.info("[SERVER]"
-//                    + " [DESTROY_ENTITIES]"
-//                    + " ENTITY_IDS=" + Arrays.toString(packet.getEntityIds()));
-
         } else if (event.getPacketType() == PacketType.Play.Server.DISPLAY_CHAT_PREVIEW) {
             WrapperPlayServerSetDisplayChatPreview packet = new WrapperPlayServerSetDisplayChatPreview(event);
 
@@ -218,14 +208,6 @@ public class PacketSniffer extends PacketCheck {
                     + ", DURATION=" + packet.getEffectDurationTicks()
                     + ", FACTOR_DATA=" + packet.getFactorData()
                     + ", POTION_TYPE=" + packet.getPotionType());
-
-        } else if (event.getPacketType() == PacketType.Play.Server.ENTITY_EQUIPMENT) {
-            WrapperPlayServerEntityEquipment packet = new WrapperPlayServerEntityEquipment(event);
-
-            LogUtil.info("[SERVER]"
-                    + " [ENTITY_EQUIPMENT]"
-                    + " ENTITY_ID=" + packet.getEntityId()
-                    + ", EQUIPMENT=" + packet.getEquipment());
 
         } else if (event.getPacketType() == PacketType.Play.Server.ENTITY_HEAD_LOOK) {
             WrapperPlayServerEntityHeadLook packet = new WrapperPlayServerEntityHeadLook(event);
@@ -308,15 +290,6 @@ public class PacketSniffer extends PacketCheck {
             LogUtil.info("[SERVER]"
                     + " [KEEP_ALIVE]"
                     + " ID=" + packet.getId());
-
-        } else if (event.getPacketType() == PacketType.Play.Server.MULTI_BLOCK_CHANGE) {
-            WrapperPlayServerMultiBlockChange packet = new WrapperPlayServerMultiBlockChange(event);
-
-            LogUtil.info("[SERVER]"
-                    + " [MULTI_BLOCK_CHANGE]"
-                    + " BLOCKS=" + Arrays.toString(packet.getBlocks())
-                    + ", CHUNK_POS=" + packet.getChunkPosition()
-                    + ", TRUST_EDGES=" + packet.getTrustEdges());
 
         } else if (event.getPacketType() == PacketType.Play.Server.NBT_QUERY_RESPONSE) {
             WrapperPlayServerNBTQueryResponse packet = new WrapperPlayServerNBTQueryResponse(event);
@@ -459,6 +432,35 @@ public class PacketSniffer extends PacketCheck {
             LogUtil.info("[SERVER]"
                     + " [SERVER_DATA]"
                     + " PREVIEWS_CHAT=" + packet.isPreviewsChat());
+
+        } else if (event.getPacketType() == PacketType.Login.Server.LOGIN_PLUGIN_REQUEST) {
+            WrapperLoginServerPluginRequest packet = new WrapperLoginServerPluginRequest(event);
+
+            LogUtil.info("[SERVER]"
+                    + " [LOGIN_PLUGIN_REQUEST]"
+                    + " CHANNEL_NAME=" + packet.getChannelName()
+                    + ", MESSAGE_ID=" + packet.getMessageId()
+                    + ", DATA=" + new String(packet.getData(), StandardCharsets.UTF_8));
+
+        } else if (event.getPacketType() == PacketType.Login.Server.DISCONNECT) {
+            WrapperLoginServerDisconnect packet = new WrapperLoginServerDisconnect(event);
+
+            LogUtil.info("[SERVER]"
+                    + " [DISCONNECT]"
+                    + " REASON=" + packet.getReason());
+
+        } else if (event.getPacketType() == PacketType.Play.Server.JOIN_GAME) {
+            WrapperPlayServerJoinGame packet = new WrapperPlayServerJoinGame(event);
+
+            LogUtil.info("[SERVER]"
+                    + " [JOIN_GAME]");
+
+        } else if (event.getPacketType() == PacketType.Login.Server.LOGIN_SUCCESS) {
+            WrapperLoginServerLoginSuccess packet = new WrapperLoginServerLoginSuccess(event);
+
+            LogUtil.info("[SERVER]"
+                    + " [LOGIN_SUCCESS]"
+                    + " USER_PROFILE=" + packet.getUserProfile().toString());
         }
     }
 
@@ -472,17 +474,7 @@ public class PacketSniffer extends PacketCheck {
         String hSens = String.valueOf((int) Math.round(aimProcessor.sensitivityX * 200));
         String vSens = String.valueOf((int) Math.round(aimProcessor.sensitivityY * 200));
 
-        if (event.getPacketType() == PacketType.Handshaking.Client.HANDSHAKE) {
-            WrapperHandshakingClientHandshake packet = new WrapperHandshakingClientHandshake(event);
-
-            LogUtil.info("[HANDSHAKE]"
-                    + " ADDRESS=" + packet.getServerAddress()
-                    + ", CLIENT_VERSION=" + packet.getClientVersion()
-                    + ", PROTOCOL_VERSION=" + packet.getProtocolVersion()
-                    + ", NEXT_CONNECTION_STATE=" + packet.getNextConnectionState()
-                    + ", SERVER_PORT=" + packet.getServerPort());
-
-        } else if (event.getPacketType() == PacketType.Login.Client.LOGIN_START) {
+        if (event.getPacketType() == PacketType.Login.Client.LOGIN_START) {
             WrapperLoginClientLoginStart packet = new WrapperLoginClientLoginStart(event);
 
             LogUtil.info("[LOGIN_START]"
@@ -912,8 +904,14 @@ public class PacketSniffer extends PacketCheck {
                     + ", ACTION_ID=" + packet.getActionId()
                     + ", ACCEPTED=" + packet.isAccepted());
 
-        } else {
-            System.out.println(event.getPacketType());
+        } else if (event.getPacketType() == PacketType.Login.Client.LOGIN_PLUGIN_RESPONSE) {
+            WrapperLoginClientPluginResponse packet = new WrapperLoginClientPluginResponse(event);
+
+            LogUtil.info("[CLIENT]"
+                    + " [LOGIN_PLUGIN_RESPONSE]"
+                    + " SUCCESSFUL=" + packet.isSuccessful()
+                    + ", MESSAGE_ID=" + packet.getMessageId()
+                    + ", DATA=" + new String(packet.getData(), StandardCharsets.UTF_8));
         }
     }
 }

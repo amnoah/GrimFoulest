@@ -1,5 +1,6 @@
 package ac.grim.grimac.checks.impl.pingspoof;
 
+import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
@@ -16,13 +17,18 @@ import net.kyori.adventure.text.Component;
 @CheckData(name = "PingSpoof G")
 public class PingSpoofG extends PacketCheck {
 
-    private long resourcePackTime;
+    private long pingPacketTime;
     private long keepAliveTime;
     private long keepAliveID;
-    private int resourcePackPing = -1;
-    private int keepAlivePing = -1;
-    private int lastKeepAlivePing = -1;
+
+    private int pingPacketDiff = -1;
+    private int lastPingPacketDiff = -1;
+    private int keepAliveDiff = -1;
+    private int lastKeepAliveDiff = -1;
+
     private boolean clientBlocksPacket = false;
+    public static boolean serverSendsResourcePacks = GrimAPI.INSTANCE.getConfigManager().getConfig()
+            .getBooleanElse("using-custom-resource-packs", false);
 
     public PingSpoofG(GrimPlayer player) {
         super(player);
@@ -30,19 +36,20 @@ public class PingSpoofG extends PacketCheck {
 
     @Override
     public void onPacketSend(PacketSendEvent event) {
+        // Skip check if server sends custom resource packs.
+        if (serverSendsResourcePacks) {
+            return;
+        }
+
         if (event.getPacketType() == PacketType.Play.Server.KEEP_ALIVE) {
             WrapperPlayServerKeepAlive packet = new WrapperPlayServerKeepAlive(event);
 
             // Sends the ping packet to the player.
-            // Compensates for clients blocking the level:// URL by sending a blank URL.
-            if (!clientBlocksPacket) {
-                player.user.sendPacket(new WrapperPlayServerResourcePackSend("level://", "", false, Component.empty()));
-            } else {
-                player.user.sendPacket(new WrapperPlayServerResourcePackSend("", "", false, Component.empty()));
-            }
+            // A blank URL is used for clients blocking the packet.
+            player.user.sendPacket(new WrapperPlayServerResourcePackSend((!clientBlocksPacket ? "level://" : ""), "", false, Component.empty()));
 
             // Keeps track of when the pings were sent, along with the KeepAlive ID.
-            resourcePackTime = System.nanoTime();
+            pingPacketTime = System.nanoTime();
             keepAliveTime = System.nanoTime();
             keepAliveID = packet.getId();
         }
@@ -50,6 +57,11 @@ public class PingSpoofG extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
+        // Skip check if server sends custom resource packs.
+        if (serverSendsResourcePacks) {
+            return;
+        }
+
         if (event.getPacketType() == PacketType.Play.Client.RESOURCE_PACK_STATUS) {
             WrapperPlayClientResourcePackStatus packet = new WrapperPlayClientResourcePackStatus(event);
 
@@ -59,8 +71,9 @@ public class PingSpoofG extends PacketCheck {
                     && packet.getResult() == WrapperPlayClientResourcePackStatus.Result.FAILED_DOWNLOAD
                     || packet.getResult() == WrapperPlayClientResourcePackStatus.Result.ACCEPTED
                     || packet.getResult() == WrapperPlayClientResourcePackStatus.Result.DECLINED) {
-                resourcePackPing = (int) (System.nanoTime() - resourcePackTime) / 1000000;
+                pingPacketDiff = (int) (System.nanoTime() - pingPacketTime) / 1000000;
                 checkPing();
+                lastPingPacketDiff = pingPacketDiff;
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
@@ -69,24 +82,26 @@ public class PingSpoofG extends PacketCheck {
             // Calculate ping via the KeepAlive packet.
             // Packet that's spoofed in PingSpoof modules.
             if (packet.getId() == keepAliveID) {
-                keepAlivePing = (int) (System.nanoTime() - keepAliveTime) / 1000000;
+                keepAliveDiff = (int) (System.nanoTime() - keepAliveTime) / 1000000;
                 checkPing();
+                lastKeepAliveDiff = keepAliveDiff;
             }
-
-            lastKeepAlivePing = keepAlivePing;
         }
     }
 
     public void checkPing() {
-        // If there's a difference between the two pings sent, the player is spoofing their ping.
-        if (resourcePackPing != -1 && keepAlivePing != -1) {
+        if (pingPacketDiff != -1 && lastPingPacketDiff != -1
+                && lastKeepAliveDiff != -1 && keepAliveDiff != -1) {
             clientBlocksPacket = false;
 
-            if (Math.abs(resourcePackPing - keepAlivePing) > 10) {
-                flagAndAlert("REAL=" + resourcePackPing + " FAKE=" + keepAlivePing, false);
+            // If there's a difference between the pings sent, the player is spoofing their ping.
+            if (Math.abs(pingPacketDiff - keepAliveDiff) > 10) {
+                if (Math.abs(lastPingPacketDiff - keepAliveDiff) > 10) {
+                    flagAndAlert("REAL=" + pingPacketDiff + " FAKE=" + keepAliveDiff, false);
+                }
             }
 
-        } else if (resourcePackPing == -1 && keepAlivePing != -1 && lastKeepAlivePing != -1) {
+        } else if (pingPacketDiff == -1 && keepAliveDiff != -1 && lastKeepAliveDiff != -1) {
             clientBlocksPacket = true;
         }
     }

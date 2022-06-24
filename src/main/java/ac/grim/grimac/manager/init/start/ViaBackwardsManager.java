@@ -12,6 +12,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.logging.Logger;
 
 public class ViaBackwardsManager implements Initable {
+
     public static boolean isViaLegacyUpdated = true;
     public static boolean didViaBreakBlockPredictions = true;
 
@@ -29,6 +30,7 @@ public class ViaBackwardsManager implements Initable {
             // Check if we support this property
             try {
                 Plugin viaVersion = Bukkit.getPluginManager().getPlugin("ViaVersion");
+
                 // 1.19 servers don't have via messing with block predictions
                 if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_19) && viaVersion != null) {
                     String[] split = viaVersion.getDescription().getVersion().replace("-SNAPSHOT", "").split("\\.");
@@ -42,6 +44,7 @@ public class ViaBackwardsManager implements Initable {
                 }
 
                 Plugin viaBackwards = Bukkit.getPluginManager().getPlugin("ViaBackwards");
+
                 if (viaBackwards != null) {
                     String[] split = viaBackwards.getDescription().getVersion().replace("-SNAPSHOT", "").split("\\.");
 
@@ -49,7 +52,6 @@ public class ViaBackwardsManager implements Initable {
                         // If the version is before 4.0.2
                         if (Integer.parseInt(split[0]) < 4 || (Integer.parseInt(split[1]) == 0 && Integer.parseInt(split[2]) < 2)) {
                             Logger logger = GrimAPI.INSTANCE.getPlugin().getLogger();
-
                             logger.warning(ChatColor.RED + "Please update ViaBackwards to 4.0.2 or newer");
                             logger.warning(ChatColor.RED + "An important packet is broken for 1.16 and below clients on this ViaBackwards version");
                             logger.warning(ChatColor.RED + "Disabling all checks for 1.16 and below players as otherwise they WILL be falsely banned");

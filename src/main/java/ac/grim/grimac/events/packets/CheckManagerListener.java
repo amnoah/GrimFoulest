@@ -22,6 +22,9 @@ import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
+import com.github.retrooper.packetevents.event.simple.PacketLoginSendEvent;
+import com.github.retrooper.packetevents.event.simple.PacketPlaySendEvent;
+import com.github.retrooper.packetevents.event.simple.PacketStatusSendEvent;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.protocol.ConnectionState;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
@@ -468,9 +471,9 @@ public class CheckManagerListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getConnectionState() != ConnectionState.PLAY) {
-            return;
-        }
+//        if (event.getConnectionState() != ConnectionState.PLAY) {
+//            return;
+//        }
 
         GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
 
@@ -650,11 +653,12 @@ public class CheckManagerListener extends PacketListenerAbstract {
         }
 
         double threshold = player.getMovementThreshold();
+
         // Don't check duplicate 1.17 packets (Why would you do this mojang?)
         // Don't check rotation since it changes between these packets, with the second being irrelevant.
         //
         // removed a large rant, but I'm keeping this out of context insult below
-        // EVEN A BUNCH OF MONKEYS ON A TYPEWRITER COULDNT WRITE WORSE NETCODE THAN MOJANG
+        // EVEN A BUNCH OF MONKEYS ON A TYPEWRITER COULDN'T WRITE WORSE NETCODE THAN MOJANG
         if (!player.packetStateData.lastPacketWasTeleport && hasPosition && hasLook &&
                 // Ground status will never change in this stupidity packet
                 ((onGround == player.packetStateData.packetPlayerOnGround
@@ -744,8 +748,8 @@ public class CheckManagerListener extends PacketListenerAbstract {
                 player.x = clampVector.getX();
                 player.y = clampVector.getY();
                 player.z = clampVector.getZ();
-
                 player.checkManager.onPositionUpdate(update);
+
             } else if (update.isTeleport()) { // Mojang doesn't use their own exit vehicle field to leave vehicles, manually call the setback handler
                 player.getSetbackTeleportUtil().onPredictionComplete(new PredictionComplete(0, update));
             }
@@ -760,18 +764,20 @@ public class CheckManagerListener extends PacketListenerAbstract {
         }
 
         player.packetStateData.lastPacketWasOnePointSeventeenDuplicate = false;
-
         player.packetStateData.didLastLastMovementIncludePosition = player.packetStateData.didLastMovementIncludePosition;
         player.packetStateData.didLastMovementIncludePosition = hasPosition;
     }
 
     @Override
     public void onPacketSend(PacketSendEvent event) {
-        if (event.getConnectionState() != ConnectionState.PLAY) {
-            return;
-        }
+//        if (event.getConnectionState() != ConnectionState.PLAY) {
+//            return;
+//        }
+
         GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
         if (player == null) {
+            System.out.println("Ignored: " + event.getPacketType());
             return;
         }
 

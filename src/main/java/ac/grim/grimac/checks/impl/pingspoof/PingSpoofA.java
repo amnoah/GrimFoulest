@@ -31,7 +31,7 @@ public class PingSpoofA extends PacketCheck {
             // For calculating player ping
             sentKeepAliveTime = System.nanoTime();
 
-            if (lastSentID != lastReceivedID && lastSentID != -1) {
+            if (lastSentID != lastReceivedID && lastReceivedID != -1) {
                 event.setCancelled(true);
                 player.kick(getCheckName(), "SENT (S=" + lastSentID + ", R=" + lastReceivedID + ")");
                 return;
