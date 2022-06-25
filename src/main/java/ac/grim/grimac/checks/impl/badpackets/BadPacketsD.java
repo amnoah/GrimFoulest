@@ -26,7 +26,7 @@ public class BadPacketsD extends PacketCheck {
 
             if (packet.hasRotationChanged() && Math.abs(packet.getLocation().getPitch()) > 90) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "Invalid Pitch");
+                player.kick(getCheckName(), "Invalid Pitch", "Illegal position");
             }
         }
     }

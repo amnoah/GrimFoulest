@@ -24,13 +24,13 @@ public class InventoryL extends PacketCheck {
 
             if (packet.getSlot() == lastSlot) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "Sent Same Slot");
+                player.kick(getCheckName(), "Sent Same Slot", "You are sending too many packets!");
                 return;
             }
 
             if (packet.getSlot() < 0 || packet.getSlot() > 8) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "Invalid Slot");
+                player.kick(getCheckName(), "Invalid Slot", "You are sending too many packets!");
                 return;
             }
 

@@ -72,7 +72,7 @@ public class Timer extends PacketCheck {
         if (timerBalanceRealTime > System.nanoTime()) {
             if (flag()) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "");
+                player.kick(getCheckName(), "", "You are sending too many packets!");
             }
 
             // Reset the violation by 1 movement

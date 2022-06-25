@@ -24,7 +24,7 @@ public class BadPacketsI extends PacketCheck {
             if (sentHeldItem && player.isTickingReliablyFor(3)
                     && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9)) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "");
+                player.kick(getCheckName(), "", "You are sending too many packets!");
                 return;
             } else {
                 sentHeldItem = true;

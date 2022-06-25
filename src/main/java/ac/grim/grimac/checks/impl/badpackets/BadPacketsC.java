@@ -31,7 +31,7 @@ public class BadPacketsC extends PacketCheck {
                     }
 
                     event.setCancelled(true);
-                    player.kick(getCheckName(), "START_SPRINTING");
+                    player.kick(getCheckName(), "START_SPRINTING", "You are sending too many packets!");
                     return;
                 }
 
@@ -45,7 +45,7 @@ public class BadPacketsC extends PacketCheck {
                     }
 
                     event.setCancelled(true);
-                    player.kick(getCheckName(), "STOP_SPRINTING");
+                    player.kick(getCheckName(), "STOP_SPRINTING", "You are sending too many packets!");
                     return;
                 }
 

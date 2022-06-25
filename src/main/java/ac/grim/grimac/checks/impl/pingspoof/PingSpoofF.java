@@ -34,7 +34,7 @@ public class PingSpoofF extends PacketCheck {
 
         if (noReminderTicks > 20) {
             event.setCancelled(true);
-            player.kick(getCheckName(), "POSITION");
+            player.kick(getCheckName(), "POSITION", "Your connection is unstable.");
         }
     }
 }

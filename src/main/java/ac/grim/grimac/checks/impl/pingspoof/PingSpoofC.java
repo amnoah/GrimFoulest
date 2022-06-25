@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 // Detects players sending unknown KeepAlive packets
-// TODO: Might be superseded by PingSpoof A
 @CheckData(name = "PingSpoof C")
 public class PingSpoofC extends PacketCheck {
 
@@ -48,7 +47,7 @@ public class PingSpoofC extends PacketCheck {
 
             if (!hasID) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "UNKNOWN (ID=" + id + ")");
+                player.kick(getCheckName(), "UNKNOWN (ID=" + id + ")", "You are sending too many packets!");
             } else { // Found the ID, remove stuff until we get to it (to stop very slow memory leaks)
                 Pair<Long, Long> data;
                 do {

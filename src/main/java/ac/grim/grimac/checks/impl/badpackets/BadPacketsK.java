@@ -46,7 +46,7 @@ public class BadPacketsK extends PacketCheck {
                 if (player.isTickingReliablyFor(3)) {
                     for (String flag : flags) {
                         event.setCancelled(true);
-                        player.kick(getCheckName(), flag + " (" + player.getClientVersion().name() + ")");
+                        player.kick(getCheckName(), flag + " (" + player.getClientVersion().name() + ")", "You are sending too many packets!");
                         return;
                     }
                 }

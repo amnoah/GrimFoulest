@@ -29,7 +29,7 @@ public class BadPacketsN extends PacketCheck {
 
             if (streak >= 6) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), event.getPacketType().getName());
+                player.kick(getCheckName(), event.getPacketType().getName(), "You are sending too many packets!");
             }
 
         } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {

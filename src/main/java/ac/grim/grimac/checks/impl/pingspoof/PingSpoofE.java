@@ -25,7 +25,7 @@ public class PingSpoofE extends PacketCheck {
 
             if (Math.abs(diff) >= 7 && lastID != 0 && Math.abs(packet.getActionId()) >= 30) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "MODIFY (DIFF=" + diff + ", ID=" + packet.getActionId() + ")");
+                player.kick(getCheckName(), "MODIFY (DIFF=" + diff + ", ID=" + packet.getActionId() + ")", "You are sending too many packets!");
                 return;
             }
 

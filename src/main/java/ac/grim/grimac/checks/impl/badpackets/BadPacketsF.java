@@ -28,7 +28,7 @@ public class BadPacketsF extends PacketCheck {
 
             if (++streak > 2) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "NoSwing");
+                player.kick(getCheckName(), "NoSwing", "You are sending too many packets!");
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {

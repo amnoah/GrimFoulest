@@ -7,15 +7,15 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.DiggingAction;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-// Detects swinging after destroying a block in the same tick
-@CheckData(name = "BadPackets B")
-public class BadPacketsB extends PacketCheck {
+// Detects LiquidBounce's AbortBreaking
+@CheckData(name = "BadPackets O")
+public class BadPacketsO extends PacketCheck {
 
-    private boolean sentAnimation;
+    private boolean digging;
+    private long lastSwing;
 
-    public BadPacketsB(GrimPlayer player) {
+    public BadPacketsO(GrimPlayer player) {
         super(player);
     }
 
@@ -24,16 +24,21 @@ public class BadPacketsB extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
             WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
 
-            if (sentAnimation && packet.getAction() == DiggingAction.FINISHED_DIGGING) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "Swing After Destroy", "You are sending too many packets!");
+            if (packet.getAction() == DiggingAction.START_DIGGING) {
+                digging = true;
+            } else if (packet.getAction() == DiggingAction.CANCELLED_DIGGING
+                    || packet.getAction() == DiggingAction.FINISHED_DIGGING) {
+                digging = false;
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
-            sentAnimation = true;
+            lastSwing = System.currentTimeMillis();
+        }
 
-        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            sentAnimation = false;
+        long timeSinceSwing = System.currentTimeMillis() - lastSwing;
+
+        if (digging && timeSinceSwing > 51) {
+            player.kick(getCheckName(), "SWING=" + timeSinceSwing, "You are sending too many packets!");
         }
     }
 }

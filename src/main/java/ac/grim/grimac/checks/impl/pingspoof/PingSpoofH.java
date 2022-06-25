@@ -75,7 +75,7 @@ public class PingSpoofH extends PacketCheck {
 
                 // Detects sending lower amount of Flying packets per KeepAlive
                 if (!player.user.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9)) {
-                    if (flyingCount < 40 && flyingCountList.getLast() < 40 && flyingCount != 0
+                    if (flyingCount < 39 && flyingCountList.getLast() < 39 && flyingCount != 0
                             && inTransactionRange && lastInTransactionRange) {
                         flagAndAlert("(Low Count F) " + "[FLYING] " + lastAverageFlyingTimePercent + "% (" + flyingCount + ") "
                                 + " [TRANS] " + lastAverageTransactionTimePercent + "% (" + transactionCount + ")", false);
@@ -111,9 +111,6 @@ public class PingSpoofH extends PacketCheck {
                             + " [TRANS] " + lastAverageTransactionTimePercent + "% (" + transactionCount + ")", false);
                 }
             }
-
-//            System.out.println("[FLYING] " + lastAverageFlyingTimePercent + "% (" + flyingCount + ") "
-//                    + " [TRANS] " + lastAverageTransactionTimePercent + "% (" + transactionCount + ")");
 
             flyingCountList.add(flyingCount);
             transactionCountList.add(transactionCount);

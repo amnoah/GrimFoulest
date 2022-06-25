@@ -35,7 +35,7 @@ public class BadPacketsJ extends PacketCheck {
             if (Math.abs(packet.getLocation().getX()) > HARD_CODED_BORDER
                     || Math.abs(packet.getLocation().getZ()) > HARD_CODED_BORDER) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "Outside Border");
+                player.kick(getCheckName(), "Outside Border", "Illegal position");
             }
         }
     }

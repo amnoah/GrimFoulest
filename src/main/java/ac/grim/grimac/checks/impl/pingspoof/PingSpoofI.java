@@ -47,7 +47,7 @@ public class PingSpoofI extends PacketCheck {
 
             if (!hasID) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "UNKNOWN (ID=" + id + ")");
+                player.kick(getCheckName(), "UNKNOWN (ID=" + id + ")", "You are sending too many packets!");
             } else { // Found the ID, remove stuff until we get to it (to stop very slow memory leaks)
                 Pair<Short, Long> data;
                 do {

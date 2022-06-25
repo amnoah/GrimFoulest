@@ -28,7 +28,7 @@ public class BadPacketsE extends PacketCheck {
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SNEAKING) {
                 if (lastSneaking && !wasTeleport) {
                     event.setCancelled(true);
-                    player.kick(getCheckName(), "START_SNEAKING");
+                    player.kick(getCheckName(), "START_SNEAKING", "You are sending too many packets!");
                 } else {
                     lastSneaking = true;
                 }
@@ -36,7 +36,7 @@ public class BadPacketsE extends PacketCheck {
             } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SNEAKING) {
                 if (!lastSneaking && !wasTeleport) {
                     event.setCancelled(true);
-                    player.kick(getCheckName(), "STOP_SNEAKING");
+                    player.kick(getCheckName(), "STOP_SNEAKING", "You are sending too many packets!");
                 } else {
                     lastSneaking = false;
                 }

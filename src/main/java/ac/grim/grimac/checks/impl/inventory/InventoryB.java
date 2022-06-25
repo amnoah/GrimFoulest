@@ -41,7 +41,7 @@ public class InventoryB extends PacketCheck {
 
         if (streak == 6) {
             event.setCancelled(true);
-            player.kick(getCheckName(), "");
+            player.kick(getCheckName(), "", "You are sending too many packets!");
         }
     }
 }

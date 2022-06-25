@@ -611,7 +611,7 @@ public class GrimPlayer {
         return getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_10) || (gamemode == GameMode.CREATIVE && compensatedEntities.getSelf().getOpLevel() >= 2);
     }
 
-    public void kick(String reason, String verbose) {
+    public void kick(String reason, String verbose, String kickMessage) {
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -627,7 +627,7 @@ public class GrimPlayer {
                         + (Objects.equals(verbose, "") ? "" : " &7(" + verbose + ")"));
 
                 if (bukkitPlayer.isOnline()) {
-                    bukkitPlayer.kickPlayer("You are sending too many packets!");
+                    bukkitPlayer.kickPlayer(kickMessage);
                 }
             }
         }.runTask(GrimAC.instance);

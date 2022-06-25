@@ -53,7 +53,7 @@ public class BadPacketsG extends PacketCheck {
             // lastYaw and lastPitch are identical
             if (lastYaw == posYaw && lastPitch == posPitch) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "Identical Rotation");
+                player.kick(getCheckName(), "Identical Rotation", "You are sending too many packets!");
                 return;
             }
 

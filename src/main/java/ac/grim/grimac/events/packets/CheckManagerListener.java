@@ -509,7 +509,7 @@ public class CheckManagerListener extends PacketListenerAbstract {
                         || Float.isNaN(pos.getYaw()) || Float.isNaN(pos.getPitch())
                         || Float.isInfinite(pos.getYaw()) || Float.isInfinite(pos.getPitch())) {
                     event.setCancelled(true);
-                    player.kick("Illegal Position", "");
+                    player.kick("Illegal Position", "", "Illegal position");
                     return;
                 }
             }

@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 // Basic packet sniffer for debugging purposes
-@SuppressWarnings("ConstantConditions")
 public class PacketSniffer extends PacketCheck {
 
     public static boolean sniffingIncoming;
@@ -450,8 +449,6 @@ public class PacketSniffer extends PacketCheck {
                     + " REASON=" + packet.getReason());
 
         } else if (event.getPacketType() == PacketType.Play.Server.JOIN_GAME) {
-            WrapperPlayServerJoinGame packet = new WrapperPlayServerJoinGame(event);
-
             LogUtil.info("[SERVER]"
                     + " [JOIN_GAME]");
 

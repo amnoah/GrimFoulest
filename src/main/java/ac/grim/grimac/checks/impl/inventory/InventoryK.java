@@ -51,7 +51,7 @@ public class InventoryK extends PacketCheck {
 
         if (streak == 4) {
             event.setCancelled(true);
-            player.kick(getCheckName(), "Infinite Durability");
+            player.kick(getCheckName(), "Infinite Durability", "You are sending too many packets!");
         }
     }
 }
