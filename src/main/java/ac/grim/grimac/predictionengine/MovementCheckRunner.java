@@ -90,11 +90,13 @@ public class MovementCheckRunner extends PositionCheck {
             if (update.getTeleportData() == null || !update.getTeleportData().isRelativeX()) {
                 player.clientVelocity.setX(0);
             }
+
             if (update.getTeleportData() == null || !update.getTeleportData().isRelativeY()) {
                 player.clientVelocity.setY(0);
                 player.lastWasClimbing = 0; // Vertical movement reset
                 player.canSwimHop = false; // Vertical movement reset
             }
+
             if (update.getTeleportData() == null || !update.getTeleportData().isRelativeZ()) {
                 player.clientVelocity.setZ(0);
             }
@@ -159,12 +161,15 @@ public class MovementCheckRunner extends PositionCheck {
             if (isEast) {
                 player.uncertaintyHandler.lastStuckEast.reset();
             }
+
             if (isWest) {
                 player.uncertaintyHandler.lastStuckWest.reset();
             }
+
             if (isNorth) {
                 player.uncertaintyHandler.lastStuckNorth.reset();
             }
+
             if (isSouth) {
                 player.uncertaintyHandler.lastStuckSouth.reset();
             }
@@ -223,6 +228,7 @@ public class MovementCheckRunner extends PositionCheck {
                 player.lastZ = cutTo.getZ();
 
                 player.boundingBox = GetBoundingBox.getCollisionBoxForPlayer(player, player.lastX, player.lastY, player.lastZ);
+
             } else {
                 // Server always teleports the player when they eject anyways,
                 // so just let the player control where they eject within reason, they get set back anyways
@@ -253,9 +259,11 @@ public class MovementCheckRunner extends PositionCheck {
 
         if (!player.compensatedEntities.getSelf().inVehicle()) {
             player.speed = player.compensatedEntities.getPlayerMovementSpeed();
+
             if (player.hasGravity != player.playerEntityHasGravity) {
                 player.pointThreeEstimator.updatePlayerGravity();
             }
+
             player.hasGravity = player.playerEntityHasGravity;
         }
 
@@ -363,31 +371,41 @@ public class MovementCheckRunner extends PositionCheck {
         player.uncertaintyHandler.isSteppingNearScaffolding = false;
 
         SimpleCollisionBox steppingOnBB = GetBoundingBox.getCollisionBoxForPlayer(player, player.x, player.y, player.z).expand(0.03).offset(0, -1, 0);
+
         Collisions.hasMaterial(player, steppingOnBB, (pair) -> {
             WrappedBlockState data = pair.getFirst();
+
             if (data.getType() == StateTypes.SLIME_BLOCK && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_8)) {
                 player.uncertaintyHandler.isSteppingOnSlime = true;
                 player.uncertaintyHandler.isSteppingOnBouncyBlock = true;
             }
+
             if (data.getType() == StateTypes.HONEY_BLOCK) {
                 if (player.getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_14)
                         && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_8)) {
                     player.uncertaintyHandler.isSteppingOnBouncyBlock = true;
                 }
+
                 player.uncertaintyHandler.isSteppingOnHoney = true;
             }
-            if (BlockTags.BEDS.contains(data.getType()) && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_8)) {
+
+            if (BlockTags.BEDS.contains(data.getType())
+                    && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_8)) {
                 player.uncertaintyHandler.isSteppingOnBouncyBlock = true;
             }
+
             if (BlockTags.ICE.contains(data.getType())) {
                 player.uncertaintyHandler.isSteppingOnIce = true;
             }
+
             if (data.getType() == StateTypes.BUBBLE_COLUMN) {
                 player.uncertaintyHandler.isSteppingNearBubbleColumn = true;
             }
+
             if (data.getType() == StateTypes.SCAFFOLDING) {
                 player.uncertaintyHandler.isSteppingNearScaffolding = true;
             }
+
             return false;
         });
 
@@ -413,7 +431,8 @@ public class MovementCheckRunner extends PositionCheck {
         player.uncertaintyHandler.isNearGlitchyBlock = player.getClientVersion().isOlderThan(ClientVersion.V_1_9)
                 && Collisions.hasMaterial(player, expandedBB.copy().expand(0.2),
                 checkData -> BlockTags.ANVIL.contains(checkData.getFirst().getType())
-                        || checkData.getFirst().getType() == StateTypes.CHEST || checkData.getFirst().getType() == StateTypes.TRAPPED_CHEST);
+                        || checkData.getFirst().getType() == StateTypes.CHEST
+                        || checkData.getFirst().getType() == StateTypes.TRAPPED_CHEST);
 
         player.uncertaintyHandler.isOrWasNearGlitchyBlock = isGlitchy || player.uncertaintyHandler.isNearGlitchyBlock;
         player.uncertaintyHandler.checkForHardCollision();
@@ -447,6 +466,7 @@ public class MovementCheckRunner extends PositionCheck {
             // Dead players can't cheat, if you find a way how they could, open an issue
             player.predictedVelocity = new VectorData(player.actualMovement, VectorData.VectorType.Dead);
             player.clientVelocity = new Vector();
+
         } else if (player.disableGrim || (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_8) && player.gamemode == GameMode.SPECTATOR) || player.isFlying) {
             // We could technically check spectator but what's the point...
             // Added complexity to analyze a gamemode used mainly by moderators
@@ -457,6 +477,7 @@ public class MovementCheckRunner extends PositionCheck {
             player.gravity = 0;
             player.friction = 0.91f;
             PredictionEngineNormal.staticVectorEndOfTick(player, player.clientVelocity);
+
         } else if (player.compensatedEntities.getSelf().getRiding() == null) {
             wasChecked = true;
 
@@ -508,6 +529,7 @@ public class MovementCheckRunner extends PositionCheck {
 
         } else if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_9) && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9)) {
             wasChecked = true;
+
             // The player and server are both on a version with client controlled entities
             // If either or both of the client server version has server controlled entities
             // The player can't use entities (or the server just checks the entities)
@@ -515,17 +537,21 @@ public class MovementCheckRunner extends PositionCheck {
                 new PlayerBaseTick(player).doBaseTick();
                 // Speed doesn't affect anything with boat movement
                 new BoatPredictionEngine(player).guessBestMovement(0.1f, player);
+
             } else if (player.compensatedEntities.getSelf().getRiding() instanceof PacketEntityHorse) {
                 new PlayerBaseTick(player).doBaseTick();
                 new MovementTickerHorse(player).livingEntityAIStep();
+
             } else if (player.compensatedEntities.getSelf().getRiding().type == EntityTypes.PIG) {
                 new PlayerBaseTick(player).doBaseTick();
                 new MovementTickerPig(player).livingEntityAIStep();
+
             } else if (player.compensatedEntities.getSelf().getRiding().type == EntityTypes.STRIDER) {
                 new PlayerBaseTick(player).doBaseTick();
                 new MovementTickerStrider(player).livingEntityAIStep();
                 MovementTickerStrider.floatStrider(player);
                 Collisions.handleInsideBlocks(player);
+
             } else {
                 wasChecked = false;
             }
@@ -544,6 +570,7 @@ public class MovementCheckRunner extends PositionCheck {
             // We shouldn't attempt to send this prediction analysis into checks if we didn't predict anything
             player.checkManager.onPredictionFinish(new PredictionComplete(offset, update));
         }
+
         if (!wasChecked) {
             // The player wasn't checked, explosion and knockback status unknown
             player.checkManager.getExplosionHandler().forceExempt();
@@ -557,12 +584,16 @@ public class MovementCheckRunner extends PositionCheck {
         // Checking for oldClientVel being too high fixes BleachHack vertical scaffold
         if (player.getSetbackTeleportUtil().setbackConfirmTicksAgo == 1) {
             Vector setbackVel = player.getSetbackTeleportUtil().getRequiredSetBack().getVelocity();
+
             // A player must have velocity going INTO the ground to be able to jump
             // Otherwise they could ignore upwards velocity that isn't useful into more useful upwards velocity (towering)
-            if (player.predictedVelocity.isJump() && ((setbackVel != null && setbackVel.getY() >= 0) || !Collisions.slowCouldPointThreeHitGround(player, player.lastX, player.lastY, player.lastZ))) {
+            if (player.predictedVelocity.isJump() && ((setbackVel != null && setbackVel.getY() >= 0)
+                    || !Collisions.slowCouldPointThreeHitGround(player, player.lastX, player.lastY, player.lastZ))) {
                 player.getSetbackTeleportUtil().executeForceResync();
             }
+
             SetBackData data = player.getSetbackTeleportUtil().getRequiredSetBack();
+
             // Player ignored the knockback or is delaying it a tick... bad!
             if (!player.predictedVelocity.isKnockback() && data.getVelocity() != null) {
                 // And then send it again!
@@ -602,10 +633,12 @@ public class MovementCheckRunner extends PositionCheck {
         // Logic is if the player was directly 0.03 and the player could control vertical movement in 0.03
         // Or some state of the player changed, so we can no longer predict this vertical movement
         // Or gravity made the player enter 0.03 movement
-        // TODO: This needs to be secured better.  isWasAlwaysCertain() seems like a bit of a hack.
-        player.uncertaintyHandler.wasZeroPointThreeVertically = !player.compensatedEntities.getSelf().inVehicle() &&
-                ((player.uncertaintyHandler.lastMovementWasZeroPointZeroThree && player.pointThreeEstimator.controlsVerticalMovement())
-                        || !player.pointThreeEstimator.canPredictNextVerticalMovement() || !player.pointThreeEstimator.isWasAlwaysCertain());
+        // TODO: This needs to be secured better. isWasAlwaysCertain() seems like a bit of a hack.
+        player.uncertaintyHandler.wasZeroPointThreeVertically = !player.compensatedEntities.getSelf().inVehicle()
+                && ((player.uncertaintyHandler.lastMovementWasZeroPointZeroThree
+                && player.pointThreeEstimator.controlsVerticalMovement())
+                || !player.pointThreeEstimator.canPredictNextVerticalMovement()
+                || !player.pointThreeEstimator.isWasAlwaysCertain());
 
         player.uncertaintyHandler.lastPacketWasGroundPacket = player.uncertaintyHandler.onGroundUncertain;
         player.uncertaintyHandler.onGroundUncertain = false;

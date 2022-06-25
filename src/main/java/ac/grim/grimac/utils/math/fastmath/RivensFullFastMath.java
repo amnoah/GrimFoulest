@@ -1,4 +1,4 @@
-package ac.grim.grimac.utils.math;
+package ac.grim.grimac.utils.math.fastmath;
 
 // Found in BetterFPS 1.2.0
 // TODO: Implement this somewhere

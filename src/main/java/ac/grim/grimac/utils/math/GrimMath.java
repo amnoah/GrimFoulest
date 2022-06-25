@@ -8,19 +8,18 @@ import java.util.*;
 
 @UtilityClass
 public class GrimMath {
+
     public final double EXPANDER = Math.pow(2, 24);
 
     /**
      * @param data - The set of data you want to find the variance from
      * @return - The variance of the numbers.
-     * @See - https://en.wikipedia.org/wiki/Variance
+     * @See - <a href="https://en.wikipedia.org/wiki/Variance">...</a>
      */
     public double getVariance(Collection<? extends Number> data) {
         int count = 0;
-
         double sum = 0.0;
         double variance = 0.0;
-
         double average;
 
         // Increase the sum and the count to find the average and the standard deviation
@@ -42,8 +41,8 @@ public class GrimMath {
     /**
      * @param data - The set of numbers / data you want to find the standard deviation from.
      * @return - The standard deviation using the square root of the variance.
-     * @See - https://en.wikipedia.org/wiki/Standard_deviation
-     * @See - https://en.wikipedia.org/wiki/Variance
+     * @See - <a href="https://en.wikipedia.org/wiki/Standard_deviation">...</a>
+     * @See - <a href="https://en.wikipedia.org/wiki/Variance">...</a>
      */
     public double getStandardDeviation(Collection<? extends Number> data) {
         double variance = getVariance(data);
@@ -55,12 +54,11 @@ public class GrimMath {
     /**
      * @param data - The set of numbers / data you want to find the skewness from
      * @return - The skewness running the standard skewness formula.
-     * @See - https://en.wikipedia.org/wiki/Skewness
+     * @See - <a href="https://en.wikipedia.org/wiki/Skewness">...</a>
      */
     public double getSkewness(Collection<? extends Number> data) {
         double sum = 0;
         int count = 0;
-
         List<Double> numbers = Lists.newArrayList();
 
         // Get the sum of all the data and the amount via looping
@@ -98,7 +96,7 @@ public class GrimMath {
     }
 
     /**
-     * @param - collection The collection of the numbers you want to get the duplicates from
+     * @param collection - The collection of the numbers you want to get the duplicates from
      * @return - The duplicate amount
      */
     public static int getDuplicates(Collection<? extends Number> collection) {
@@ -106,9 +104,9 @@ public class GrimMath {
     }
 
     /**
-     * @param - The collection of numbers you want analyze
+     * @param collection - The collection of numbers you want analyze
      * @return - A pair of the high and low outliers
-     * @See - https://en.wikipedia.org/wiki/Outlier
+     * @See - <a href="https://en.wikipedia.org/wiki/Outlier">...</a>
      */
     public Pair<List<Double>, List<Double>> getOutliers(Collection<? extends Number> collection) {
         List<Double> values = new ArrayList<>();
@@ -119,7 +117,6 @@ public class GrimMath {
 
         double q1 = getMedian(values.subList(0, values.size() / 2));
         double q3 = getMedian(values.subList(values.size() / 2, values.size()));
-
         double iqr = Math.abs(q1 - q3);
         double lowThreshold = q1 - 1.5 * iqr, highThreshold = q3 + 1.5 * iqr;
 
@@ -139,7 +136,7 @@ public class GrimMath {
     /**
      * @param data - The set of numbers/data you want to get the kurtosis from
      * @return - The kurtosis using the standard kurtosis formula
-     * @See - https://en.wikipedia.org/wiki/Kurtosis
+     * @See - <a href="https://en.wikipedia.org/wiki/Kurtosis">...</a>
      */
     public double getKurtosis(Collection<? extends Number> data) {
         double sum = 0.0;
@@ -157,7 +154,6 @@ public class GrimMath {
         double efficiencyFirst = count * (count + 1.0) / ((count - 1.0) * (count - 2.0) * (count - 3.0));
         double efficiencySecond = 3.0 * Math.pow(count - 1.0, 2.0) / ((count - 2.0) * (count - 3.0));
         double average = sum / count;
-
         double variance = 0.0;
         double varianceSquared = 0.0;
 
@@ -172,7 +168,7 @@ public class GrimMath {
     /**
      * @param data - The data you want the median from
      * @return - The middle number of that data
-     * @See - https://en.wikipedia.org/wiki/Median
+     * @See - <a href="https://en.wikipedia.org/wiki/Median">...</a>
      */
     private double getMedian(List<Double> data) {
         if (data.size() % 2 == 0) {
@@ -233,21 +229,21 @@ public class GrimMath {
         return start + lerpAmount * (end - start);
     }
 
-    public static int sign(double p_14206_) {
-        if (p_14206_ == 0.0D) {
+    public static int sign(double d) {
+        if (d == 0.0D) {
             return 0;
         } else {
-            return p_14206_ > 0.0D ? 1 : -1;
+            return d > 0.0D ? 1 : -1;
         }
     }
 
-    public static double frac(double p_14186_) {
-        return p_14186_ - lfloor(p_14186_);
+    public static double frac(double d) {
+        return d - lfloor(d);
     }
 
-    public static long lfloor(double p_14135_) {
-        long i = (long) p_14135_;
-        return p_14135_ < i ? i - 1L : i;
+    public static long lfloor(double d) {
+        long i = (long) d;
+        return d < i ? i - 1L : i;
     }
 
     // Find the closest distance to (1 / 64)
@@ -270,17 +266,21 @@ public class GrimMath {
 
     public static double calculateAverage(List<Integer> marks) {
         long sum = 0;
+
         for (int mark : marks) {
             sum += mark;
         }
+
         return marks.isEmpty() ? 0 : 1.0 * sum / marks.size();
     }
 
     public static double calculateAverageLong(List<Long> marks) {
         long sum = 0;
+
         for (long mark : marks) {
             sum += mark;
         }
+
         return marks.isEmpty() ? 0 : 1.0 * sum / marks.size();
     }
 

@@ -1,4 +1,4 @@
-package ac.grim.grimac.utils.math;
+package ac.grim.grimac.utils.math.fastmath;
 
 public class VanillaMath {
 
