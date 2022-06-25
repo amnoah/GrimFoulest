@@ -36,6 +36,9 @@ public class BadPacketsO extends PacketCheck {
         }
 
         long timeSinceSwing = System.currentTimeMillis() - lastSwing;
+        if (timeSinceSwing == System.currentTimeMillis()) {
+            return;
+        }
 
         if (digging && timeSinceSwing > 51) {
             player.kick(getCheckName(), "SWING=" + timeSinceSwing, "You are sending too many packets!");

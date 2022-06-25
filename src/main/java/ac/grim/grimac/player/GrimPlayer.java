@@ -189,7 +189,6 @@ public class GrimPlayer {
     public GameMode gamemode;
     public Dimension dimension;
     public Vector3d bedPosition;
-    public int keepAlivePing;
     public long lastBlockPlaceUseItem = 0;
     public Queue<PacketWrapper<?>> placeUseItemPackets = new LinkedBlockingQueue<>();
     PacketTracker packetTracker;
@@ -378,7 +377,6 @@ public class GrimPlayer {
 
         try {
             addTransactionSend(transactionID);
-
             PacketWrapper<?> packet;
 
             if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_17)) {

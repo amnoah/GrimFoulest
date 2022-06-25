@@ -41,13 +41,16 @@ public class PingSpoofD extends PacketCheck {
         double countRatio = ((double) (flyingCount == 0 ? 1 : flyingCount)
                 / (transactionCount == 0 ? 1 : transactionCount));
 
-        if (flyingCount >= 20 && (countRatio >= 3.0 || countRatio <= 0.5)) {
+        // We can't track our targeted ratio (0.5 and below) because
+        // Grim sends Transaction packets on every teleport.
+        // So when a player gets repeatedly setback, this false flags.
+        if (flyingCount >= 20 && countRatio >= 3.0) {
             player.kick(getCheckName(), "(Ratio) FLYING=" + flyingCount + " TRANS=" + transactionCount
                     + " RESET=" + timeSinceReset + " RATIO=" + countRatio, "Your connection is unstable.");
 
         } else if (flyingCount >= 50) {
             player.kick(getCheckName(), "(Count) FLYING=" + flyingCount + " TRANS=" + transactionCount
-                            + " RESET=" + timeSinceReset + " RATIO=" + countRatio, "Your connection is unstable.");
+                    + " RESET=" + timeSinceReset + " RATIO=" + countRatio, "Your connection is unstable.");
         }
     }
 }

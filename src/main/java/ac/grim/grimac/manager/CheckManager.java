@@ -110,6 +110,9 @@ public class CheckManager {
                 .put(PingSpoofF.class, new PingSpoofF(player))
                 .put(PingSpoofH.class, new PingSpoofH(player))
                 .put(PingSpoofI.class, new PingSpoofI(player))
+                .put(PingSpoofJ.class, new PingSpoofJ(player))
+                .put(PingSpoofK.class, new PingSpoofK(player))
+                .put(PingSpoofL.class, new PingSpoofL(player))
                 .put(FastBreak.class, new FastBreak(player))
                 .put(SetbackBlocker.class, new SetbackBlocker(player)) // Must be last class otherwise we can't check while blocking packets
                 .build();

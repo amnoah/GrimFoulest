@@ -1,7 +1,7 @@
 package ac.grim.grimac.utils.math;
 
-// My previous rant was wrong, we have 4 fastmath versions.  what the fuck optifine.
 public class LegacyFastMath {
+
     private static final float[] SIN_TABLE_FAST = new float[4096];
 
     static {

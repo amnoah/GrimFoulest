@@ -24,6 +24,7 @@ import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.potion.PotionType;
 import com.github.retrooper.packetevents.util.Vector3d;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class PacketEntity {
 
     public Vector3d desyncClientPos;
     public final EntityType type;
-    @lombok.Getter
+    @Getter
     public PacketEntity riding;
     public final List<PacketEntity> passengers = new ArrayList<>(0);
     public boolean isDead = false;
