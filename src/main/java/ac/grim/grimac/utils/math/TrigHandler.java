@@ -2,75 +2,30 @@ package ac.grim.grimac.utils.math;
 
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.math.fastmath.*;
-import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import lombok.Getter;
 import org.bukkit.util.Vector;
 
+import static ac.grim.grimac.utils.math.fastmath.JavaFastMath.getJavaMathMovement;
+import static ac.grim.grimac.utils.math.fastmath.LibGDXFastMath.getLibGDXMathMovement;
+import static ac.grim.grimac.utils.math.fastmath.OptifineFastMath.getOptiFineMathMovement;
+import static ac.grim.grimac.utils.math.fastmath.RivensFastMath.getRivensMathMovement;
+import static ac.grim.grimac.utils.math.fastmath.RivensFullFastMath.getRivensFullMathMovement;
+import static ac.grim.grimac.utils.math.fastmath.TaylorFastMath.getTaylorMathMovement;
+import static ac.grim.grimac.utils.math.fastmath.VanillaMath.getVanillaMathMovement;
+
 public class TrigHandler {
 
-    final GrimPlayer player;
+    @Getter
+    // TODO: Calculate this and set it
+    private final FastMathType activeFastMath = FastMathType.VANILLA_MATH;
+    private final GrimPlayer player;
     private double buffer = 0;
     @Getter
+    @Deprecated
     private boolean isVanillaMath = true;
 
     public TrigHandler(GrimPlayer player) {
         this.player = player;
-    }
-
-    public Vector getVanillaMathMovement(Vector wantedMovement, float f, float f2) {
-        float sin = VanillaMath.sin(f2 * 0.017453292f);
-        float cos = VanillaMath.cos(f2 * 0.017453292f);
-        float bestTheoreticalX = (float) (sin * wantedMovement.getZ() + cos * wantedMovement.getX()) / (sin * sin + cos * cos) / f;
-        float bestTheoreticalZ = (float) (-sin * wantedMovement.getX() + cos * wantedMovement.getZ()) / (sin * sin + cos * cos) / f;
-        return new Vector(bestTheoreticalX, 0, bestTheoreticalZ);
-    }
-
-    public Vector getJavaMathMovement(Vector wantedMovement, float f, float f2) {
-        float sin = JavaFastMath.sin(f2 * 0.017453292f);
-        float cos = JavaFastMath.cos(f2 * 0.017453292f);
-        float bestTheoreticalX = (float) (sin * wantedMovement.getZ() + cos * wantedMovement.getX()) / (sin * sin + cos * cos) / f;
-        float bestTheoreticalZ = (float) (-sin * wantedMovement.getX() + cos * wantedMovement.getZ()) / (sin * sin + cos * cos) / f;
-        return new Vector(bestTheoreticalX, 0, bestTheoreticalZ);
-    }
-
-    public Vector getLibGDXMathMovement(Vector wantedMovement, float f, float f2) {
-        float sin = LibGDXFastMath.sin(f2 * 0.017453292f);
-        float cos = LibGDXFastMath.cos(f2 * 0.017453292f);
-        float bestTheoreticalX = (float) (sin * wantedMovement.getZ() + cos * wantedMovement.getX()) / (sin * sin + cos * cos) / f;
-        float bestTheoreticalZ = (float) (-sin * wantedMovement.getX() + cos * wantedMovement.getZ()) / (sin * sin + cos * cos) / f;
-        return new Vector(bestTheoreticalX, 0, bestTheoreticalZ);
-    }
-
-    public Vector getRivensMathMovement(Vector wantedMovement, float f, float f2) {
-        float sin = RivensFastMath.sin(f2 * 0.017453292f);
-        float cos = RivensFastMath.cos(f2 * 0.017453292f);
-        float bestTheoreticalX = (float) (sin * wantedMovement.getZ() + cos * wantedMovement.getX()) / (sin * sin + cos * cos) / f;
-        float bestTheoreticalZ = (float) (-sin * wantedMovement.getX() + cos * wantedMovement.getZ()) / (sin * sin + cos * cos) / f;
-        return new Vector(bestTheoreticalX, 0, bestTheoreticalZ);
-    }
-
-    public Vector getRivensFullMathMovement(Vector wantedMovement, float f, float f2) {
-        float sin = RivensFullFastMath.sin(f2 * 0.017453292f);
-        float cos = RivensFullFastMath.cos(f2 * 0.017453292f);
-        float bestTheoreticalX = (float) (sin * wantedMovement.getZ() + cos * wantedMovement.getX()) / (sin * sin + cos * cos) / f;
-        float bestTheoreticalZ = (float) (-sin * wantedMovement.getX() + cos * wantedMovement.getZ()) / (sin * sin + cos * cos) / f;
-        return new Vector(bestTheoreticalX, 0, bestTheoreticalZ);
-    }
-
-    public Vector getTaylorMathMovement(Vector wantedMovement, float f, float f2) {
-        float sin = TaylorFastMath.sin(f2 * 0.017453292f);
-        float cos = TaylorFastMath.cos(f2 * 0.017453292f);
-        float bestTheoreticalX = (float) (sin * wantedMovement.getZ() + cos * wantedMovement.getX()) / (sin * sin + cos * cos) / f;
-        float bestTheoreticalZ = (float) (-sin * wantedMovement.getX() + cos * wantedMovement.getZ()) / (sin * sin + cos * cos) / f;
-        return new Vector(bestTheoreticalX, 0, bestTheoreticalZ);
-    }
-
-    public Vector getOptiFineMathMovement(Vector wantedMovement, float f, float f2) {
-        float sin = player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_8) ? OptifineFastMath.sin(f2 * 0.017453292f) : LegacyFastMath.sin(f2 * 0.017453292f);
-        float cos = player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_8) ? OptifineFastMath.cos(f2 * 0.017453292f) : LegacyFastMath.cos(f2 * 0.017453292f);
-        float bestTheoreticalX = (float) (sin * wantedMovement.getZ() + cos * wantedMovement.getX()) / (sin * sin + cos * cos) / f;
-        float bestTheoreticalZ = (float) (-sin * wantedMovement.getX() + cos * wantedMovement.getZ()) / (sin * sin + cos * cos) / f;
-        return new Vector(bestTheoreticalX, 0, bestTheoreticalZ);
     }
 
     public void setOffset(Vector oldVel, double offset) {
@@ -98,11 +53,12 @@ public class TrigHandler {
             return;
         }
 
-        if (player.checkManager.getOffsetHandler().doesOffsetFlag(offset)) {
+        // ! = for debug purposes
+        if (!player.checkManager.getOffsetHandler().doesOffsetFlag(offset)) {
             Vector trueMovement = player.actualMovement.clone().subtract(oldVel);
 
             Vector vanillaMath = getVanillaMathMovement(trueMovement, 0.1f, player.xRot);
-            Vector optifineMath = getOptiFineMathMovement(trueMovement, 0.1f, player.xRot);
+            Vector optifineMath = getOptiFineMathMovement(player, trueMovement, 0.1f, player.xRot);
             Vector javaMath = getJavaMathMovement(trueMovement, 0.1f, player.xRot);
             Vector libGDXMath = getLibGDXMathMovement(trueMovement, 0.1f, player.xRot);
             Vector rivensMath = getRivensMathMovement(trueMovement, 0.1f, player.xRot);
@@ -138,7 +94,7 @@ public class TrigHandler {
             double minTaylorMathHorizontal = Math.min(taylorMath.getX(), taylorMath.getZ());
             minTaylorMathHorizontal = Math.min(minTaylorMathHorizontal, Math.abs(taylorMath.getX() - taylorMath.getZ()));
 
-            // TODO: wtf do i do with this
+            // for debug purposes
             System.out.println("(DEBUG)"
                     + " OFFSET=" + offset
                     + " VANILLA=" + minVanillaHorizontal
@@ -149,6 +105,8 @@ public class TrigHandler {
                     + " RIVENSFULL=" + minRivensFullHorizontal
                     + " TAYLOR=" + minTaylorMathHorizontal);
 
+            // TODO: Calculate which version of FastMath the player is using and set it as activeFastMath.
+            //  This method below sucks, need to scrap it and re-do it.
             boolean newVanilla = minVanillaHorizontal < minOptiFineHorizontal;
             buffer += newVanilla != isVanillaMath ? 1 : -0.25;
 
@@ -160,10 +118,60 @@ public class TrigHandler {
     }
 
     public float sin(float f) {
-        return isVanillaMath ? VanillaMath.sin(f) : (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_8) ? OptifineFastMath.sin(f) : LegacyFastMath.sin(f));
+        switch (activeFastMath) {
+            case VANILLA_MATH:
+                return VanillaMath.sin(f);
+
+            case OPTIFINE_MATH:
+                return OptifineFastMath.sin(f);
+
+            case JAVA_MATH:
+                return JavaFastMath.sin(f);
+
+            case LIBGDX_MATH:
+                return LibGDXFastMath.sin(f);
+
+            case RIVENS_MATH:
+                return RivensFastMath.sin(f);
+
+            case RIVENS_FULL_MATH:
+                return RivensFullFastMath.sin(f);
+
+            case TAYLOR_MATH:
+                return TaylorFastMath.sin(f);
+
+            case LEGACY_MATH:
+            default:
+                return LegacyFastMath.sin(f);
+        }
     }
 
     public float cos(float f) {
-        return isVanillaMath ? VanillaMath.cos(f) : (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_8) ? OptifineFastMath.cos(f) : LegacyFastMath.cos(f));
+        switch (activeFastMath) {
+            case VANILLA_MATH:
+                return VanillaMath.cos(f);
+
+            case OPTIFINE_MATH:
+                return OptifineFastMath.cos(f);
+
+            case JAVA_MATH:
+                return JavaFastMath.cos(f);
+
+            case LIBGDX_MATH:
+                return LibGDXFastMath.cos(f);
+
+            case RIVENS_MATH:
+                return RivensFastMath.cos(f);
+
+            case RIVENS_FULL_MATH:
+                return RivensFullFastMath.cos(f);
+
+            case TAYLOR_MATH:
+                return TaylorFastMath.cos(f);
+
+            case LEGACY_MATH:
+            default:
+                return LegacyFastMath.cos(f);
+        }
     }
 }

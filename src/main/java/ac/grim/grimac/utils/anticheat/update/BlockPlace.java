@@ -38,30 +38,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
+@Setter
 public class BlockPlace {
+
     protected static final BlockFace[] UPDATE_SHAPE_ORDER = new BlockFace[]{BlockFace.WEST, BlockFace.EAST, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.DOWN, BlockFace.UP};
     static final BlockFace[] BY_3D = new BlockFace[]{BlockFace.DOWN, BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.EAST};
     private static final BlockFace[] BY_2D = new BlockFace[]{BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST};
-    @Setter
+    final GrimPlayer player;
     Vector3i blockPosition;
-    @Getter
-    @Setter
     boolean replaceClicked;
     boolean isCancelled = false;
-    final GrimPlayer player;
-    @Getter
     ItemStack itemStack;
-    @Getter
     StateType material;
-    @Getter
     HitData hitData;
-    @Setter
     BlockFace face;
-    @Getter
-    @Setter
     boolean isInside;
-    @Getter
-    @Setter
     Vector3f cursor;
 
     public BlockPlace(GrimPlayer player, Vector3i blockPosition, BlockFace face, ItemStack itemStack, HitData hitData) {
@@ -118,37 +110,48 @@ public class BlockPlace {
         if (BlockTags.CANDLES.contains(state.getType())) {
             return heldItem == state.getType() && state.getCandles() < 4 && !isSecondaryUse();
         }
+
         if (state.getType() == StateTypes.SEA_PICKLE) {
             return heldItem == state.getType() && state.getPickles() < 4 && !isSecondaryUse();
         }
+
         if (state.getType() == StateTypes.TURTLE_EGG) {
             return heldItem == state.getType() && state.getEggs() < 4 && !isSecondaryUse();
         }
+
         // Glow lichen can be replaced if it has an open face, or the player is placing something
         if (state.getType() == StateTypes.GLOW_LICHEN) {
             if (heldItem != StateTypes.GLOW_LICHEN) {
                 return true;
             }
+
             if (!state.isUp()) {
                 return true;
             }
+
             if (!state.isDown()) {
                 return true;
             }
+
             if (state.getNorth() == North.FALSE) {
                 return true;
             }
+
             if (state.getSouth() == South.FALSE) {
                 return true;
             }
+
             if (state.getEast() == East.FALSE) {
                 return true;
             }
+
             return state.getWest() == West.FALSE;
         }
+
         if (state.getType() == StateTypes.SCAFFOLDING) {
             return heldItem == StateTypes.SCAFFOLDING;
         }
+
         if (BlockTags.SLABS.contains(state.getType())) {
             if (state.getTypeData() == Type.DOUBLE || state.getType() != heldItem) {
                 return false;
@@ -166,33 +169,42 @@ public class BlockPlace {
                 return clickedFace == BlockFace.DOWN || !flag && isFaceHorizontal();
             }
         }
+
         if (state.getType() == StateTypes.SNOW) {
             int layers = state.getLayers();
+
             if (heldItem == state.getType() && layers < 8) { // We index at 1 (less than 8 layers)
                 return true;
             } else {
                 return layers == 1; // index at 1, (1 layer)
             }
         }
+
         if (state.getType() == StateTypes.VINE) {
             if (baseReplaceable) {
                 return true;
             }
+
             if (heldItem != state.getType()) {
                 return false;
             }
+
             if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_13) && !state.isUp()) {
                 return true;
             }
+
             if (state.getNorth() == North.FALSE) {
                 return true;
             }
+
             if (state.getSouth() == South.FALSE) {
                 return true;
             }
+
             if (state.getEast() == East.FALSE) {
                 return true;
             }
+
             return state.getWest() == West.FALSE;
         }
 
@@ -206,12 +218,15 @@ public class BlockPlace {
         if (box.isNull()) {
             return false;
         }
+
         if (isFullFace(facing)) {
             return true;
         }
+
         if (BlockTags.LEAVES.contains(data.getType())) {
             return false;
         }
+
         if (BlockTags.FENCE_GATES.contains(data.getType())) {
             return false;
         }
@@ -223,6 +238,7 @@ public class BlockPlace {
 
         for (SimpleCollisionBox simpleBox : collisions) {
             simpleBox = axis.modify(simpleBox);
+
             if (simpleBox.minX <= 7 / 16d && simpleBox.maxX >= 7 / 16d
                     && simpleBox.minY <= 0 && simpleBox.maxY >= 10 / 16d
                     && simpleBox.minZ <= 7 / 16d && simpleBox.maxZ >= 9 / 16d) {
@@ -240,9 +256,11 @@ public class BlockPlace {
         if (box.isNull()) {
             return false;
         }
+
         if (isFullFace(facing)) {
             return true;
         }
+
         if (BlockTags.LEAVES.contains(data.getType())) {
             return false;
         }
@@ -254,6 +272,7 @@ public class BlockPlace {
 
         for (SimpleCollisionBox simpleBox : collisions) {
             simpleBox = axis.modify(simpleBox);
+
             if (simpleBox.minX <= 2 / 16d && simpleBox.maxX >= 14 / 16d
                     && simpleBox.minY <= 0 && simpleBox.maxY >= 1
                     && simpleBox.minZ <= 2 / 16d && simpleBox.maxZ >= 14 / 16d) {
@@ -268,35 +287,40 @@ public class BlockPlace {
         WrappedBlockState state = getDirectionalState(relative);
         BlockFace face = relative.getOppositeFace();
         BlockFace bukkitFace = BlockFace.valueOf(face.name());
-
         AxisSelect axis = AxisUtil.getAxis(face);
-
         CollisionBox box = CollisionData.getData(state.getType()).getMovementCollisionBox(player, player.getClientVersion(), state);
-
         StateType blockMaterial = state.getType();
 
         if (BlockTags.LEAVES.contains(blockMaterial)) {
             // Leaves can't support blocks
             return false;
+
         } else if (blockMaterial == StateTypes.SNOW) {
             return state.getLayers() == 8 || face == BlockFace.DOWN;
+
         } else if (BlockTags.STAIRS.contains(blockMaterial)) {
             if (face == BlockFace.UP) {
                 return state.getHalf() == Half.TOP;
             }
+
             if (face == BlockFace.DOWN) {
                 return state.getHalf() == Half.BOTTOM;
             }
 
             return state.getFacing() == bukkitFace;
+
         } else if (blockMaterial == StateTypes.COMPOSTER) { // Composters have solid faces except for on the top
             return face != BlockFace.UP;
+
         } else if (blockMaterial == StateTypes.SOUL_SAND) { // Soul sand is considered to be a full block when placing things
             return true;
+
         } else if (blockMaterial == StateTypes.LADDER) { // Yes, although it breaks immediately, you can place blocks on ladders
             return state.getFacing().getOppositeFace() == bukkitFace;
+
         } else if (BlockTags.TRAPDOORS.contains(blockMaterial)) { // You can place blocks that need solid faces on trapdoors
             return state.getFacing().getOppositeFace() == bukkitFace && state.isOpen();
+
         } else if (BlockTags.DOORS.contains(blockMaterial)) { // You can place blocks that need solid faces on doors
             CollisionData data = CollisionData.getData(blockMaterial);
 
@@ -325,6 +349,7 @@ public class BlockPlace {
     public boolean isBlockFaceOpen(BlockFace facing) {
         Vector3i pos = getPlacedBlockPos();
         pos = pos.add(facing.getModX(), facing.getModY(), facing.getModZ());
+
         // You can't build above height limit.
         if (pos.getY() >= player.compensatedWorld.getMaxHeight()) {
             return false;
@@ -341,9 +366,11 @@ public class BlockPlace {
         if (box.isNull()) {
             return false;
         }
+
         if (isFullFace(facing)) {
             return true;
         }
+
         if (BlockTags.LEAVES.contains(data.getType())) {
             return false;
         }
@@ -355,6 +382,7 @@ public class BlockPlace {
 
         for (SimpleCollisionBox simpleBox : collisions) {
             simpleBox = axis.modify(simpleBox);
+
             // If all sides to the box have width, there is collision.
             switch (facing) {
                 case NORTH:
@@ -362,26 +390,31 @@ public class BlockPlace {
                         return false;
                     }
                     break;
+
                 case SOUTH:
                     if (simpleBox.maxZ == 1) {
                         return false;
                     }
                     break;
+
                 case EAST:
                     if (simpleBox.maxX == 1) {
                         return false;
                     }
                     break;
+
                 case WEST:
                     if (simpleBox.minX == 0) {
                         return false;
                     }
                     break;
+
                 case UP:
                     if (simpleBox.maxY == 1) {
                         return false;
                     }
                     break;
+
                 case DOWN:
                     if (simpleBox.minY == 0) {
                         return false;
@@ -425,7 +458,8 @@ public class BlockPlace {
     }
 
     public boolean isOnDirt() {
-        return isOn(StateTypes.DIRT, StateTypes.GRASS_BLOCK, StateTypes.PODZOL, StateTypes.COARSE_DIRT, StateTypes.MYCELIUM, StateTypes.ROOTED_DIRT, StateTypes.MOSS_BLOCK);
+        return isOn(StateTypes.DIRT, StateTypes.GRASS_BLOCK, StateTypes.PODZOL, StateTypes.COARSE_DIRT,
+                StateTypes.MYCELIUM, StateTypes.ROOTED_DIRT, StateTypes.MOSS_BLOCK);
     }
 
     // I have to be the first anticheat to actually account for this... wish me luck
@@ -451,10 +485,10 @@ public class BlockPlace {
             // Soul sand is exempt from this check.
             // Glass, moving pistons, beacons, redstone blocks (for some reason) and observers are not conductive
             // Otherwise, if something is solid blocking and a full block, then it is conductive
-            if (state.getType() != StateTypes.SOUL_SAND &&
-                    BlockTags.GLASS_BLOCKS.contains(state.getType()) || state.getType() == StateTypes.MOVING_PISTON
-                    || state.getType() == StateTypes.BEACON || state.getType() ==
-                    StateTypes.REDSTONE_BLOCK || state.getType() == StateTypes.OBSERVER || !isByDefaultConductive) {
+            if (state.getType() != StateTypes.SOUL_SAND && BlockTags.GLASS_BLOCKS.contains(state.getType())
+                    || state.getType() == StateTypes.MOVING_PISTON || state.getType() == StateTypes.BEACON
+                    || state.getType() == StateTypes.REDSTONE_BLOCK || state.getType() == StateTypes.OBSERVER
+                    || !isByDefaultConductive) {
                 continue;
             }
 
@@ -464,7 +498,8 @@ public class BlockPlace {
                 Vector3i poweredRecursive = placed.add(recursive.getModX(), recursive.getModY(), recursive.getModZ());
 
                 // A block next to the player is directly powered.  Therefore, the block is powered
-                if (player.compensatedWorld.getDirectSignalAtState(recursive, poweredRecursive.getX(), poweredRecursive.getY(), poweredRecursive.getZ()) > 0) {
+                if (player.compensatedWorld.getDirectSignalAtState(recursive, poweredRecursive.getX(),
+                        poweredRecursive.getY(), poweredRecursive.getZ()) > 0) {
                     return true;
                 }
             }
@@ -499,14 +534,17 @@ public class BlockPlace {
         BlockFace direction = flag ? BlockFace.EAST : BlockFace.WEST;
         BlockFace direction1 = flag1 ? BlockFace.UP : BlockFace.DOWN;
         BlockFace direction2 = flag2 ? BlockFace.SOUTH : BlockFace.NORTH;
+
         if (f6 > f8) {
             if (f7 > f9) {
                 return makeDirList(direction1, direction, direction2);
             } else {
                 return f10 > f7 ? makeDirList(direction, direction2, direction1) : makeDirList(direction, direction1, direction2);
             }
+
         } else if (f7 > f10) {
             return makeDirList(direction1, direction2, direction);
+
         } else {
             return f9 > f7 ? makeDirList(direction2, direction, direction1) : makeDirList(direction2, direction1, direction);
         }
@@ -520,14 +558,14 @@ public class BlockPlace {
         return player.yRot < 0.0F ? BlockFace.UP : BlockFace.DOWN;
     }
 
-    // Copied from vanilla nms
+    // Copied from Vanilla NMS
     public List<BlockFace> getNearestPlacingDirections() {
         BlockFace[] faces = getNearestLookingDirections().toArray(new BlockFace[0]);
 
         if (!isReplaceClicked()) {
             BlockFace direction = getDirection();
 
-            // Blame mojang for this code, not me
+            // Blame Mojang for this code, not me
             int i;
             for (i = 0; i < faces.length && faces[i] != direction.getOppositeFace(); ++i) {
             }
@@ -553,10 +591,6 @@ public class BlockPlace {
     public boolean isXAxis() {
         BlockFace face = getDirection();
         return face == BlockFace.WEST || face == BlockFace.EAST;
-    }
-
-    public boolean isCancelled() {
-        return isCancelled;
     }
 
     public Vector3i getPlacedBlockPos() {
@@ -599,8 +633,8 @@ public class BlockPlace {
 
     public void set(Vector3i position, WrappedBlockState state) {
         // Hack for scaffolding to be the correct bounding box
-        CollisionBox box = CollisionData.getData(state.getType()).getMovementCollisionBox(player, player.getClientVersion(), state, position.getX(), position.getY(), position.getZ());
-
+        CollisionBox box = CollisionData.getData(state.getType()).getMovementCollisionBox(player,
+                player.getClientVersion(), state, position.getX(), position.getY(), position.getZ());
 
         // Note scaffolding is a special case because it can never intersect with the player's bounding box,
         // and we fetch it with lastY instead of y which is wrong, so it is easier to just ignore scaffolding here
@@ -620,7 +654,6 @@ public class BlockPlace {
             if (player.getClientVersion().isNewerThan(ClientVersion.V_1_8)) {
                 for (PacketEntity entity : player.compensatedEntities.entityMap.values()) {
                     SimpleCollisionBox interpBox = entity.getPossibleCollisionBoxes();
-
                     double width = BoundingBoxSize.getWidth(player, entity);
                     double height = BoundingBoxSize.getHeight(player, entity);
                     double interpWidth = Math.max(interpBox.maxX - interpBox.minX, interpBox.maxZ - interpBox.minZ);
@@ -631,7 +664,8 @@ public class BlockPlace {
                     // On 1.8 clients this should practically never happen
                     if (interpWidth - width > 0.05 || interpHeight - height > 0.05) {
                         Vector3d entityPos = entity.desyncClientPos;
-                        interpBox = GetBoundingBox.getPacketEntityBoundingBox(player, entityPos.getX(), entityPos.getY(), entityPos.getZ(), entity);
+                        interpBox = GetBoundingBox.getPacketEntityBoundingBox(player, entityPos.getX(),
+                                entityPos.getY(), entityPos.getZ(), entity);
                     }
 
                     if (box.isIntersected(interpBox)) {
@@ -647,9 +681,9 @@ public class BlockPlace {
             return;
         }
 
-        // Check for waterlogged
+        // Check for water-logged blocks
         if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_13)) {
-            if (state.getInternalData().containsKey(StateValue.WATERLOGGED)) { // waterloggable
+            if (state.getInternalData().containsKey(StateValue.WATERLOGGED)) { // water-loggable
                 if (existingState.getType() == StateTypes.WATER && existingState.getLevel() == 0) {
                     state.setWaterlogged(true);
                 }
@@ -675,7 +709,6 @@ public class BlockPlace {
     }
 
     private void cascadeBlockUpdates(Vector3i pos) {
-
     }
 
     public void set(WrappedBlockState state) {
@@ -700,7 +733,6 @@ public class BlockPlace {
     public Vector getClickedLocation() {
         SimpleCollisionBox box = new SimpleCollisionBox(getPlacedAgainstBlockLocation());
         Vector look = ReachUtils.getLook(player, player.xRot, player.yRot);
-
         Vector eyePos = new Vector(player.x, player.y + player.getEyeHeight(), player.z);
         Vector endReachPos = eyePos.clone().add(new Vector(look.getX() * 6, look.getY() * 6, look.getZ() * 6));
         Vector intercept = ReachUtils.calculateIntercept(box, eyePos, endReachPos).getFirst();
@@ -714,7 +746,6 @@ public class BlockPlace {
         intercept.setX(intercept.getX() - box.minX);
         intercept.setY(intercept.getY() - box.minY);
         intercept.setZ(intercept.getZ() - box.minZ);
-
         return intercept;
     }
 
@@ -728,18 +759,21 @@ public class BlockPlace {
             LogUtil.warn("Material " + null + " has no placed type!");
             return;
         }
+
         set(material);
     }
 
     public void setAbove() {
         Vector3i placed = getPlacedBlockPos();
         placed = placed.add(0, 1, 0);
+
         set(placed, material.createBlockState(CompensatedWorld.blockVersion));
     }
 
     public void setAbove(WrappedBlockState toReplaceWith) {
         Vector3i placed = getPlacedBlockPos();
         placed = placed.add(0, 1, 0);
+
         set(placed, toReplaceWith);
     }
 }

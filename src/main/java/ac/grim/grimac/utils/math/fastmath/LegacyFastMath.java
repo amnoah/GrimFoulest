@@ -3,6 +3,7 @@ package ac.grim.grimac.utils.math.fastmath;
 public class LegacyFastMath {
 
     private static final float[] SIN_TABLE_FAST = new float[4096];
+    public static FastMathType fastMathType = FastMathType.LEGACY_MATH;
 
     static {
         for (int i = 0; i < 4096; ++i) {

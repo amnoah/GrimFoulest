@@ -1,10 +1,13 @@
 package ac.grim.grimac.utils.math.fastmath;
 
+import org.bukkit.util.Vector;
+
 // Found in BetterFPS 1.2.0
 // TODO: Implement this somewhere
 public class TaylorFastMath {
 
     private static final float SIN_TO_COS = 1.5707964f;
+    public static FastMathType fastMathType = FastMathType.TAYLOR_MATH;
 
     public static float sin(float rad) {
         double x2 = rad * rad;
@@ -30,5 +33,13 @@ public class TaylorFastMath {
 
     public static float cos(float rad) {
         return sin(rad + SIN_TO_COS);
+    }
+
+    public static Vector getTaylorMathMovement(Vector wantedMovement, float f, float f2) {
+        float sin = sin(f2 * 0.017453292f);
+        float cos = cos(f2 * 0.017453292f);
+        float bestTheoreticalX = (float) (sin * wantedMovement.getZ() + cos * wantedMovement.getX()) / (sin * sin + cos * cos) / f;
+        float bestTheoreticalZ = (float) (-sin * wantedMovement.getX() + cos * wantedMovement.getZ()) / (sin * sin + cos * cos) / f;
+        return new Vector(bestTheoreticalX, 0, bestTheoreticalZ);
     }
 }
