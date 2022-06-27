@@ -10,10 +10,6 @@ import lombok.Getter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 public class ConfigManager {
 
@@ -27,7 +23,6 @@ public class ConfigManager {
     private final File discordFile = new File(GrimAPI.INSTANCE.getPlugin().getDataFolder(), "discord.yml");
     @Getter
     private final File punishFile = new File(GrimAPI.INSTANCE.getPlugin().getDataFolder(), "punishments.yml");
-    private final List<Pattern> ignoredClientPatterns = new ArrayList<>();
     @Getter
     private int maxPingTransaction = 120; // This is just a really hot variable so cache it.
 
@@ -74,25 +69,6 @@ public class ConfigManager {
         }
 
         maxPingTransaction = config.getIntElse("max-ping.transaction", 120);
-        ignoredClientPatterns.clear();
-
-        for (String string : config.getStringList("client-brand.ignored-clients")) {
-            try {
-                ignoredClientPatterns.add(Pattern.compile(string));
-            } catch (PatternSyntaxException e) {
-                throw new RuntimeException("Failed to compile client pattern", e);
-            }
-        }
-    }
-
-    public boolean isIgnoredClient(String brand) {
-        for (Pattern pattern : ignoredClientPatterns) {
-            if (pattern.matcher(brand).find()) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private void upgrade() {

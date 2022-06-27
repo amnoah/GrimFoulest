@@ -10,14 +10,6 @@ alerts:
   # In addition to broadcasting alerts to players, should they also be sent to the console?
   print-to-console: true
 
-client-brand:
-  # This means it won't broadcast their brand to operators if the brand matches the following regexes
-  ignored-clients:
-    - "^vanilla$"
-    - "^fabric$"
-    - "^lunarclient:[a-z0-9]{7}"
-    - "^Feather Fabric$"
-
 spectators:
   # Hide all spectators with the grim.spectator permission regardless if they are actually actively spectating
   hide-regardless: false
@@ -53,14 +45,7 @@ NoSlowdown:
   dont-alert-until: 25
   alert-interval: 25
 
-Knockback:
-  threshold: 0.001
-  setback-vl: 3
-  decay: 0.025
-  dont-alert-until: 8
-  alert-interval: 5
-
-Explosion:
+Velocity:
   threshold: 0.001
   setback-vl: 3
   decay: 0.025

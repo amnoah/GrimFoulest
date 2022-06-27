@@ -1,22 +1,33 @@
 package ac.grim.grimac.checks.impl.misc;
 
-import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
-import ac.grim.grimac.utils.anticheat.MessageUtil;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.resources.ResourceLocation;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPluginMessage;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class ClientBrand extends PacketCheck {
 
+    public static final List<Pattern> IGNORED_BRANDS = Arrays.asList(
+            Pattern.compile("^vanilla$"),
+            Pattern.compile("^fabric$"),
+            Pattern.compile("^lunarclient:[a-z\\d]{7}"),
+            Pattern.compile("^Feather Fabric$")
+    );
+
+    public static final List<Pattern> IGNORED_REGISTERS = Collections.emptyList();
+
     @Getter
     String brand = "vanilla";
-    boolean hasBrand = false;
 
     public ClientBrand(GrimPlayer player) {
         super(player);
@@ -26,8 +37,8 @@ public class ClientBrand extends PacketCheck {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.PLUGIN_MESSAGE) {
             WrapperPlayClientPluginMessage packet = new WrapperPlayClientPluginMessage(event);
-            String channelName;
             Object channelObject = packet.getChannelName();
+            String channelName;
 
             if (channelObject instanceof String) {
                 channelName = (String) channelObject;
@@ -36,41 +47,46 @@ public class ClientBrand extends PacketCheck {
                 channelName = resourceLocation.getNamespace() + ":" + resourceLocation.getKey();
             }
 
-            if (channelName.equalsIgnoreCase("minecraft:brand") || // 1.13+
-                    channelName.equals("MC|Brand")) { // 1.12-
-                byte[] data = packet.getData();
+            if (channelName.equalsIgnoreCase("minecraft:brand") || channelName.equals("MC|Brand")) {
+                String data = new String(packet.getData(), StandardCharsets.UTF_8);
 
-                if (data.length == 0) {
-                    brand = "received empty brand";
-                    return;
+                if (data.equals("")) {
+                    data = "Empty";
                 }
 
-                byte[] minusLength = new byte[data.length - 1];
-                System.arraycopy(data, 1, minusLength, 0, minusLength.length);
+                // Removes Velocity's brand suffix
+                data = data.replace(" (Velocity)", "");
 
-                brand = new String(minusLength).replace(" (Velocity)", ""); // Removes velocity's brand suffix
+                // Prints unknown brands to console & online players with permission
+                if (!isInPatternList(IGNORED_BRANDS, brand)) {
+                    // TODO: Sync with prefix & shit
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "grim sendalert &b[Grim] &f"
+                            + player.user.getProfile().getName() + " &7sent an unknown brand: &f" + data);
+                }
 
-                if (!hasBrand) {
-                    hasBrand = true;
+            } else if (channelName.equalsIgnoreCase("minecraft:register") || channelName.equals("REGISTER")) {
+                String data = new String(packet.getData(), StandardCharsets.UTF_8);
 
-                    if (!GrimAPI.INSTANCE.getConfigManager().isIgnoredClient(brand)) {
-                        String message = GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("client-brand-format", "%prefix% &f%player% joined using %brand%");
-                        message = MessageUtil.format(message);
-                        message = message.replace("%brand%", brand);
-                        message = message.replace("%player%", player.user.getProfile().getName());
+                if (data.equals("")) {
+                    data = "Empty";
+                }
 
-                        // sendMessage is async safe while broadcast isn't due to adventure
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                            if (player.hasPermission("grim.brand")) {
-                                player.sendMessage(message);
-                            }
-                        }
-
-                        // Prints to console
-                        Bukkit.getConsoleSender().sendMessage(message);
-                    }
+                if (!isInPatternList(IGNORED_REGISTERS, data)) {
+                    // TODO: Sync with prefix & shit
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "grim sendalert &b[Grim] &f"
+                            + player.user.getProfile().getName() + " &7registered unknown data: &f" + data);
                 }
             }
         }
+    }
+
+    public boolean isInPatternList(List<Pattern> patternList, String text) {
+        for (Pattern pattern : patternList) {
+            if (pattern.matcher(text).find()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
