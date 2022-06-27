@@ -12,7 +12,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 @CheckData(name = "AutoBlock A")
 public class AutoBlockA extends PacketCheck {
 
-    private int streak;
+    private int stage;
 
     public AutoBlockA(GrimPlayer player) {
         super(player);
@@ -24,32 +24,32 @@ public class AutoBlockA extends PacketCheck {
             WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
 
             if (packet.getAction() == DiggingAction.RELEASE_USE_ITEM) {
-                if (streak == 0) {
-                    ++streak;
+                if (stage == 0) {
+                    ++stage;
                 }
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
-            if (streak == 1) {
-                ++streak;
+            if (stage == 1) {
+                ++stage;
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
             WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
 
             if (packet.getAction() == WrapperPlayClientInteractEntity.InteractAction.ATTACK) {
-                if (streak == 2) {
-                    ++streak;
+                if (stage == 2) {
+                    ++stage;
                 }
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_FLYING
                 || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION
                 || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
-            streak = 0;
+            stage = 0;
         }
 
-        if (streak == 3) {
+        if (stage == 3) {
             event.setCancelled(true);
             player.kick(getCheckName(), "", "You are sending too many packets!");
         }

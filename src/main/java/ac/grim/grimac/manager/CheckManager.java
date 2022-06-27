@@ -4,10 +4,8 @@ import ac.grim.grimac.checks.Check;
 import ac.grim.grimac.checks.impl.badpackets.*;
 import ac.grim.grimac.checks.impl.badpackets.packetorder.*;
 import ac.grim.grimac.checks.impl.badpackets.pingspoof.*;
-import ac.grim.grimac.checks.impl.combat.aimassist.AimAssistA;
-import ac.grim.grimac.checks.impl.combat.aimassist.AimAssistB;
-import ac.grim.grimac.checks.impl.combat.aimassist.AimAssistC;
-import ac.grim.grimac.checks.impl.combat.aimassist.AimAssistD;
+import ac.grim.grimac.checks.impl.combat.aimassist.*;
+import ac.grim.grimac.checks.impl.combat.aimassist.baritone.Baritone;
 import ac.grim.grimac.checks.impl.combat.aimassist.processor.AimProcessor;
 import ac.grim.grimac.checks.impl.combat.aimassist.processor.Cinematic;
 import ac.grim.grimac.checks.impl.combat.autoblock.AutoBlockA;
@@ -83,6 +81,7 @@ public class CheckManager {
                 .put(GroundSpoofB.class, new GroundSpoofB(player))
 
                 .put(BadPacketsA.class, new BadPacketsA(player))
+                .put(BadPacketsB.class, new BadPacketsB(player))
                 .put(BadPacketsC.class, new BadPacketsC(player))
                 .put(BadPacketsD.class, new BadPacketsD(player))
                 .put(BadPacketsE.class, new BadPacketsE(player))
@@ -91,9 +90,13 @@ public class CheckManager {
                 .put(BadPacketsH.class, new BadPacketsH(player))
                 .put(BadPacketsI.class, new BadPacketsI(player))
                 .put(BadPacketsJ.class, new BadPacketsJ(player))
+                .put(BadPacketsK.class, new BadPacketsK(player))
                 .put(BadPacketsL.class, new BadPacketsL(player))
                 .put(BadPacketsM.class, new BadPacketsM(player))
                 .put(BadPacketsN.class, new BadPacketsN(player))
+                .put(BadPacketsO.class, new BadPacketsO(player))
+                .put(BadPacketsP.class, new BadPacketsP(player))
+                .put(BadPacketsQ.class, new BadPacketsQ(player))
 
                 .put(AutoBlockA.class, new AutoBlockA(player))
 
@@ -101,7 +104,6 @@ public class CheckManager {
                 .put(PacketOrderB.class, new PacketOrderB(player))
                 .put(PacketOrderC.class, new PacketOrderC(player))
                 .put(PacketOrderD.class, new PacketOrderD(player))
-                .put(PacketOrderE.class, new PacketOrderE(player))
 
                 .put(AutoHealA.class, new AutoHealA(player))
                 .put(AutoHealB.class, new AutoHealB(player))
@@ -109,12 +111,18 @@ public class CheckManager {
                 .put(AutoHealD.class, new AutoHealD(player))
                 .put(AutoHealE.class, new AutoHealE(player))
                 .put(AutoHealF.class, new AutoHealF(player))
+                .put(AutoHealG.class, new AutoHealG(player))
 
                 .put(InventoryA.class, new InventoryA(player))
                 .put(InventoryB.class, new InventoryB(player))
                 .put(InventoryC.class, new InventoryC(player))
                 .put(InventoryD.class, new InventoryD(player))
                 .put(InventoryE.class, new InventoryE(player))
+                .put(InventoryF.class, new InventoryF(player))
+                .put(InventoryG.class, new InventoryG(player))
+                .put(InventoryH.class, new InventoryH(player))
+                .put(InventoryI.class, new InventoryI(player))
+                .put(InventoryJ.class, new InventoryJ(player))
 
                 .put(PingSpoofA.class, new PingSpoofA(player))
                 .put(PingSpoofB.class, new PingSpoofB(player))
@@ -140,10 +148,13 @@ public class CheckManager {
         rotationCheck = new ImmutableClassToInstanceMap.Builder<RotationCheck>()
                 .put(AimProcessor.class, new AimProcessor(player))
                 .put(Cinematic.class, new Cinematic(player))
+                .put(Baritone.class, new Baritone(player))
                 .put(AimAssistA.class, new AimAssistA(player))
                 .put(AimAssistB.class, new AimAssistB(player))
                 .put(AimAssistC.class, new AimAssistC(player))
                 .put(AimAssistD.class, new AimAssistD(player))
+                .put(AimAssistE.class, new AimAssistE(player))
+                .put(AimAssistF.class, new AimAssistF(player))
                 .build();
 
         vehicleCheck = new ImmutableClassToInstanceMap.Builder<VehicleCheck>()
@@ -170,6 +181,7 @@ public class CheckManager {
                 .put(ScaffoldC.class, new ScaffoldC(player))
                 .put(ScaffoldD.class, new ScaffoldD(player))
                 .put(ScaffoldE.class, new ScaffoldE(player))
+                .put(ScaffoldF.class, new ScaffoldF(player))
                 .build();
 
         timerCheck = new ImmutableClassToInstanceMap.Builder<PacketCheck>()

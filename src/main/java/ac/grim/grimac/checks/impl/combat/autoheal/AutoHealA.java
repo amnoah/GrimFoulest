@@ -11,7 +11,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientCl
 @CheckData(name = "AutoHeal A")
 public class AutoHealA extends PacketCheck {
 
-    private int streak;
+    private int stage;
 
     public AutoHealA(GrimPlayer player) {
         super(player);
@@ -19,33 +19,33 @@ public class AutoHealA extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.CLICK_WINDOW) { // Streak: 1
+        if (event.getPacketType() == PacketType.Play.Client.CLICK_WINDOW) {
             WrapperPlayClientClickWindow packet = new WrapperPlayClientClickWindow(event);
             WrapperPlayClientClickWindow.WindowClickType clickType = packet.getWindowClickType();
 
             if (packet.getWindowId() == 0 && clickType == WrapperPlayClientClickWindow.WindowClickType.QUICK_MOVE) {
-                if (streak == 0) {
-                    ++streak;
+                if (stage == 0) {
+                    ++stage;
                 }
             }
 
-        } else if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) { // Streak: 2, 4
-            if (streak == 1 || streak == 3) {
-                ++streak;
+        } else if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) {
+            if (stage == 1 || stage == 3) {
+                ++stage;
             }
 
-        } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) { // Streak: 3
-            if (streak == 2) {
-                ++streak;
+        } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) {
+            if (stage == 2) {
+                ++stage;
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_FLYING
                 || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION
                 || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
-            streak = 0;
+            stage = 0;
         }
 
-        if (streak == 4) {
+        if (stage == 4) {
             event.setCancelled(true);
             player.kick(getCheckName(), "", "You are sending too many packets!");
         }

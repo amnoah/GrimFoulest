@@ -26,8 +26,7 @@ public class PacketSniffer extends PacketCheck {
     public static boolean sniffingIncoming;
     public static boolean sniffingOutgoing;
     public static boolean sniffingFlying;
-    public static boolean sniffingWindowConfirmation;
-    public static boolean sniffingResourcePack;
+    public static boolean sniffingTransaction;
 
     public PacketSniffer(GrimPlayer player) {
         super(player);
@@ -522,6 +521,7 @@ public class PacketSniffer extends PacketCheck {
                     + ", SLOT=" + packet.getSlot()
                     + ", WINDOW_ID=" + packet.getWindowId()
                     + ", CLICK_TYPE=" + packet.getWindowClickType()
+                    + (packet.getStateId().isPresent() ? ", STATE_ID=" + packet.getStateId().get() : "")
                     + ", ITEM_STACK=" + packet.getCarriedItemStack());
 
         } else if (event.getPacketType() == PacketType.Play.Client.CREATIVE_INVENTORY_ACTION) {
@@ -889,7 +889,7 @@ public class PacketSniffer extends PacketCheck {
                     + ", BLOCK_POS=" + packet.getBlockPosition());
 
         } else if (event.getPacketType() == PacketType.Play.Client.WINDOW_CONFIRMATION) {
-            if (!sniffingWindowConfirmation) {
+            if (!sniffingTransaction) {
                 return;
             }
 

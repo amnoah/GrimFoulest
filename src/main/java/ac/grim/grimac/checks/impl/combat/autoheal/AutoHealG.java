@@ -5,30 +5,45 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.protocol.player.DiggingAction;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
+import com.github.retrooper.packetevents.protocol.world.BlockFace;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientHeldItemChange;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerBlockPlacement;
 
-// Detects LiquidBounce's AutoHeal
-@CheckData(name = "AutoHeal F")
-public class AutoHealF extends PacketCheck {
+// Detects Generic AutoHeal
+@CheckData(name = "AutoHeal G")
+public class AutoHealG extends PacketCheck {
 
     private int stage;
+    private int lastSlot = 0;
+    private int lastLastSlot = 0;
 
-    public AutoHealF(GrimPlayer player) {
+    public AutoHealG(GrimPlayer player) {
         super(player);
     }
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) {
-            if (stage == 0 || stage == 2) {
+            WrapperPlayClientHeldItemChange packet = new WrapperPlayClientHeldItemChange(event);
+
+            if (stage == 0) {
                 ++stage;
             }
 
-        } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
-            WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
+            if (stage == 2) {
+                if (packet.getSlot() == lastLastSlot) {
+                    ++stage;
+                    flagAndAlert("", false);
+                }
+            }
 
-            if (packet.getAction() == DiggingAction.DROP_ITEM) {
+            lastLastSlot = lastSlot;
+            lastSlot = packet.getSlot();
+
+        } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) {
+            WrapperPlayClientPlayerBlockPlacement packet = new WrapperPlayClientPlayerBlockPlacement(event);
+
+            if (packet.getFace() == BlockFace.OTHER) {
                 if (stage == 1) {
                     ++stage;
                 }

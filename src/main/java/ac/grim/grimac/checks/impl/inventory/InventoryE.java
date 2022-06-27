@@ -12,7 +12,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientIn
 @CheckData(name = "Inventory E")
 public class InventoryE extends PacketCheck {
 
-    private int streak;
+    private int stage;
 
     public InventoryE(GrimPlayer player) {
         super(player);
@@ -21,8 +21,8 @@ public class InventoryE extends PacketCheck {
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
-            if (streak == 0) {
-                ++streak;
+            if (stage == 0) {
+                ++stage;
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.CLICK_WINDOW) {
@@ -30,8 +30,8 @@ public class InventoryE extends PacketCheck {
 
             if (packet.getWindowId() == 0
                     && packet.getWindowClickType() == WrapperPlayClientClickWindow.WindowClickType.SWAP) {
-                if (streak == 1 || streak == 3) {
-                    ++streak;
+                if (stage == 1 || stage == 3) {
+                    ++stage;
                 }
             }
 
@@ -39,18 +39,18 @@ public class InventoryE extends PacketCheck {
             WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
 
             if (packet.getAction() == WrapperPlayClientInteractEntity.InteractAction.ATTACK) {
-                if (streak == 2) {
-                    ++streak;
+                if (stage == 2) {
+                    ++stage;
                 }
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_FLYING
                 || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION
                 || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
-            streak = 0;
+            stage = 0;
         }
 
-        if (streak == 4) {
+        if (stage == 4) {
             event.setCancelled(true);
             player.kick(getCheckName(), "Infinite Durability", "You are sending too many packets!");
         }

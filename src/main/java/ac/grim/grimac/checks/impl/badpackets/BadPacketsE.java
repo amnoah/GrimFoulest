@@ -5,14 +5,15 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEntityAction;
+import com.github.retrooper.packetevents.protocol.player.DiggingAction;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-// Detects sending two Sneak packets with the same state
 @CheckData(name = "BadPackets E")
 public class BadPacketsE extends PacketCheck {
 
-    boolean wasTeleport;
-    boolean lastSneaking;
+    private boolean sent;
 
     public BadPacketsE(GrimPlayer player) {
         super(player);
@@ -20,26 +21,19 @@ public class BadPacketsE extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        wasTeleport = player.packetStateData.lastPacketWasTeleport || wasTeleport;
+        if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) {
+            sent = true;
 
-        if (event.getPacketType() == PacketType.Play.Client.ENTITY_ACTION) {
-            WrapperPlayClientEntityAction packet = new WrapperPlayClientEntityAction(event);
+        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            sent = false;
 
-            if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SNEAKING) {
-                if (lastSneaking && !wasTeleport) {
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "START_SNEAKING", "You are sending too many packets!");
-                } else {
-                    lastSneaking = true;
-                }
+        } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
+            WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
 
-            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SNEAKING) {
-                if (!lastSneaking && !wasTeleport) {
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "STOP_SNEAKING", "You are sending too many packets!");
-                } else {
-                    lastSneaking = false;
-                }
+            if (sent && packet.getAction() == DiggingAction.RELEASE_USE_ITEM
+                    && !player.packetStateData.lastPacketWasTeleport
+                    && !player.compensatedEntities.getSelf().inVehicle()) {
+                flagAndAlert("", false);
             }
         }
     }

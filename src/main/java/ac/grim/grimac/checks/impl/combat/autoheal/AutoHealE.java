@@ -14,7 +14,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 @CheckData(name = "AutoHeal E")
 public class AutoHealE extends PacketCheck {
 
-    private int streak;
+    private int stage;
 
     public AutoHealE(GrimPlayer player) {
         super(player);
@@ -27,32 +27,32 @@ public class AutoHealE extends PacketCheck {
             WrapperPlayClientClickWindow.WindowClickType clickType = packet.getWindowClickType();
 
             if (packet.getWindowId() == 0 && clickType == WrapperPlayClientClickWindow.WindowClickType.SWAP) {
-                if (streak == 0) {
-                    ++streak;
+                if (stage == 0) {
+                    ++stage;
                 }
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) {
-            if (streak == 1 || streak == 3) {
-                ++streak;
+            if (stage == 1 || stage == 3) {
+                ++stage;
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) {
             WrapperPlayClientPlayerBlockPlacement packet = new WrapperPlayClientPlayerBlockPlacement(event);
 
             if (packet.getFace() == BlockFace.OTHER) {
-                if (streak == 2) {
-                    ++streak;
+                if (stage == 2) {
+                    ++stage;
                 }
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_FLYING
                 || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION
                 || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
-            streak = 0;
+            stage = 0;
         }
 
-        if (streak == 4) {
+        if (stage == 4) {
             event.setCancelled(true);
             player.kick(getCheckName(), "", "You are sending too many packets!");
         }

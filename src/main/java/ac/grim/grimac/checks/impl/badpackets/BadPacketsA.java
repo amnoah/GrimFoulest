@@ -83,9 +83,9 @@ public class BadPacketsA extends PacketCheck {
                 return;
             }
 
-            if (forwards > 0.98f || sideways > 0.98f) {
+            if (forwards > 0.9800000190734863 || sideways > 0.9800000190734863) {
                 event.setCancelled(true);
-                player.kick(getCheckName(), "Vehicle Speed", "You are sending too many packets!");
+                player.kick(getCheckName(), "Vehicle Steer", "You are sending too many packets!");
                 return;
             }
         }

@@ -13,6 +13,7 @@ import io.github.retrooper.packetevents.util.SpigotReflectionUtil;
 import lombok.Setter;
 
 import java.awt.*;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -83,9 +84,10 @@ public class DiscordManager implements Initable {
             String formattedVer = player.getClientVersion().getReleaseName();
             String brand = player.checkManager.getPacketCheck(ClientBrand.class).getBrand().replace("_", "\\_");
             String name = (player.bukkitPlayer != null ? player.bukkitPlayer.getName() : player.user.getProfile().getName()).replace("_", "\\_");
+            String uuidString = player.user.getProfile().getUUID().toString();
 
             String content = staticContent;
-            content = content.replace("%uuid%", player.user.getProfile().getUUID().toString());
+            content = content.replace("%uuid%", uuidString);
             content = content.replace("%player%", name);
             content = content.replace("%check%", checkName);
             content = content.replace("%violations%", violations);
@@ -101,7 +103,8 @@ public class DiscordManager implements Initable {
                     .setThumbnailUrl("https://crafthead.net/helm/" + player.user.getProfile().getUUID())
                     .setTitle(new WebhookEmbed.EmbedTitle("**Grim Alert**", null))
                     .setDescription(content)
-                    .setFooter(new WebhookEmbed.EmbedFooter(time, "https://grim.ac/images/grim.png"));
+                    .setTimestamp(Instant.now())
+                    .setFooter(new WebhookEmbed.EmbedFooter("", "https://grim.ac/images/grim.png"));
 
             if (!verbose.isEmpty()) {
                 embed.addField(new WebhookEmbed.EmbedField(true, "Verbose", verbose));

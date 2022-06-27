@@ -12,7 +12,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientCl
 @CheckData(name = "Inventory C")
 public class InventoryC extends PacketCheck {
 
-    private int streak;
+    private int stage;
 
     public InventoryC(GrimPlayer player) {
         super(player);
@@ -25,16 +25,16 @@ public class InventoryC extends PacketCheck {
             WrapperPlayClientClickWindow.WindowClickType clickType = packet.getWindowClickType();
 
             if (packet.getWindowId() == 0 && clickType == WrapperPlayClientClickWindow.WindowClickType.PICKUP) {
-                ++streak;
+                ++stage;
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_FLYING
                 || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION
                 || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
-            streak = 0;
+            stage = 0;
         }
 
-        if (streak == 2) {
+        if (stage == 2) {
             event.setCancelled(true);
             player.kick(getCheckName(), "", "You are sending too many packets!");
         }

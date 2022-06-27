@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class RotationUpdate {
+
     private HeadRotation from, to;
     private AimProcessor processor;
     private float deltaPitch, deltaYaw;

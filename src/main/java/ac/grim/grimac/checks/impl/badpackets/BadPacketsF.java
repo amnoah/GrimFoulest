@@ -8,7 +8,7 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 
 // Detects attacking entities without swinging
-@CheckData(name = "BadPackets H")
+@CheckData(name = "BadPackets F")
 public class BadPacketsF extends PacketCheck {
 
     private int streak;

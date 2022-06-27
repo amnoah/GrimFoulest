@@ -4,15 +4,10 @@ import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.RotationCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.update.RotationUpdate;
-import ac.grim.grimac.utils.data.HeadRotation;
 import ac.grim.grimac.utils.math.GrimMath;
 
-// Detects Baritone
-@CheckData(name = "Baritone")
+@CheckData(name = "AimAssist D")
 public class AimAssistD extends RotationCheck {
-
-    private float lastPitchDifference;
-    private int verbose;
 
     public AimAssistD(GrimPlayer playerData) {
         super(playerData);
@@ -20,26 +15,24 @@ public class AimAssistD extends RotationCheck {
 
     @Override
     public void process(RotationUpdate rotationUpdate) {
-        HeadRotation from = rotationUpdate.getFrom();
-        HeadRotation to = rotationUpdate.getTo();
-        float deltaPitch = Math.abs(to.getPitch() - from.getPitch());
+        float absDeltaYaw = Math.abs(rotationUpdate.getDeltaYaw());
 
-        // Baritone works with small degrees, limit to 1 degrees to pick up on baritone slightly moving aim to bypass anticheats
-        if (rotationUpdate.getDeltaYaw() == 0 && deltaPitch > 0 && deltaPitch < 1 && Math.abs(to.getPitch()) != 90.0f) {
-            long gcd = GrimMath.getGcd((long) (deltaPitch * GrimMath.EXPANDER), (long) (lastPitchDifference * GrimMath.EXPANDER));
-
-            if (gcd < 131072L) {
-                verbose = Math.min(verbose + 1, 20);
-
-                if (verbose > 9) {
-                    flagAndAlert("GCD: " + gcd, false);
-                    verbose = 0;
-                }
-            } else {
-                verbose = Math.max(0, verbose - 1);
+        if (absDeltaYaw >= 1.0f && absDeltaYaw % 0.1f == 0.0f) {
+            if (absDeltaYaw % 1.0f == 0.0f
+                    || absDeltaYaw % 10.0f == 0.0f
+                    || absDeltaYaw % 30.0f == 0.0f) {
+                flagAndAlert("YAW=" + absDeltaYaw, false);
             }
         }
 
-        lastPitchDifference = deltaPitch;
+        float absDeltaPitch = Math.abs(rotationUpdate.getDeltaPitch());
+
+        if (absDeltaPitch >= 1.0f && absDeltaPitch % 0.1f == 0.0f) {
+            if (absDeltaPitch % 1.0f == 0.0f
+                    || absDeltaPitch % 10.0f == 0.0f
+                    || absDeltaPitch % 30.0f == 0.0f) {
+                flagAndAlert("PITCH=" + absDeltaPitch, false);
+            }
+        }
     }
 }

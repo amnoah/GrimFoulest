@@ -4,11 +4,15 @@ import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEntityAction;
 
-// Detects sending Rotation packets with an invalid pitch
+// Detects sending two Sneak packets with the same state
 @CheckData(name = "BadPackets D")
 public class BadPacketsD extends PacketCheck {
+
+    boolean wasTeleport;
+    boolean lastSneaking;
 
     public BadPacketsD(GrimPlayer player) {
         super(player);
@@ -16,16 +20,26 @@ public class BadPacketsD extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (player.packetStateData.lastPacketWasTeleport) {
-            return;
-        }
+        wasTeleport = player.packetStateData.lastPacketWasTeleport || wasTeleport;
 
-        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
+        if (event.getPacketType() == PacketType.Play.Client.ENTITY_ACTION) {
+            WrapperPlayClientEntityAction packet = new WrapperPlayClientEntityAction(event);
 
-            if (packet.hasRotationChanged() && Math.abs(packet.getLocation().getPitch()) > 90) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "Invalid Pitch", "Illegal position");
+            if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SNEAKING) {
+                if (lastSneaking && !wasTeleport) {
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "START_SNEAKING", "You are sending too many packets!");
+                } else {
+                    lastSneaking = true;
+                }
+
+            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SNEAKING) {
+                if (!lastSneaking && !wasTeleport) {
+                    event.setCancelled(true);
+                    player.kick(getCheckName(), "STOP_SNEAKING", "You are sending too many packets!");
+                } else {
+                    lastSneaking = false;
+                }
             }
         }
     }

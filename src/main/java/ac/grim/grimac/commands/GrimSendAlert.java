@@ -21,8 +21,9 @@ public class GrimSendAlert extends BaseCommand {
             bukkitPlayer.sendMessage(string);
         }
 
+        // Print alert to console
         if (GrimAPI.INSTANCE.getConfigManager().getConfig().getBooleanElse("alerts.print-to-console", true)) {
-            LogUtil.info(string); // Print alert to console
+            LogUtil.console(string);
         }
     }
 }

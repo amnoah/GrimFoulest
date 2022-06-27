@@ -20,13 +20,14 @@ public class BadPacketsM extends PacketCheck {
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
         if (!WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())
-                && event.getPacketType() != PacketType.Play.Client.WINDOW_CONFIRMATION
-                && event.getPacketType() != PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT
-                && event.getPacketType() != PacketType.Play.Client.PLAYER_DIGGING
                 && event.getPacketType() != PacketType.Play.Client.ANIMATION
                 && event.getPacketType() != PacketType.Play.Client.CLICK_WINDOW
+                && event.getPacketType() != PacketType.Play.Client.CREATIVE_INVENTORY_ACTION
+                && event.getPacketType() != PacketType.Play.Client.INTERACT_ENTITY
+                && event.getPacketType() != PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT
+                && event.getPacketType() != PacketType.Play.Client.PLAYER_DIGGING
                 && event.getPacketType() != PacketType.Play.Client.STEER_VEHICLE
-                && event.getPacketType() != PacketType.Play.Client.INTERACT_ENTITY) {
+                && event.getPacketType() != PacketType.Play.Client.WINDOW_CONFIRMATION) {
             if (streak % 2 != 0) {
                 ++streak;
 

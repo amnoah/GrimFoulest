@@ -8,7 +8,7 @@ import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
 // Detects sending same yaw & pitch twice
-@CheckData(name = "BadPackets H")
+@CheckData(name = "BadPackets G")
 public class BadPacketsG extends PacketCheck {
 
     private double lastYaw;

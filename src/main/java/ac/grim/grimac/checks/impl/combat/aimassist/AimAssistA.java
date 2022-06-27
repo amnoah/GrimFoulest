@@ -9,8 +9,8 @@ import ac.grim.grimac.utils.math.GrimMath;
 @CheckData(name = "AimAssist A")
 public class AimAssistA extends RotationCheck {
 
-    public double lastYawDiff;
-    public double lastPitchDiff;
+    public double lastDeltaYaw;
+    public double lastDeltaPitch;
     boolean exempt = false;
 
     public AimAssistA(GrimPlayer playerData) {
@@ -29,20 +29,18 @@ public class AimAssistA extends RotationCheck {
             return;
         }
 
-        double yawDiff = Math.abs(rotationUpdate.getTo().getYaw() - rotationUpdate.getFrom().getYaw());
-        double pitchDiff = Math.abs(rotationUpdate.getTo().getPitch() - rotationUpdate.getFrom().getPitch());
-        int yawDecimal = GrimMath.countDecimalPlaces(yawDiff);
-        int pitchDecimal = GrimMath.countDecimalPlaces(pitchDiff);
+        int yawDecimal = GrimMath.countDecimalPlaces(rotationUpdate.getDeltaYaw());
+        int pitchDecimal = GrimMath.countDecimalPlaces(rotationUpdate.getDeltaPitch());
 
-        if (yawDiff > 0.08 && yawDiff == lastYawDiff && yawDecimal <= 5) {
-            flagAndAlert("YawDiff: " + yawDiff + " Decimal: " + GrimMath.countDecimalPlaces(yawDiff), false);
+        if (rotationUpdate.getDeltaYaw() > 0.08 && rotationUpdate.getDeltaYaw() == lastDeltaYaw && yawDecimal <= 5) {
+            flagAndAlert("YawDiff: " + rotationUpdate.getDeltaYaw() + " Decimal: " + GrimMath.countDecimalPlaces(rotationUpdate.getDeltaYaw()), false);
         }
 
-        if (pitchDiff > 0.08 && pitchDiff == lastPitchDiff && pitchDecimal <= 5) {
-            flagAndAlert("PitchDiff: " + pitchDiff + " Decimal: " + GrimMath.countDecimalPlaces(pitchDiff), false);
+        if (rotationUpdate.getDeltaPitch() > 0.08 && rotationUpdate.getDeltaPitch() == lastDeltaPitch && pitchDecimal <= 5) {
+            flagAndAlert("PitchDiff: " + rotationUpdate.getDeltaPitch() + " Decimal: " + GrimMath.countDecimalPlaces(rotationUpdate.getDeltaPitch()), false);
         }
 
-        lastYawDiff = yawDiff;
-        lastPitchDiff = pitchDiff;
+        lastDeltaYaw = rotationUpdate.getDeltaYaw();
+        lastDeltaPitch = rotationUpdate.getDeltaPitch();
     }
 }

@@ -11,7 +11,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.*;
 @CheckData(name = "Inventory A")
 public class InventoryA extends PacketCheck {
 
-    private int streak;
+    private int stage;
 
     public InventoryA(GrimPlayer player) {
         super(player);
@@ -23,8 +23,8 @@ public class InventoryA extends PacketCheck {
             WrapperPlayClientClientStatus packet = new WrapperPlayClientClientStatus(event);
 
             if (packet.getAction() == WrapperPlayClientClientStatus.Action.OPEN_INVENTORY_ACHIEVEMENT) {
-                if (streak == 0) {
-                    ++streak;
+                if (stage == 0) {
+                    ++stage;
                 }
             }
 
@@ -33,8 +33,8 @@ public class InventoryA extends PacketCheck {
             WrapperPlayClientClickWindow.WindowClickType clickType = packet.getWindowClickType();
 
             if (packet.getWindowId() == 0 && clickType == WrapperPlayClientClickWindow.WindowClickType.QUICK_MOVE) {
-                if (streak == 1) {
-                    ++streak;
+                if (stage == 1) {
+                    ++stage;
                 }
             }
 
@@ -42,18 +42,18 @@ public class InventoryA extends PacketCheck {
             WrapperPlayClientCloseWindow packet = new WrapperPlayClientCloseWindow(event);
 
             if (packet.getWindowId() == 0) {
-                if (streak == 2) {
-                    ++streak;
+                if (stage == 2) {
+                    ++stage;
                 }
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_FLYING
                 || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION
                 || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
-            streak = 0;
+            stage = 0;
         }
 
-        if (streak == 3) {
+        if (stage == 3) {
             event.setCancelled(true);
             player.kick(getCheckName(), "", "You are sending too many packets!");
         }
