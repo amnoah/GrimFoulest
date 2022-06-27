@@ -30,6 +30,7 @@ public class GrimReload extends BaseCommand {
         for (GrimPlayer grimPlayer : GrimAPI.INSTANCE.getPlayerDataManager().getEntries()) {
             ChannelHelper.runInEventLoop(grimPlayer.user.getChannel(), () -> {
                 grimPlayer.punishmentManager.reload();
+
                 for (Check value : grimPlayer.checkManager.allChecks.values()) {
                     value.reload();
                 }

@@ -1,6 +1,8 @@
 package ac.grim.grimac.player;
 
+import ac.grim.grimac.AbstractCheck;
 import ac.grim.grimac.GrimAPI;
+import ac.grim.grimac.GrimUser;
 import ac.grim.grimac.events.packets.CheckManagerListener;
 import ac.grim.grimac.manager.ActionManager;
 import ac.grim.grimac.manager.CheckManager;
@@ -55,7 +57,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 // Put variables sync'd to the netty thread in PacketStateData
 // Variables that need lag compensation should have their own class
 // Soon there will be a generic class for lag compensation
-public class GrimPlayer {
+public class GrimPlayer implements GrimUser {
 
     public final User user;
     // Start transaction handling stuff
@@ -604,6 +606,27 @@ public class GrimPlayer {
         // This check was added in 1.11
         // 1.11+ players must be in creative and have a permission level at or above 2
         return getClientVersion().isOlderThanOrEquals(ClientVersion.V_1_10) || (gamemode == GameMode.CREATIVE && compensatedEntities.getSelf().getOpLevel() >= 2);
+    }
+
+
+    @Override
+    public void runSafely(Runnable runnable) {
+        ChannelHelper.runInEventLoop(this.user.getChannel(), runnable);
+    }
+
+    @Override
+    public String getName() {
+        return user.getName();
+    }
+
+    @Override
+    public UUID getUniqueId() {
+        return user.getProfile().getUUID();
+    }
+
+    @Override
+    public Collection<? extends AbstractCheck> getChecks() {
+        return checkManager.allChecks.values();
     }
 
     public void kick(String reason, String verbose, String kickMessage) {

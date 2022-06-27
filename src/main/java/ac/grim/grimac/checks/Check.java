@@ -1,20 +1,20 @@
 package ac.grim.grimac.checks;
 
+import ac.grim.grimac.AbstractCheck;
 import ac.grim.grimac.GrimAPI;
+import ac.grim.grimac.events.FlagEvent;
 import ac.grim.grimac.player.GrimPlayer;
-import ac.grim.grimac.utils.events.FlagEvent;
 import github.scarsz.configuralize.DynamicConfig;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 
-// Class from https://github.com/Tecnio/AntiCheatBase/blob/master/src/main/java/me/tecnio/anticheat/check/Check.java
 @Getter
-public class Check {
+public class Check implements AbstractCheck {
 
     protected final GrimPlayer player;
     public double violations;
-    public double decay;
-    public double setbackVL;
+    private double decay;
+    private double setbackVL;
     private String checkName;
     private String configName;
     private String alternativeName;
@@ -51,18 +51,12 @@ public class Check {
         }
     }
 
-    public void flagAndSetback() {
-        if (flag()) {
-            setbackIfAboveSetbackVL();
-        }
-    }
-
     public final boolean flag() {
         if (player.disableGrim) {
             return false; // Avoid calling event if disabled
         }
 
-        FlagEvent event = new FlagEvent(this);
+        FlagEvent event = new FlagEvent(player, this);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
@@ -105,4 +99,3 @@ public class Check {
         return offset > 0.001 ? String.format("%.5f", offset) : String.format("%.2E", offset);
     }
 }
-

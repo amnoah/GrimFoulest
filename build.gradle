@@ -40,6 +40,8 @@ dependencies {
     implementation 'it.unimi.dsi:fastutil:8.5.8'
     implementation 'org.jetbrains:annotations:23.0.0' // Why is this needed to compile?
     implementation 'github.scarsz:configuralize:1.4.0'
+    // Use implementation 'ac.grim.grimac:GrimAPI:1.0` when using local maven
+    implementation 'com.github.MWHunter:GrimAPI:90f5a9cb20'
 
     compileOnly 'org.geysermc.floodgate:api:2.0-SNAPSHOT'
     compileOnly 'org.spigotmc:spigot-api:1.18-R0.1-SNAPSHOT'

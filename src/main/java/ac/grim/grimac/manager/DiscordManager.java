@@ -10,6 +10,7 @@ import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import io.github.retrooper.packetevents.util.SpigotReflectionUtil;
+import lombok.Setter;
 
 import java.awt.*;
 import java.time.LocalDateTime;
@@ -22,6 +23,9 @@ public class DiscordManager implements Initable {
     private static WebhookClient client;
     private int embedColor;
     private String staticContent = "";
+
+    @Setter
+    private String serverName = "Unknown";
 
     @Override
     public void start() {
@@ -89,6 +93,7 @@ public class DiscordManager implements Initable {
             content = content.replace("%brand%", brand);
             content = content.replace("%ping%", formattedPing);
             content = content.replace("%tps%", tps);
+            content = content.replace("%server%", serverName);
 
             WebhookEmbedBuilder embed = new WebhookEmbedBuilder()
                     .setImageUrl("https://i.stack.imgur.com/Fzh0w.png") // Constant width
