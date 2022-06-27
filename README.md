@@ -1,10 +1,12 @@
-# GrimAC Fork
+# Grim Fork
 
 **Link to Grim: https://github.com/MWHunter/Grim**
+
 
 This is my fork of Grim, an advanced anticheat for Minecraft.
 
 I don't want to intrude upon Grim's vision, so I created my own.
+
 
 **New Checks (as of 6/27/22):** 
 - AimAssist (x1)
