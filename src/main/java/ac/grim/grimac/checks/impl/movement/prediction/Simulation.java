@@ -2,22 +2,19 @@ package ac.grim.grimac.checks.impl.movement.prediction;
 
 import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PostPredictionCheck;
+import ac.grim.grimac.events.CompletePredictionEvent;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.update.PredictionComplete;
-import ac.grim.grimac.utils.events.CompletePredictionEvent;
 import org.bukkit.Bukkit;
 
 @CheckData(name = "Simulation", configName = "Simulation", decay = 0.02)
 public class Simulation extends PostPredictionCheck {
 
-    // Config
     double setbackDecayMultiplier;
     double threshold;
     double immediateSetbackThreshold;
     double maxAdvantage;
     double maxCeiling;
-
-    // Current advantage gained
     double advantageGained = 0;
 
     public Simulation(GrimPlayer player) {
@@ -87,9 +84,5 @@ public class Simulation extends PostPredictionCheck {
         if (immediateSetbackThreshold == -1) {
             immediateSetbackThreshold = Double.MAX_VALUE;
         }
-    }
-
-    public boolean doesOffsetFlag(double offset) {
-        return offset >= threshold;
     }
 }

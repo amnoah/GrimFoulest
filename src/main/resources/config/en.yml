@@ -20,11 +20,6 @@ spectators:
 # How long should players have until we keep them for timing out?
 max-ping: 120
 
-# Set to false if your server uses custom resource packs
-# Example: Cops & Robbers on Hypixel
-using-custom-resource-packs: false
-
-# Check Settings
 Simulation:
   setback-decay-multiplier: 0.999
   threshold: 0.001

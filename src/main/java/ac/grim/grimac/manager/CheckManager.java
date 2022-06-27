@@ -126,7 +126,6 @@ public class CheckManager {
                 .put(PingSpoofH.class, new PingSpoofH(player))
                 .put(PingSpoofI.class, new PingSpoofI(player))
                 .put(PingSpoofJ.class, new PingSpoofJ(player))
-                .put(PingSpoofK.class, new PingSpoofK(player))
 
                 .put(FastBreak.class, new FastBreak(player))
 
