@@ -239,6 +239,7 @@ public class CompensatedInventory extends PacketCheck {
             if (needResend) {
                 if (player.bukkitPlayer != null) {
                     needResend = false;
+
                     Bukkit.getScheduler().runTask(GrimAPI.INSTANCE.getPlugin(), () -> {
                         player.bukkitPlayer.closeInventory();
                         player.bukkitPlayer.updateInventory();

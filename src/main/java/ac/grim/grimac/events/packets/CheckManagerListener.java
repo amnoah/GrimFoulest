@@ -2,6 +2,7 @@ package ac.grim.grimac.events.packets;
 
 import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.player.GrimPlayer;
+import ac.grim.grimac.utils.anticheat.LogUtil;
 import ac.grim.grimac.utils.anticheat.update.*;
 import ac.grim.grimac.utils.blockplace.BlockPlaceResult;
 import ac.grim.grimac.utils.blockplace.ConsumesBlockPlace;
@@ -559,9 +560,16 @@ public class CheckManagerListener extends PacketListenerAbstract {
                 // Instant breaking, no damage means it is unbreakable by creative players (with swords)
                 if (damage > 1 || (player.gamemode == GameMode.CREATIVE && damage != 0)) {
                     player.compensatedWorld.startPredicting();
-                    player.compensatedWorld.updateBlock(dig.getBlockPosition().getX(), dig.getBlockPosition().getY(), dig.getBlockPosition().getZ(), 0);
+                    player.compensatedWorld.updateBlock(dig.getBlockPosition().getX(),
+                            dig.getBlockPosition().getY(), dig.getBlockPosition().getZ(), 0);
                     player.compensatedWorld.stopPredicting(dig);
                 }
+            }
+
+            if (dig.getAction() == DiggingAction.START_DIGGING
+                    || dig.getAction() == DiggingAction.FINISHED_DIGGING
+                    || dig.getAction() == DiggingAction.CANCELLED_DIGGING) {
+                player.compensatedWorld.handleBlockBreakPrediction(dig);
             }
         }
 
@@ -575,14 +583,17 @@ public class CheckManagerListener extends PacketListenerAbstract {
             }
 
             // This is the use item packet
-            if (packet.getFace() == BlockFace.OTHER && PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9)) {
+            if (packet.getFace() == BlockFace.OTHER
+                    && PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9)) {
                 player.placeUseItemPackets.add(packet);
                 PacketPlayerDigging.handleUseItem(player, player.getInventory().getHeldItem(), InteractionHand.MAIN_HAND);
+                player.checkManager.onPacketReceive(event); // Now we can read these packets!
                 return;
             }
 
             // Anti-air place
-            BlockPlace blockPlace = new BlockPlace(player, packet.getBlockPosition(), packet.getFace(), placedWith, getNearestHitResult(player, null, true));
+            BlockPlace blockPlace = new BlockPlace(player, packet.getBlockPosition(), packet.getFace(),
+                    placedWith, getNearestHitResult(player, null, true));
             blockPlace.setCursor(packet.getCursorPosition());
 
             if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_11) && player.getClientVersion().isOlderThan(ClientVersion.V_1_11)) {
@@ -593,7 +604,6 @@ public class CheckManagerListener extends PacketListenerAbstract {
                     int trueByteX = (int) (packet.getCursorPosition().getX() * 15);
                     int trueByteY = (int) (packet.getCursorPosition().getY() * 15);
                     int trueByteZ = (int) (packet.getCursorPosition().getZ() * 15);
-
                     blockPlace.setCursor(new Vector3f(trueByteX / 16f, trueByteY / 16f, trueByteZ / 16f));
                 }
             }
@@ -603,7 +613,7 @@ public class CheckManagerListener extends PacketListenerAbstract {
             }
 
             if (blockPlace.isCancelled() && !player.disableGrim) { // The player tried placing blocks in air/water
-                event.setCancelled(true);
+                //event.setCancelled(true);
 
                 Vector3i facePos = new Vector3i(packet.getBlockPosition().getX() + packet.getFace().getModX(), packet.getBlockPosition().getY() + packet.getFace().getModY(), packet.getBlockPosition().getZ() + packet.getFace().getModZ());
                 int placed = player.compensatedWorld.getWrappedBlockStateAt(packet.getBlockPosition()).getGlobalId();
@@ -777,7 +787,6 @@ public class CheckManagerListener extends PacketListenerAbstract {
         GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
 
         if (player == null) {
-            System.out.println("Ignored: " + event.getPacketType());
             return;
         }
 

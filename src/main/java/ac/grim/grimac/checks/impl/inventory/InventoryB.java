@@ -5,11 +5,11 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.protocol.player.DiggingAction;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClickWindow;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClientStatus;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientCloseWindow;
 
-// Detects Dortware's AutoSoup
+// Detects LiquidBounce's InvCleaner
 @CheckData(name = "Inventory B")
 public class InventoryB extends PacketCheck {
 
@@ -21,25 +21,41 @@ public class InventoryB extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_CHANGE) { // Streak: 1
-            if (streak == 0 || streak == 2 || streak == 3 || streak == 4) {
-                ++streak;
-            }
+        if (event.getPacketType() == PacketType.Play.Client.CLIENT_STATUS) {
+            WrapperPlayClientClientStatus packet = new WrapperPlayClientClientStatus(event);
 
-        } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) { // Streak: 2, 4
-            WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
-
-            if (packet.getAction() == DiggingAction.RELEASE_USE_ITEM) {
-                if (streak == 1 || streak == 5) {
+            if (packet.getAction() == WrapperPlayClientClientStatus.Action.OPEN_INVENTORY_ACHIEVEMENT) {
+                if (streak == 0) {
                     ++streak;
                 }
             }
 
-        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+        } else if (event.getPacketType() == PacketType.Play.Client.CLICK_WINDOW) {
+            WrapperPlayClientClickWindow packet = new WrapperPlayClientClickWindow(event);
+            WrapperPlayClientClickWindow.WindowClickType clickType = packet.getWindowClickType();
+
+            if (packet.getWindowId() == 0 && clickType == WrapperPlayClientClickWindow.WindowClickType.THROW) {
+                if (streak == 1) {
+                    ++streak;
+                }
+            }
+
+        } else if (event.getPacketType() == PacketType.Play.Client.CLOSE_WINDOW) {
+            WrapperPlayClientCloseWindow packet = new WrapperPlayClientCloseWindow(event);
+
+            if (packet.getWindowId() == 0) {
+                if (streak == 2) {
+                    ++streak;
+                }
+            }
+
+        } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_FLYING
+                || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION
+                || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
             streak = 0;
         }
 
-        if (streak == 6) {
+        if (streak == 3) {
             event.setCancelled(true);
             player.kick(getCheckName(), "", "You are sending too many packets!");
         }

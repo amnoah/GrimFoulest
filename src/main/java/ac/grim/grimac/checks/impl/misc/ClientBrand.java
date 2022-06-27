@@ -6,6 +6,7 @@ import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.MessageUtil;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.resources.ResourceLocation;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPluginMessage;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -25,9 +26,18 @@ public class ClientBrand extends PacketCheck {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.PLUGIN_MESSAGE) {
             WrapperPlayClientPluginMessage packet = new WrapperPlayClientPluginMessage(event);
+            String channelName;
+            Object channelObject = packet.getChannelName();
 
-            if (packet.getChannelName().toString().equalsIgnoreCase("minecraft:brand") || // 1.13+
-                    packet.getChannelName().equals("MC|Brand")) { // 1.12-
+            if (channelObject instanceof String) {
+                channelName = (String) channelObject;
+            } else {
+                ResourceLocation resourceLocation = (ResourceLocation) channelObject;
+                channelName = resourceLocation.getNamespace() + ":" + resourceLocation.getKey();
+            }
+
+            if (channelName.equalsIgnoreCase("minecraft:brand") || // 1.13+
+                    channelName.equals("MC|Brand")) { // 1.12-
                 byte[] data = packet.getData();
 
                 if (data.length == 0) {
@@ -38,10 +48,11 @@ public class ClientBrand extends PacketCheck {
                 byte[] minusLength = new byte[data.length - 1];
                 System.arraycopy(data, 1, minusLength, 0, minusLength.length);
 
-                brand = new String(minusLength).replace(" (Velocity)", ""); //removes velocity's brand suffix
+                brand = new String(minusLength).replace(" (Velocity)", ""); // Removes velocity's brand suffix
 
                 if (!hasBrand) {
                     hasBrand = true;
+
                     if (!GrimAPI.INSTANCE.getConfigManager().isIgnoredClient(brand)) {
                         String message = GrimAPI.INSTANCE.getConfigManager().getConfig().getStringElse("client-brand-format", "%prefix% &f%player% joined using %brand%");
                         message = MessageUtil.format(message);
@@ -54,6 +65,9 @@ public class ClientBrand extends PacketCheck {
                                 player.sendMessage(message);
                             }
                         }
+
+                        // Prints to console
+                        Bukkit.getConsoleSender().sendMessage(message);
                     }
                 }
             }

@@ -261,7 +261,7 @@ public class GrimMath {
     }
 
     public static boolean isCloseEnoughEquals(double d, double d2) {
-        return Math.abs(d2 - d) < 9.999999747378752E-6;
+        return Math.abs(d2 - d) < 1e-5;
     }
 
     public static double calculateAverage(List<Integer> marks) {

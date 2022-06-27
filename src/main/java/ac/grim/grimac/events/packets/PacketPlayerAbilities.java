@@ -14,6 +14,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPl
 // We must delay the second ability packet until the tick after the first is received
 // Else the player will fly for a tick, and we won't know about it, which is bad.
 public class PacketPlayerAbilities extends PacketCheck {
+
     // -1 = don't set
     // 0 is the tick to let flying be true
     // 1 is the tick to apply this
@@ -40,6 +41,7 @@ public class PacketPlayerAbilities extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_ABILITIES) {
             WrapperPlayClientPlayerAbilities abilities = new WrapperPlayClientPlayerAbilities(event);
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
             if (player == null) {
                 return;
             }

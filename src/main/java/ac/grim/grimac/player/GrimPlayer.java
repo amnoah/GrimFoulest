@@ -1,6 +1,5 @@
 package ac.grim.grimac.player;
 
-import ac.grim.grimac.GrimAC;
 import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.events.packets.CheckManagerListener;
 import ac.grim.grimac.manager.ActionManager;
@@ -44,7 +43,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
@@ -153,7 +151,6 @@ public class GrimPlayer {
     public boolean slightlyTouchingWater = false;
     public boolean wasEyeInWater = false;
     public FluidTag fluidOnEyes;
-    public boolean horizontalCollision;
     public boolean verticalCollision;
     public boolean clientControlledHorizontalCollision;
     public boolean clientControlledVerticalCollision;
@@ -420,7 +417,7 @@ public class GrimPlayer {
 
         if ((System.nanoTime() - getPlayerClockAtLeast()) > GrimAPI.INSTANCE.getConfigManager().getMaxPingTransaction() * 1e9) {
             try {
-                user.sendPacket(new WrapperPlayServerDisconnect(Component.text("Timed out!")));
+                user.sendPacket(new WrapperPlayServerDisconnect(Component.translatable("disconnect.timeout")));
             } catch (Exception ignored) { // There may (?) be an exception if the player is in the wrong state...
                 LogUtil.warn("Failed to send disconnect packet to time out " + user.getProfile().getName() + "! Disconnecting anyways.");
             }
@@ -610,13 +607,8 @@ public class GrimPlayer {
     }
 
     public void kick(String reason, String verbose, String kickMessage) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (isKicking) {
-                    return;
-                }
-
+        Bukkit.getScheduler().runTask(GrimAPI.INSTANCE.getPlugin(), () -> {
+            if (!isKicking) {
                 isKicking = true;
 
                 // TODO: Sync with prefix & shit
@@ -628,6 +620,6 @@ public class GrimPlayer {
                     bukkitPlayer.kickPlayer(kickMessage);
                 }
             }
-        }.runTask(GrimAC.instance);
+        });
     }
 }

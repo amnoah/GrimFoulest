@@ -28,7 +28,7 @@ public class BadPacketsM extends PacketCheck {
                 && event.getPacketType() != PacketType.Play.Client.STEER_VEHICLE
                 && event.getPacketType() != PacketType.Play.Client.INTERACT_ENTITY) {
             if (streak % 2 != 0) {
-                streak++;
+                ++streak;
 
                 if (streak >= 10) {
                     event.setCancelled(true);
@@ -38,9 +38,11 @@ public class BadPacketsM extends PacketCheck {
                 streak = 0;
             }
 
-        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+        } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_FLYING
+                || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION
+                || event.getPacketType() == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION) {
             if (streak % 2 == 0) {
-                streak++;
+                ++streak;
             } else {
                 streak = 0;
             }

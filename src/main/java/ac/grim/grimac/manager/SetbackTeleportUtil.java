@@ -1,7 +1,6 @@
 package ac.grim.grimac.manager;
 
 import ac.grim.grimac.GrimAPI;
-import ac.grim.grimac.checks.impl.badpackets.BadPacketsH;
 import ac.grim.grimac.checks.type.PostPredictionCheck;
 import ac.grim.grimac.events.packets.patch.ResyncWorldUtil;
 import ac.grim.grimac.player.GrimPlayer;

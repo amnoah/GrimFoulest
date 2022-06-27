@@ -111,7 +111,7 @@ public class DebugHandler extends PostPredictionCheck {
 
         if (offset <= 0 || totalOffset <= 0) { // If exempt don't bother coloring, so I stop getting false false reports
             return ChatColor.GRAY;
-        } else if (offset < 0.0001) {
+        } else if (offset < 0.001) {
             return ChatColor.GREEN;
         } else if (offset < 0.01) {
             return ChatColor.YELLOW;

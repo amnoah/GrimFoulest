@@ -23,6 +23,7 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
         if (event.getPacketType() == PacketType.Play.Server.UNLOAD_CHUNK) {
             WrapperPlayServerUnloadChunk unloadChunk = new WrapperPlayServerUnloadChunk(event);
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
             if (player == null) {
                 return;
             }
@@ -33,6 +34,7 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
         // 1.7 and 1.8 only
         if (event.getPacketType() == PacketType.Play.Server.MAP_CHUNK_BULK) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
             if (player == null) {
                 return;
             }
@@ -42,6 +44,7 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
 
         if (event.getPacketType() == PacketType.Play.Server.CHUNK_DATA) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
             if (player == null) {
                 return;
             }
@@ -51,6 +54,7 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
 
         if (event.getPacketType() == PacketType.Play.Server.BLOCK_CHANGE) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
             if (player == null) {
                 return;
             }
@@ -60,6 +64,7 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
 
         if (event.getPacketType() == PacketType.Play.Server.MULTI_BLOCK_CHANGE) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
             if (player == null) {
                 return;
             }
@@ -69,12 +74,24 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
 
         if (event.getPacketType() == PacketType.Play.Server.ACKNOWLEDGE_BLOCK_CHANGES) {
             GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
             if (player == null) {
                 return;
             }
 
             WrapperPlayServerAcknowledgeBlockChanges changes = new WrapperPlayServerAcknowledgeBlockChanges(event);
             player.compensatedWorld.handlePredictionConfirmation(changes.getSequence());
+        }
+
+        if (event.getPacketType() == PacketType.Play.Server.ACKNOWLEDGE_PLAYER_DIGGING) {
+            GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
+
+            if (player == null) {
+                return;
+            }
+
+            WrapperPlayServerAcknowledgePlayerDigging ack = new WrapperPlayServerAcknowledgePlayerDigging(event);
+            player.compensatedWorld.handleBlockBreakAck(ack.getBlockPosition(), ack.getBlockId(), ack.getAction(), ack.isSuccessful());
         }
     }
 
@@ -101,12 +118,15 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
             if (teleports.getFlags().getMask() != 0) {
                 continue; // Worse that will happen is people will get an extra setback... relative teleports aren't good for long distance teleports anyways
             }
-            shouldPostTrans = shouldPostTrans || (Math.abs(teleports.getLocation().getX() - chunkCenterX) < 16 && Math.abs(teleports.getLocation().getZ() - chunkCenterZ) < 16);
+
+            shouldPostTrans = shouldPostTrans || (Math.abs(teleports.getLocation().getX() - chunkCenterX) < 16
+                    && Math.abs(teleports.getLocation().getZ() - chunkCenterZ) < 16);
         }
 
         if (shouldPostTrans) {
             event.getPostTasks().add(player::sendTransaction); // Player is in this unloaded chunk
         }
+
         if (isGroundUp) {
             Column column = new Column(chunkX, chunkZ, chunks, player.lastTransactionSent.get());
             player.compensatedWorld.addToCache(column, chunkX, chunkZ);
@@ -121,6 +141,7 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
                     // LogUtil.warn("Invalid non-ground up continuous sent for empty chunk " + chunkX + " " + chunkZ + " for " + player.user.getProfile().getName() + "! This corrupts the player's empty chunk!");
                     return;
                 }
+
                 existingColumn.mergeChunks(chunks);
             });
         }
@@ -130,14 +151,15 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
         if (player == null) {
             return;
         }
+
         player.compensatedWorld.removeChunkLater(x, z);
     }
 
     public void handleBlockChange(GrimPlayer player, PacketSendEvent event) {
         WrapperPlayServerBlockChange blockChange = new WrapperPlayServerBlockChange(event);
         int range = 16;
-
         Vector3i blockPosition = blockChange.getBlockPosition();
+
         // Don't spam transactions (block changes are sent in batches)
         if (Math.abs(blockPosition.getX() - player.x) < range && Math.abs(blockPosition.getY() - player.y) < range && Math.abs(blockPosition.getZ() - player.z) < range &&
                 player.lastTransSent + 2 < System.currentTimeMillis()) {
@@ -149,19 +171,22 @@ public class BasePacketWorldReader extends PacketListenerAbstract {
 
     public void handleMultiBlockChange(GrimPlayer player, PacketSendEvent event) {
         WrapperPlayServerMultiBlockChange multiBlockChange = new WrapperPlayServerMultiBlockChange(event);
-
         boolean didSend = false;
         int range = 16;
 
         for (WrapperPlayServerMultiBlockChange.EncodedBlock blockChange : multiBlockChange.getBlocks()) {
             // Don't send a transaction unless it's within 16 blocks of the player
-            if (!didSend && Math.abs(blockChange.getX() - player.x) < range && Math.abs(blockChange.getY() - player.y) < range && Math.abs(blockChange.getZ() - player.z) < range &&
-                    player.lastTransSent + 2 < System.currentTimeMillis()) {
+            if (!didSend && Math.abs(blockChange.getX() - player.x) < range
+                    && Math.abs(blockChange.getY() - player.y) < range
+                    && Math.abs(blockChange.getZ() - player.z) < range
+                    && player.lastTransSent + 2 < System.currentTimeMillis()) {
                 didSend = true;
                 player.sendTransaction();
             }
 
-            player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(), () -> player.compensatedWorld.updateBlock(blockChange.getX(), blockChange.getY(), blockChange.getZ(), blockChange.getBlockId()));
+            player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get(),
+                    () -> player.compensatedWorld.updateBlock(blockChange.getX(), blockChange.getY(),
+                            blockChange.getZ(), blockChange.getBlockId()));
         }
     }
 }

@@ -29,6 +29,7 @@ public class TrigHandler {
     }
 
     public void setOffset(Vector oldVel, double offset) {
+        // TODO: Is this still needed?
         // Offset too high, this is an outlier, ignore
         // We are checking in the range of 1e-3 to 5e-5, around what using the wrong trig system results in
         //
@@ -37,24 +38,7 @@ public class TrigHandler {
             return;
         }
 
-        boolean flags = player.checkManager.getOffsetHandler().doesOffsetFlag(offset);
-        buffer = Math.max(0, buffer);
-
-        // Gliding doesn't allow inputs, so, therefore we must rely on the old type of check for this.
-        // This isn't too accurate but what choice do I have?
-        if (player.isGliding) {
-            buffer += flags ? 1 : -0.25;
-
-            if (buffer > 5) {
-                buffer = 0;
-                isVanillaMath = !isVanillaMath;
-            }
-
-            return;
-        }
-
-        // ! = for debug purposes
-        if (!player.checkManager.getOffsetHandler().doesOffsetFlag(offset)) {
+        if (offset > 1e-5) {
             Vector trueMovement = player.actualMovement.clone().subtract(oldVel);
 
             Vector vanillaMath = getVanillaMathMovement(trueMovement, 0.1f, player.xRot);
@@ -114,6 +98,8 @@ public class TrigHandler {
                 buffer = 0;
                 isVanillaMath = !isVanillaMath;
             }
+
+            buffer = Math.max(0, buffer);
         }
     }
 

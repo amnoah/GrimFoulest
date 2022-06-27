@@ -47,7 +47,8 @@ public class PacketPlayerDigging extends PacketListenerAbstract {
                 }
 
                 // 1.8 splash potion
-                if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9) && item.getLegacyData() > 16384) {
+                if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_9)
+                        && item.getLegacyData() > 16384) {
                     return;
                 }
 

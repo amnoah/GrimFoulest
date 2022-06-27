@@ -1,6 +1,6 @@
 package ac.grim.grimac.utils.anticheat.update;
 
-import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
+import ac.grim.grimac.checks.impl.combat.aimassist.processor.AimProcessor;
 import ac.grim.grimac.utils.data.HeadRotation;
 import lombok.Getter;
 import lombok.Setter;

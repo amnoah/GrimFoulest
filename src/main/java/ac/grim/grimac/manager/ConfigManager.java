@@ -109,7 +109,7 @@ public class ConfigManager {
                     configStringVersion = configStringVersion.replaceAll("\\D", "");
                     configVersion = Integer.parseInt(configStringVersion);
                     // TODO: Do we have to hardcode this?
-                    configString = configString.replaceAll("config-version: " + configStringVersion, "config-version: 3");
+                    configString = configString.replaceAll("config-version: " + configStringVersion, "config-version: 4");
 
                     Files.write(config.toPath(), configString.getBytes());
                     upgradeModernConfig(config, configString, configVersion);
@@ -135,11 +135,40 @@ public class ConfigManager {
         if (configVersion < 3) {
             addBaritoneCheck();
         }
+
+        if (configVersion < 4) {
+            newOffsetNewDiscordConf(config, configString);
+        }
     }
 
     private void removeLegacyTwoPointOne(File config) throws IOException {
         // If config doesn't have config-version, it's a legacy config
         Files.move(config.toPath(), new File(GrimAPI.INSTANCE.getPlugin().getDataFolder(), "config-2.1.old.yml").toPath());
+    }
+
+    private void newOffsetNewDiscordConf(File config, String configString) throws IOException {
+        configString = configString.replace("threshold: 0.0001", "threshold: 0.001"); // 1e-5 -> 1e-4 default flag level
+        configString = configString.replace("threshold: 0.00001", "threshold: 0.001"); // 1e-6 -> 1e-4 anti-kb flag
+        Files.write(config.toPath(), configString.getBytes());
+
+        File discordFile = new File(GrimAPI.INSTANCE.getPlugin().getDataFolder(), "discord.yml");
+
+        if (discordFile.exists()) {
+            try {
+                String discordString = new String(Files.readAllBytes(discordFile.toPath()));
+                discordString += "\nembed-color: \"#00FFFF\"\n" +
+                        "violation-content:\n" +
+                        "  - \"**Player**: %player%\"\n" +
+                        "  - \"**Check**: %check%\"\n" +
+                        "  - \"**Violations**: %violations%\"\n" +
+                        "  - \"**Client Version**: %version%\"\n" +
+                        "  - \"**Brand**: %brand%\"\n" +
+                        "  - \"**Ping**: %ping%\"\n" +
+                        "  - \"**TPS**: %tps%\"\n";
+                Files.write(discordFile.toPath(), discordString.getBytes());
+            } catch (IOException ignored) {
+            }
+        }
     }
 
     private void addMaxPing(File config, String configString) throws IOException {

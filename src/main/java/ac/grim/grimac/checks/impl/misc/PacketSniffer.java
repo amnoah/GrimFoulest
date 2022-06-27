@@ -1,6 +1,6 @@
 package ac.grim.grimac.checks.impl.misc;
 
-import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
+import ac.grim.grimac.checks.impl.combat.aimassist.processor.AimProcessor;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.LogUtil;
