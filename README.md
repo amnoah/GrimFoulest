@@ -9,13 +9,14 @@ I don't want to intrude upon Grim's vision, so I created my own.
 
 
 **New Checks (as of 6/27/22):** 
-- AimAssist (x1)
+- AimAssist (x4)
 - AutoBlock (x1)
-- AutoHeal (x6)
-- Inventory (x5)
-- BadPackets (x5)
-- PacketOrder (x5)
+- AutoHeal (x7)
+- Inventory (x10)
+- BadPackets (x10)
+- PacketOrder (x4)
 - PingSpoof (x11)
+- Scaffold (x1)
 
 Feel free to try it out for yourself.
 
