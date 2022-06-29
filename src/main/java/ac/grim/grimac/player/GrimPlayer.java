@@ -23,6 +23,7 @@ import ac.grim.grimac.utils.math.TrigHandler;
 import ac.grim.grimac.utils.nmsutil.GetBoundingBox;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
+import com.github.retrooper.packetevents.event.ProtocolPacketEvent;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
 import com.github.retrooper.packetevents.netty.channel.ChannelHelper;
 import com.github.retrooper.packetevents.protocol.ConnectionState;
@@ -611,7 +612,7 @@ public class GrimPlayer implements GrimUser {
 
     @Override
     public void runSafely(Runnable runnable) {
-        ChannelHelper.runInEventLoop(this.user.getChannel(), runnable);
+        ChannelHelper.runInEventLoop(user.getChannel(), runnable);
     }
 
     @Override
@@ -629,20 +630,24 @@ public class GrimPlayer implements GrimUser {
         return checkManager.allChecks.values();
     }
 
-    public void kick(String reason, String verbose, String kickMessage) {
-        Bukkit.getScheduler().runTask(GrimAPI.INSTANCE.getPlugin(), () -> {
-            if (!isKicking) {
-                isKicking = true;
+    public void kick(String reason, ProtocolPacketEvent<Object> event, String verbose) {
+        // Cancels the packet.
+        event.setCancelled(true);
+
+        // Only kicks the player once.
+        if (!isKicking) {
+            isKicking = true;
+
+            Bukkit.getScheduler().runTask(GrimAPI.INSTANCE.getPlugin(), () -> {
+                // Kicks the player.
+                event.getUser().closeConnection();
 
                 // TODO: Sync with prefix & shit
+                // Sends an alert about the kick.
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "grim sendalert &b[Grim] &f"
                         + bukkitPlayer.getName() + " &7was kicked for: &f" + reason
                         + (Objects.equals(verbose, "") ? "" : " &7(" + verbose + ")"));
-
-                if (bukkitPlayer.isOnline()) {
-                    bukkitPlayer.kickPlayer(kickMessage);
-                }
-            }
-        });
+            });
+        }
     }
 }

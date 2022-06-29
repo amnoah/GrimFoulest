@@ -34,8 +34,7 @@ public class BadPacketsJ extends PacketCheck {
             // Player location is above the max world border value
             if (Math.abs(packet.getLocation().getX()) > HARD_CODED_BORDER
                     || Math.abs(packet.getLocation().getZ()) > HARD_CODED_BORDER) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "Outside Border", "Illegal position");
+                player.kick(getCheckName(), event, "Outside Border");
             }
         }
     }

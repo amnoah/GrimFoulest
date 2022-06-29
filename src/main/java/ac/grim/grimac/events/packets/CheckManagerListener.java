@@ -2,7 +2,6 @@ package ac.grim.grimac.events.packets;
 
 import ac.grim.grimac.GrimAPI;
 import ac.grim.grimac.player.GrimPlayer;
-import ac.grim.grimac.utils.anticheat.LogUtil;
 import ac.grim.grimac.utils.anticheat.update.*;
 import ac.grim.grimac.utils.blockplace.BlockPlaceResult;
 import ac.grim.grimac.utils.blockplace.ConsumesBlockPlace;
@@ -23,11 +22,7 @@ import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
-import com.github.retrooper.packetevents.event.simple.PacketLoginSendEvent;
-import com.github.retrooper.packetevents.event.simple.PacketPlaySendEvent;
-import com.github.retrooper.packetevents.event.simple.PacketStatusSendEvent;
 import com.github.retrooper.packetevents.manager.server.ServerVersion;
-import com.github.retrooper.packetevents.protocol.ConnectionState;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.github.retrooper.packetevents.protocol.item.type.ItemType;
 import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
@@ -472,17 +467,17 @@ public class CheckManagerListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-//        if (event.getConnectionState() != ConnectionState.PLAY) {
-//            return;
-//        }
-
         GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
 
         if (player == null) {
             return;
         }
 
-        player.isKicking = false;
+        // Cancels packets if the player is being kicked.
+        if (player.isKicking) {
+            event.setCancelled(true);
+            return;
+        }
 
         // Determine if teleport BEFORE we call the pre-prediction vehicle
         if (event.getPacketType() == PacketType.Play.Client.VEHICLE_MOVE) {
@@ -509,8 +504,7 @@ public class CheckManagerListener extends PacketListenerAbstract {
                         || Double.isInfinite(pos.getX()) || Double.isInfinite(pos.getY()) || Double.isInfinite(pos.getZ())
                         || Float.isNaN(pos.getYaw()) || Float.isNaN(pos.getPitch())
                         || Float.isInfinite(pos.getYaw()) || Float.isInfinite(pos.getPitch())) {
-                    event.setCancelled(true);
-                    player.kick("Illegal Position", "", "Illegal position");
+                    player.kick("Illegal Position", event, "");
                     return;
                 }
             }
@@ -780,10 +774,6 @@ public class CheckManagerListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketSend(PacketSendEvent event) {
-//        if (event.getConnectionState() != ConnectionState.PLAY) {
-//            return;
-//        }
-
         GrimPlayer player = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(event.getUser());
 
         if (player == null) {

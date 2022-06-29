@@ -47,21 +47,21 @@ public class ClientBrand extends PacketCheck {
     );
 
     public static final List<Pattern> HACKED_CHANNELS = Arrays.asList(
-            Pattern.compile("LOLIMAHCKER"),
-            Pattern.compile("CPS_BAN_THIS_NIGGER"),
-            Pattern.compile("EROUAXWASHERE"),
-            Pattern.compile("#unbanearwax"),
-            Pattern.compile("1946203560"),
-            Pattern.compile("cock"),
-            Pattern.compile("lmaohax"),
-            Pattern.compile("reach"),
-            Pattern.compile("gg"),
-            Pattern.compile("customGuiOpenBspkrs"),
-            Pattern.compile("0SO1Lk2KASxzsd"),
-            Pattern.compile("MCnetHandler"),
-            Pattern.compile("n"),
-            Pattern.compile("BLC|M"),
-            Pattern.compile("XDSMKDKFDKSDAKDFkEJF")
+            Pattern.compile("^LOLIMAHCKER$"),
+            Pattern.compile("^CPS_BAN_THIS_NIGGER$"),
+            Pattern.compile("^EROUAXWASHERE$"),
+            Pattern.compile("^#unbanearwax$"),
+            Pattern.compile("^1946203560$"),
+            Pattern.compile("^cock$"),
+            Pattern.compile("^lmaohax$"),
+            Pattern.compile("^reach$"),
+            Pattern.compile("^gg$"),
+            Pattern.compile("^customGuiOpenBspkrs$"),
+            Pattern.compile("^0SO1Lk2KASxzsd$"),
+            Pattern.compile("^MCnetHandler$"),
+            Pattern.compile("^n$"),
+            Pattern.compile("^BLC|M$"),
+            Pattern.compile("^XDSMKDKFDKSDAKDFkEJF$")
     );
 
     @Getter
@@ -100,9 +100,7 @@ public class ClientBrand extends PacketCheck {
 
                 // Kicks players with hacked brands.
                 if (isInPatternList(HACKED_BRANDS, brand)) {
-                    event.setCancelled(true);
-                    player.kick("Hacked Brand", "BRAND=" + brand,
-                            "Internal Exception: java.io.IOException: An existing connection was forcibly closed by the remote host");
+                    player.kick("Hacked Brand", event, "BRAND=" + brand);
                     return;
                 }
 
@@ -122,9 +120,7 @@ public class ClientBrand extends PacketCheck {
 
                 // Kicks players with hacked registered data.
                 if (isInPatternList(HACKED_REGISTERS, data)) {
-                    event.setCancelled(true);
-                    player.kick("Hacked Register Data", "BRAND=" + brand,
-                            "Internal Exception: java.io.IOException: An existing connection was forcibly closed by the remote host");
+                    player.kick("Hacked Register Data", event, "BRAND=" + brand);
                     return;
                 }
 
@@ -138,17 +134,13 @@ public class ClientBrand extends PacketCheck {
             } else {
                 // Kicks Crystalware players.
                 if (channelName.startsWith("CRYSTAL|")) {
-                    event.setCancelled(true);
-                    player.kick("Hacked Channel Data", "CHANNEL=" + channelName,
-                            "Internal Exception: java.io.IOException: An existing connection was forcibly closed by the remote host");
+                    player.kick("Hacked Channel Data", event, "CHANNEL=" + channelName);
                     return;
                 }
 
                 // Kicks players with hacked channel data.
                 if (isInPatternList(HACKED_CHANNELS, channelName)) {
-                    event.setCancelled(true);
-                    player.kick("Hacked Channel Data", "CHANNEL=" + channelName,
-                            "Internal Exception: java.io.IOException: An existing connection was forcibly closed by the remote host");
+                    player.kick("Hacked Channel Data", event, "CHANNEL=" + channelName);
                 }
             }
         }

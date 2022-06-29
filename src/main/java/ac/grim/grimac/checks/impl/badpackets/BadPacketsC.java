@@ -29,9 +29,8 @@ public class BadPacketsC extends PacketCheck {
                         thanksMojang = true;
                         return;
                     }
-
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "START_SPRINTING", "You are sending too many packets!");
+                    
+                    player.kick(getCheckName(), event, "Sprinting (Start)");
                     return;
                 }
 
@@ -43,9 +42,8 @@ public class BadPacketsC extends PacketCheck {
                         thanksMojang = true;
                         return;
                     }
-
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "STOP_SPRINTING", "You are sending too many packets!");
+                    
+                    player.kick(getCheckName(), event, "Sprinting (Stop)");
                     return;
                 }
 

@@ -36,8 +36,7 @@ public class PingSpoofJ extends PacketCheck {
             }
 
             if (packetsReceived > packetsSent) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "SENT=" + packetsSent + " RECEIVED=" + packetsReceived, "You are sending too many packets!");
+                player.kick(getCheckName(), event, "SENT=" + packetsSent + " RECEIVED=" + packetsReceived);
             }
         }
     }

@@ -33,8 +33,7 @@ public class PacketOrderB extends PacketCheck {
             WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
 
             if (packet.getAction() == DiggingAction.RELEASE_USE_ITEM && !sent) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "");
             }
 
             sent = false;

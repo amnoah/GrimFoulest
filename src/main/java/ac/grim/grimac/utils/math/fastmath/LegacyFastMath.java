@@ -1,5 +1,7 @@
 package ac.grim.grimac.utils.math.fastmath;
 
+import org.bukkit.util.Vector;
+
 public class LegacyFastMath {
 
     private static final float[] SIN_TABLE_FAST = new float[4096];
@@ -21,5 +23,13 @@ public class LegacyFastMath {
 
     public static float cos(float par0) {
         return SIN_TABLE_FAST[(int) ((par0 + ((float) Math.PI / 2F)) * 651.8986F) & 4095];
+    }
+
+    public static Vector getLegacyMathMovement(Vector wantedMovement, float f, float f2) {
+        float sin = sin(f2 * 0.017453292f);
+        float cos = cos(f2 * 0.017453292f);
+        float bestTheoreticalX = (float) (sin * wantedMovement.getZ() + cos * wantedMovement.getX()) / (sin * sin + cos * cos) / f;
+        float bestTheoreticalZ = (float) (-sin * wantedMovement.getX() + cos * wantedMovement.getZ()) / (sin * sin + cos * cos) / f;
+        return new Vector(bestTheoreticalX, 0, bestTheoreticalZ);
     }
 }

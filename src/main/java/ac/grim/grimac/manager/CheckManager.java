@@ -73,7 +73,6 @@ public class CheckManager {
                 .put(VelocityB.class, new VelocityB(player))
                 .put(VelocityA.class, new VelocityA(player))
 
-                .put(CompensatedInventory.class, new CompensatedInventory(player))
                 .put(PacketPlayerAbilities.class, new PacketPlayerAbilities(player))
                 .put(PacketWorldBorder.class, new PacketWorldBorder(player))
                 .put(ClientBrand.class, new ClientBrand(player))
@@ -88,22 +87,21 @@ public class CheckManager {
                 .put(BadPacketsF.class, new BadPacketsF(player))
                 .put(BadPacketsG.class, new BadPacketsG(player))
                 .put(BadPacketsH.class, new BadPacketsH(player))
-                .put(BadPacketsI.class, new BadPacketsI(player))
                 .put(BadPacketsJ.class, new BadPacketsJ(player))
                 .put(BadPacketsK.class, new BadPacketsK(player))
-                .put(BadPacketsL.class, new BadPacketsL(player))
-                .put(BadPacketsM.class, new BadPacketsM(player))
-                .put(BadPacketsN.class, new BadPacketsN(player))
                 .put(BadPacketsO.class, new BadPacketsO(player))
                 .put(BadPacketsP.class, new BadPacketsP(player))
                 .put(BadPacketsQ.class, new BadPacketsQ(player))
+                .put(BadPacketsR.class, new BadPacketsR(player))
+                .put(BadPacketsS.class, new BadPacketsS(player))
+                .put(BadPacketsT.class, new BadPacketsT(player))
+                .put(BadPacketsU.class, new BadPacketsU(player))
 
                 .put(AutoBlockA.class, new AutoBlockA(player))
 
                 .put(PacketOrderA.class, new PacketOrderA(player))
                 .put(PacketOrderB.class, new PacketOrderB(player))
                 .put(PacketOrderC.class, new PacketOrderC(player))
-                .put(PacketOrderD.class, new PacketOrderD(player))
 
                 .put(AutoHealA.class, new AutoHealA(player))
                 .put(AutoHealB.class, new AutoHealB(player))
@@ -115,7 +113,6 @@ public class CheckManager {
 
                 .put(InventoryA.class, new InventoryA(player))
                 .put(InventoryB.class, new InventoryB(player))
-                .put(InventoryC.class, new InventoryC(player))
                 .put(InventoryD.class, new InventoryD(player))
                 .put(InventoryE.class, new InventoryE(player))
                 .put(InventoryF.class, new InventoryF(player))
@@ -123,6 +120,8 @@ public class CheckManager {
                 .put(InventoryH.class, new InventoryH(player))
                 .put(InventoryI.class, new InventoryI(player))
                 .put(InventoryJ.class, new InventoryJ(player))
+                .put(InventoryK.class, new InventoryK(player))
+                .put(InventoryL.class, new InventoryL(player))
 
                 .put(PingSpoofA.class, new PingSpoofA(player))
                 .put(PingSpoofB.class, new PingSpoofB(player))
@@ -136,6 +135,8 @@ public class CheckManager {
                 .put(PingSpoofJ.class, new PingSpoofJ(player))
 
                 .put(FastBreak.class, new FastBreak(player))
+
+                .put(CompensatedInventory.class, new CompensatedInventory(player))
 
                 .put(SetbackBlocker.class, new SetbackBlocker(player)) // Must be last class otherwise we can't check while blocking packets
                 .build();
@@ -154,7 +155,6 @@ public class CheckManager {
                 .put(AimAssistC.class, new AimAssistC(player))
                 .put(AimAssistD.class, new AimAssistD(player))
                 .put(AimAssistE.class, new AimAssistE(player))
-                .put(AimAssistF.class, new AimAssistF(player))
                 .build();
 
         vehicleCheck = new ImmutableClassToInstanceMap.Builder<VehicleCheck>()

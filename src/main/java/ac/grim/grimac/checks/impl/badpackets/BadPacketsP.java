@@ -22,8 +22,7 @@ public class BadPacketsP extends PacketCheck {
             WrapperPlayClientPluginMessage packet = new WrapperPlayClientPluginMessage(event);
 
             if (packet.getData().length > 15000) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "SIZE=" + packet.getData().length, "You are sending too many packets!");
+                player.kick(getCheckName(), event, "SIZE=" + packet.getData().length);
             }
         }
     }

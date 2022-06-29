@@ -32,6 +32,10 @@ public class PacketOrderA extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
+        if (event.getPacketType() == INTERACT_ENTITY) {
+            return;
+        }
+
         if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             // Don't count teleports or duplicates as movements
             if (player.packetStateData.lastPacketWasTeleport
@@ -45,8 +49,7 @@ public class PacketOrderA extends PacketCheck {
                 // 1.9+ clients have predictions, which will determine if hidden tick skipping occurred
                 if (player.isTickingReliablyFor(3)) {
                     for (String flag : flags) {
-                        event.setCancelled(true);
-                        player.kick(getCheckName(), flag + " (" + player.getClientVersion().name() + ")", "You are sending too many packets!");
+                        player.kick(getCheckName(), event, flag + " (" + player.getClientVersion().name() + ")");
                         return;
                     }
                 }

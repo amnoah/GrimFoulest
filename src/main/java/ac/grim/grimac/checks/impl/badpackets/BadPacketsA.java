@@ -29,8 +29,7 @@ public class BadPacketsA extends PacketCheck {
                     && packet.getBlockPosition().getX() == 0.0
                     && packet.getBlockPosition().getY() == 0.0
                     && packet.getBlockPosition().getZ() == 0.0) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "BLOCK_PLACE", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "BLOCK_PLACE");
                 return;
             }
         }
@@ -44,8 +43,7 @@ public class BadPacketsA extends PacketCheck {
                         || packet.getBlockPosition().getX() != 0
                         || packet.getBlockPosition().getY() != 0
                         || packet.getBlockPosition().getZ() != 0) {
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "USE_ITEM", "You are sending too many packets!");
+                    player.kick(getCheckName(), event, "USE_ITEM");
                     return;
                 }
             }
@@ -54,8 +52,7 @@ public class BadPacketsA extends PacketCheck {
         // Invalid Spectate
         if (event.getPacketType() == PacketType.Play.Client.SPECTATE) {
             if (player.gamemode != GameMode.SPECTATOR) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "SPECTATE", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "SPECTATE");
                 return;
             }
         }
@@ -65,8 +62,12 @@ public class BadPacketsA extends PacketCheck {
             WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
 
             if (packet.getEntityId() == player.entityID) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "Self Interact", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "Self Interact");
+                return;
+            }
+
+            if (player.compensatedEntities.getEntity(packet.getEntityId()) == null) {
+                player.kick(getCheckName(), event, "Invalid Entity");
                 return;
             }
         }
@@ -78,14 +79,12 @@ public class BadPacketsA extends PacketCheck {
             float sideways = Math.abs(packet.getSideways());
 
             if (!player.compensatedEntities.getSelf().inVehicle()) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "Not In Vehicle", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "Not In Vehicle");
                 return;
             }
 
             if (forwards > 0.9800000190734863 || sideways > 0.9800000190734863) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "Vehicle Steer", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "Vehicle Steer");
                 return;
             }
         }
@@ -96,8 +95,7 @@ public class BadPacketsA extends PacketCheck {
             String message = packet.getText();
 
             if (message.equals("")) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "TAB_COMPLETE", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "TAB_COMPLETE");
                 return;
             }
         }
@@ -105,8 +103,7 @@ public class BadPacketsA extends PacketCheck {
         // Invalid Creative Slot
         if (event.getPacketType() == PacketType.Play.Client.CREATIVE_INVENTORY_ACTION) {
             if (player.gamemode != GameMode.CREATIVE) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "CREATIVE_SLOT", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "Not in Creative");
                 return;
             }
         }
@@ -118,8 +115,7 @@ public class BadPacketsA extends PacketCheck {
             // Player Inventory
             if (packet.getWindowId() == 0) {
                 if (packet.getSlot() > 44 || (packet.getSlot() != -999 && packet.getSlot() < 0)) {
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "WINDOW_CLICK (SLOT=" + packet.getSlot() + ")", "You are sending too many packets!");
+                    player.kick(getCheckName(), event, "Window Click (SLOT=" + packet.getSlot() + ")");
                     return;
                 }
             }
@@ -127,16 +123,14 @@ public class BadPacketsA extends PacketCheck {
             switch (packet.getPacketId()) {
                 case 0:
                     if (packet.getButton() != 0 && packet.getButton() != 1) {
-                        event.setCancelled(true);
-                        player.kick(getCheckName(), "WINDOW_CLICK (0)", "You are sending too many packets!");
+                        player.kick(getCheckName(), event, "Window Click (0)");
                         return;
                     }
                     break;
 
                 case 1:
                     if (packet.getButton() != 0 && packet.getButton() != 1) {
-                        event.setCancelled(true);
-                        player.kick(getCheckName(), "WINDOW_CLICK (1)", "You are sending too many packets!");
+                        player.kick(getCheckName(), event, "Window Click (1)");
                         return;
                     }
                     break;
@@ -144,24 +138,21 @@ public class BadPacketsA extends PacketCheck {
                 case 2:
                     if (packet.getButton() != 0 && packet.getButton() != 1 && packet.getButton() != 2
                             && packet.getButton() != 8 && packet.getButton() != 40) {
-                        event.setCancelled(true);
-                        player.kick(getCheckName(), "WINDOW_CLICK (2)", "You are sending too many packets!");
+                        player.kick(getCheckName(), event, "Window Click (2)");
                         return;
                     }
                     break;
 
                 case 3:
                     if (packet.getButton() != 2) {
-                        event.setCancelled(true);
-                        player.kick(getCheckName(), "WINDOW_CLICK (3)", "You are sending too many packets!");
+                        player.kick(getCheckName(), event, "Window Click (3)");
                         return;
                     }
                     break;
 
                 case 4:
                     if (packet.getButton() != 0 && packet.getButton() != 1) {
-                        event.setCancelled(true);
-                        player.kick(getCheckName(), "WINDOW_CLICK (4)", "You are sending too many packets!");
+                        player.kick(getCheckName(), event, "Window Click (4)");
                         return;
                     }
                     break;
@@ -170,16 +161,14 @@ public class BadPacketsA extends PacketCheck {
                     if (packet.getButton() != 0 && packet.getButton() != 1 && packet.getButton() != 2
                             && packet.getButton() != 4 && packet.getButton() != 5 && packet.getButton() != 6
                             && packet.getButton() != 8 && packet.getButton() != 9 && packet.getButton() != 10) {
-                        event.setCancelled(true);
-                        player.kick(getCheckName(), "WINDOW_CLICK (5)", "You are sending too many packets!");
+                        player.kick(getCheckName(), event, "Window Click (5)");
                         return;
                     }
                     break;
 
                 case 6:
                     if (packet.getButton() != 0) {
-                        event.setCancelled(true);
-                        player.kick(getCheckName(), "WINDOW_CLICK (6)", "You are sending too many packets!");
+                        player.kick(getCheckName(), event, "Window Click (6)");
                         return;
                     }
                     break;
@@ -191,29 +180,25 @@ public class BadPacketsA extends PacketCheck {
             WrapperPlayClientEntityAction packet = new WrapperPlayClientEntityAction(event);
 
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.LEAVE_BED && !player.isInBed) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "ENTITY_ACTION (LEAVE_BED)", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "Entity Action (LEAVE_BED)");
                 return;
             }
 
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.OPEN_HORSE_INVENTORY
                     && !player.compensatedEntities.getSelf().inVehicle()) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "ENTITY_ACTION (HORSE_INVENTORY)", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "Entity Action (HORSE_INVENTORY)");
                 return;
             }
 
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_JUMPING_WITH_HORSE
                     && !player.compensatedEntities.getSelf().inVehicle()) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "ENTITY_ACTION (START_HORSE_JUMP)", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "Entity Action (START_HORSE_JUMP)");
                 return;
             }
 
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_JUMPING_WITH_HORSE
                     && !player.compensatedEntities.getSelf().inVehicle()) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "ENTITY_ACTION (STOP_HORSE_JUMP)", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "Entity Action (STOP_HORSE_JUMP)");
                 return;
             }
         }
@@ -229,33 +214,28 @@ public class BadPacketsA extends PacketCheck {
             if (isFlying == player.isFlying && isInGodMode == player.isInGodMode
                     && isFlightAllowed == player.isFlightAllowed && isInCreative == player.isInCreative
                     && !isFlying && !isInGodMode && !isFlightAllowed && !isInCreative) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "ABILITIES (ALL)", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "Abilities (All)");
                 return;
             }
 
             if (isFlying && !player.isFlightAllowed) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "ABILITIES (FLIGHT_ALLOWED)", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "Abilities (Flight Allowed)");
                 return;
             }
 
             if (player.gamemode != GameMode.CREATIVE) {
                 if (isInGodMode != player.isInGodMode) {
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "ABILITIES (GOD_MODE)", "You are sending too many packets!");
+                    player.kick(getCheckName(), event, "Abilities (God Mode)");
                     return;
                 }
 
                 if (isFlying && !player.isFlying) {
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "ABILITIES (FLYING)", "You are sending too many packets!");
+                    player.kick(getCheckName(), event, "Abilities (Flying)");
                     return;
                 }
 
                 if (isInCreative && !player.isInCreative) {
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "ABILITIES (CREATIVE)", "You are sending too many packets!");
+                    player.kick(getCheckName(), event, "Abilities (Creative)");
                 }
             }
         }

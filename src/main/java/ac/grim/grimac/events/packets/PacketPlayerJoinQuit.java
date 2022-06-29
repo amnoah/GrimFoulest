@@ -12,20 +12,24 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class PacketPlayerJoinQuit extends PacketListenerAbstract {
+
     @Override
     public void onUserConnect(UserConnectEvent event) {
-        new GrimPlayer(event.getUser()); // Player takes care of adding to hashmap
+        new GrimPlayer(event.getUser()); // Player takes care of adding to HashMap
     }
 
     @Override
     public void onUserLogin(UserLoginEvent event) {
         Player player = (Player) event.getPlayer();
+
         if (GrimAPI.INSTANCE.getConfigManager().getConfig().getBooleanElse("debug-pipeline-on-join", false)) {
             LogUtil.info("Pipeline: " + ChannelHelper.pipelineHandlerNamesAsString(event.getUser().getChannel()));
         }
+
         if (player.hasPermission("grim.alerts") && GrimAPI.INSTANCE.getConfigManager().getConfig().getBooleanElse("alerts.enable-on-join", true)) {
             GrimAPI.INSTANCE.getAlertManager().toggle(player);
         }
+
         if (player.hasPermission("grim.spectate") && GrimAPI.INSTANCE.getConfigManager().getConfig().getBooleanElse("spectators.hide-regardless", false)) {
             GrimAPI.INSTANCE.getSpectateManager().onLogin(player);
         }
@@ -36,6 +40,7 @@ public class PacketPlayerJoinQuit extends PacketListenerAbstract {
         GrimAPI.INSTANCE.getPlayerDataManager().remove(event.getUser());
 
         Player player = Bukkit.getPlayer(event.getUser().getProfile().getUUID());
+
         if (player != null) {
             GrimAPI.INSTANCE.getAlertManager().handlePlayerQuit(player);
             GrimAPI.INSTANCE.getSpectateManager().onQuit(player);

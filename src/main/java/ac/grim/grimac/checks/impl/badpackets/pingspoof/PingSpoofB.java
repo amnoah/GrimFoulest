@@ -29,8 +29,7 @@ public class PingSpoofB extends PacketCheck {
             }
 
             if (streak >= 5) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "NEGATIVE", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "NEGATIVE");
             }
         }
     }

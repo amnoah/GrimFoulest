@@ -27,16 +27,14 @@ public class BadPacketsD extends PacketCheck {
 
             if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SNEAKING) {
                 if (lastSneaking && !wasTeleport) {
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "START_SNEAKING", "You are sending too many packets!");
+                    player.kick(getCheckName(), event, "Sneaking (Start)");
                 } else {
                     lastSneaking = true;
                 }
 
             } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SNEAKING) {
                 if (!lastSneaking && !wasTeleport) {
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "STOP_SNEAKING", "You are sending too many packets!");
+                    player.kick(getCheckName(), event, "Sneaking (Stop)");
                 } else {
                     lastSneaking = false;
                 }

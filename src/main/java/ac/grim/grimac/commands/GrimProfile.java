@@ -38,7 +38,7 @@ public class GrimProfile extends BaseCommand {
 
         String hSens = String.valueOf((int) Math.round(aimProcessor.sensitivityX * 200));
         String vSens = String.valueOf((int) Math.round(aimProcessor.sensitivityY * 200));
-        String fastMath = String.valueOf(!grimPlayer.trigHandler.isVanillaMath());
+        String fastMath = grimPlayer.trigHandler.getActiveFastMath().name();
         String formattedPing = String.valueOf(GrimMath.floor(grimPlayer.getTransactionPing() / 1e6));
 
         for (String message : GrimAPI.INSTANCE.getConfigManager().getConfig().getStringList("profile")) {

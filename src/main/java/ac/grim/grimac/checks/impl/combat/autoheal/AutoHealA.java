@@ -46,8 +46,7 @@ public class AutoHealA extends PacketCheck {
         }
 
         if (stage == 4) {
-            event.setCancelled(true);
-            player.kick(getCheckName(), "", "You are sending too many packets!");
+            player.kick(getCheckName(), event, "");
         }
     }
 }

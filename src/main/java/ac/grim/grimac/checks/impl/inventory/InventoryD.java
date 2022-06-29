@@ -23,14 +23,12 @@ public class InventoryD extends PacketCheck {
             WrapperPlayClientHeldItemChange packet = new WrapperPlayClientHeldItemChange(event);
 
             if (packet.getSlot() == lastSlot) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "Sent Same Slot", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "Sent Same Slot");
                 return;
             }
 
             if (packet.getSlot() < 0 || packet.getSlot() > 8) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "Invalid Slot", "You are sending too many packets!");
+                player.kick(getCheckName(), event, "Invalid Slot");
                 return;
             }
 

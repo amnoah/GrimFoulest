@@ -5,11 +5,9 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.protocol.player.DiggingAction;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 
-// Detects swinging after destroying a block in the same tick
+// Detects sending INTERACT_ENTITY (ATTACK) without ANIMATION
 @CheckData(name = "PacketOrder C")
 public class PacketOrderC extends PacketCheck {
 
@@ -24,15 +22,13 @@ public class PacketOrderC extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
             sent = true;
 
-        } else if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
-            WrapperPlayClientPlayerDigging packet = new WrapperPlayClientPlayerDigging(event);
+        } else if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
+            WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
 
-            if (packet.getAction() == DiggingAction.FINISHED_DIGGING && !sent) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "", "You are sending too many packets!");
+            if (packet.getAction() == WrapperPlayClientInteractEntity.InteractAction.ATTACK && !sent) {
+                player.kick(getCheckName(), event, "");
             }
 
-        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
             sent = false;
         }
     }

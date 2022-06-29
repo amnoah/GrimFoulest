@@ -24,8 +24,7 @@ public class BadPacketsB extends PacketCheck {
             WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
 
             if (packet.hasRotationChanged() && Math.abs(packet.getLocation().getPitch()) > 90) {
-                event.setCancelled(true);
-                player.kick(getCheckName(), "Invalid Pitch", "Illegal position");
+                player.kick(getCheckName(), event, "Invalid Pitch");
             }
         }
     }

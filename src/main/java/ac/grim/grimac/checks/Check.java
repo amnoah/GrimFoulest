@@ -42,6 +42,11 @@ public class Check implements AbstractCheck {
     }
 
     public void flagAndAlert(String verbose, boolean setback) {
+        // Returns if the player is being kicked.
+        if (player.isKicking) {
+            return;
+        }
+
         if (flag()) {
             alert(verbose);
 
@@ -52,8 +57,14 @@ public class Check implements AbstractCheck {
     }
 
     public final boolean flag() {
+        // Avoid calling event if disabled
         if (player.disableGrim) {
-            return false; // Avoid calling event if disabled
+            return false;
+        }
+
+        // Returns false if the player is being kicked.
+        if (player.isKicking) {
+            return false;
         }
 
         FlagEvent event = new FlagEvent(player, this);

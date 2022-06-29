@@ -10,6 +10,7 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPluginMessage;
 
 import javax.lang.model.element.ElementVisitor;
+import java.nio.charset.StandardCharsets;
 
 // Detects sending invalid book packets
 @CheckData(name = "BadPackets Q")
@@ -32,8 +33,7 @@ public class BadPacketsQ extends PacketCheck {
                         && itemStack.getType() != ItemTypes.WRITTEN_BOOK
                         && itemStack.getType() != ItemTypes.WRITABLE_BOOK
                         && itemStack.getType() != ItemTypes.ENCHANTED_BOOK) {
-                    event.setCancelled(true);
-                    player.kick(getCheckName(), "CHANNEL=" + channel, "You are sending too many packets!");
+                    player.kick(getCheckName(), event, "CHANNEL=" + channel);
                 }
             }
         }

@@ -38,7 +38,6 @@ public class InventoryI extends PacketCheck {
             if (packet.getWindowClickType() == WrapperPlayClientClickWindow.WindowClickType.SWAP
                     && packet.getWindowId() != 0) {
                 if (pressed && this.slot != slot && this.button == button) {
-                    event.setCancelled(true);
                     flagAndAlert("", false);
                 }
 
