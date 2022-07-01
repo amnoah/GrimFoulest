@@ -4,41 +4,30 @@ import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
+import com.github.retrooper.packetevents.protocol.world.BlockFace;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerBlockPlacement;
 
-// Detects sending sign packets without receiving block change packets
+// Detects sending invalid BLOCK_PLACEMENT packets
 @CheckData(name = "BadPackets S")
 public class BadPacketsS extends PacketCheck {
-
-    public boolean sentSign;
-    public boolean sentBlockChange;
 
     public BadPacketsS(GrimPlayer player) {
         super(player);
     }
 
     @Override
-    public void onPacketSend(PacketSendEvent event) {
-        if (event.getPacketType() == PacketType.Play.Server.BLOCK_CHANGE) {
-            sentBlockChange = true;
-        }
-    }
-
-    @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.UPDATE_SIGN) {
-            sentSign = true;
+        if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) {
+            WrapperPlayClientPlayerBlockPlacement packet = new WrapperPlayClientPlayerBlockPlacement(event);
 
-        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            if (sentSign && !sentBlockChange) {
-                player.kick(getCheckName(), event, "No Block Change");
-                return;
+            // Detects sending invalid blank UP packets.
+            if (packet.getFace() == BlockFace.UP
+                    && packet.getBlockPosition().getX() == 0.0
+                    && packet.getBlockPosition().getY() == 0.0
+                    && packet.getBlockPosition().getZ() == 0.0) {
+                player.kick(getCheckName(), event, "BLOCK_PLACE");
             }
-
-            sentSign = false;
-            sentBlockChange = false;
         }
     }
 }

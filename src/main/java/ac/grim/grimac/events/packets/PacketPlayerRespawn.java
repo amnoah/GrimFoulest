@@ -1,7 +1,7 @@
 package ac.grim.grimac.events.packets;
 
 import ac.grim.grimac.GrimAPI;
-import ac.grim.grimac.checks.impl.badpackets.BadPacketsC;
+import ac.grim.grimac.checks.impl.badpackets.BadPacketsJ;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.data.TrackerData;
 import ac.grim.grimac.utils.data.packetentity.PacketEntitySelf;
@@ -113,7 +113,8 @@ public class PacketPlayerRespawn extends PacketListenerAbstract {
 
                 if (player.getClientVersion().isOlderThan(ClientVersion.V_1_14)) { // 1.14+ players send a packet for this, listen for it instead
                     player.isSprinting = false;
-                    player.checkManager.getPacketCheck(BadPacketsC.class).lastSprinting = false; // Pre 1.14 clients set this to false when creating new entity
+                    player.checkManager.getPacketCheck(BadPacketsJ.class).sentStartSprinting = false; // Pre 1.14 clients set this to false when creating new entity
+                    player.checkManager.getPacketCheck(BadPacketsJ.class).sentStopSprinting = true; // Pre 1.14 clients set this to false when creating new entity
                     // TODO: What the fuck ViaVersion, why do you throw out keep all metadata?
                     // The server doesn't even use it... what do we do?
                     player.compensatedEntities.hasSprintingAttributeEnabled = false;

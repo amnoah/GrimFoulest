@@ -18,15 +18,15 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @CheckData(name = "Prediction (Debug)")
 public class DebugHandler extends PostPredictionCheck {
 
-    final Set<Player> listeners = new CopyOnWriteArraySet<>(new HashSet<>());
-    boolean outputToConsole = false;
+    public final Set<Player> listeners = new CopyOnWriteArraySet<>(new HashSet<>());
+    public boolean outputToConsole = false;
 
-    final boolean enabledFlags = false;
-    boolean lastMovementIsFlag = false;
+    public final boolean enabledFlags = false;
+    public boolean lastMovementIsFlag = false;
 
-    final List<String> predicted = new EvictingList<>(5);
-    final List<String> actually = new EvictingList<>(5);
-    final List<String> offset = new EvictingList<>(5);
+    public final List<String> predicted = new EvictingList<>(5);
+    public final List<String> actually = new EvictingList<>(5);
+    public final List<String> offset = new EvictingList<>(5);
 
     public DebugHandler(GrimPlayer player) {
         super(player);

@@ -11,7 +11,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 @CheckData(name = "PingSpoof F")
 public class PingSpoofF extends PacketCheck {
 
-    private int noReminderTicks;
+    public int noReminderTicks;
 
     public PingSpoofF(GrimPlayer player) {
         super(player);
@@ -25,7 +25,7 @@ public class PingSpoofF extends PacketCheck {
             if (packet.hasPositionChanged()) {
                 noReminderTicks = 0;
             } else {
-                noReminderTicks++;
+                ++noReminderTicks;
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.STEER_VEHICLE) {

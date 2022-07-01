@@ -18,10 +18,10 @@ public class AimAssistE extends RotationCheck {
 
     @Override
     public void process(RotationUpdate rotationUpdate) {
-        float absDeltaYaw = Math.abs(rotationUpdate.getDeltaYaw());
-        int round;
+        double absDeltaYaw = Math.abs(rotationUpdate.getDeltaYaw());
+        long round;
 
-        if (absDeltaYaw > 1.0f && (round = Math.round(absDeltaYaw)) == absDeltaYaw) {
+        if (absDeltaYaw > 1.0 && (round = Math.round(absDeltaYaw)) == absDeltaYaw) {
             if (Objects.equals(absDeltaYaw, lastDeltaYaw)) {
                 flagAndAlert("YAW=" + lastDeltaYaw, false);
             }
@@ -29,7 +29,7 @@ public class AimAssistE extends RotationCheck {
             lastDeltaYaw = round;
 
         } else {
-            lastDeltaYaw = 0.0f;
+            lastDeltaYaw = 0.0;
         }
     }
 }

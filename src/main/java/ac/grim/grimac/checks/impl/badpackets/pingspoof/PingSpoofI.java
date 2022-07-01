@@ -11,8 +11,8 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 @CheckData(name = "PingSpoof I")
 public class PingSpoofI extends PacketCheck {
 
-    private int packetsSent;
-    private int packetsReceived;
+    public int packetsSent;
+    public int packetsReceived;
 
     public PingSpoofI(GrimPlayer player) {
         super(player);
@@ -21,16 +21,14 @@ public class PingSpoofI extends PacketCheck {
     @Override
     public void onPacketSend(PacketSendEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.WINDOW_CONFIRMATION) {
-            packetsSent++;
+            ++packetsSent;
         }
     }
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.WINDOW_CONFIRMATION) {
-            packetsReceived++;
-
-            if (packetsReceived > packetsSent) {
+            if (++packetsReceived > packetsSent) {
                 player.kick(getCheckName(), event, "SENT=" + packetsSent + " RECEIVED=" + packetsReceived);
             }
         }

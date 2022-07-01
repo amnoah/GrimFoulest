@@ -7,11 +7,11 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 
-// Detects attacking entities without swinging
+// Detects sending invalid INTERACT_ENTITY packets
 @CheckData(name = "BadPackets F")
 public class BadPacketsF extends PacketCheck {
 
-    private int streak;
+    public int attacks;
 
     public BadPacketsF(GrimPlayer player) {
         super(player);
@@ -22,16 +22,27 @@ public class BadPacketsF extends PacketCheck {
         if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
             WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
 
-            if (packet.getAction() != WrapperPlayClientInteractEntity.InteractAction.ATTACK) {
+            // Detects interacting with yourself.
+            if (packet.getEntityId() == player.entityID) {
+                player.kick(getCheckName(), event, "Self Interact");
                 return;
             }
 
-            if (++streak > 2) {
-                player.kick(getCheckName(), event, "NoSwing");
+            // Detects interacting with invalid entities.
+            if (player.compensatedEntities.getEntity(packet.getEntityId()) == null) {
+                player.kick(getCheckName(), event, "Invalid Entity");
+                return;
+            }
+
+            // Detects attacking without swinging.
+            if (packet.getAction() == WrapperPlayClientInteractEntity.InteractAction.ATTACK) {
+                if (++attacks > 2) {
+                    player.kick(getCheckName(), event, "NoSwing");
+                }
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.ANIMATION) {
-            streak = 0;
+            attacks = 0;
         }
     }
 }

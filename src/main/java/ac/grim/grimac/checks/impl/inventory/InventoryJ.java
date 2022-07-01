@@ -8,15 +8,14 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClickWindow;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
-import sun.security.krb5.internal.PAData;
 
 import java.util.Objects;
 
 @CheckData(name = "Inventory J")
 public class InventoryJ extends PacketCheck {
 
-    private int stage = 0;
-    private int slot = -999;
+    public int stage;
+    public int slot;
 
     public InventoryJ(GrimPlayer player) {
         super(player);

@@ -21,7 +21,6 @@ public class InventoryK extends PacketCheck {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.CLICK_WINDOW) {
             WrapperPlayClientClickWindow packet = new WrapperPlayClientClickWindow(event);
-            WrapperPlayClientClickWindow.WindowClickType clickType = packet.getWindowClickType();
             Inventory inventory = player.getInventory().inventory;
 
             try {
@@ -33,10 +32,16 @@ public class InventoryK extends PacketCheck {
                 return;
             }
 
+            System.out.println("PACKET=" + packet.getCarriedItemStack()
+                    + " SLOT=" + inventory.getSlot(packet.getSlot()).getItem());
+
             ItemStack packetItem = packet.getCarriedItemStack();
             ItemStack inventoryItem = inventory.getSlot(packet.getSlot()).getItem();
 
-            if (packet.getWindowId() == 0 && clickType == WrapperPlayClientClickWindow.WindowClickType.PICKUP) {
+            if (packet.getWindowId() == 0
+                    && packet.getWindowClickType() != WrapperPlayClientClickWindow.WindowClickType.SWAP
+                    && packet.getWindowClickType() != WrapperPlayClientClickWindow.WindowClickType.QUICK_MOVE
+                    && packet.getWindowClickType() != WrapperPlayClientClickWindow.WindowClickType.PICKUP_ALL) {
                 if (!(packetItem.getAmount() == inventoryItem.getAmount()
                         && packetItem.getDamageValue() == inventoryItem.getDamageValue()
                         && packetItem.getLegacyData() == inventoryItem.getLegacyData()

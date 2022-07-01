@@ -7,18 +7,14 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClickWindow;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClientStatus;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
-
-import java.awt.*;
-import java.util.Objects;
 
 @CheckData(name = "Inventory I")
 public class InventoryI extends PacketCheck {
 
-    private boolean pressed = false;
-    private int slot = -1;
-    private int button = -1;
+    public boolean pressed;
+    public int slot;
+    public int button;
 
     public InventoryI(GrimPlayer player) {
         super(player);

@@ -44,12 +44,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @CheckData(name = "Reach A", setback = 10)
 public class ReachA extends PacketCheck {
 
-    private static final List<EntityType> blacklisted = Arrays.asList(EntityTypes.BOAT, EntityTypes.CHEST_BOAT, EntityTypes.SHULKER);
+    public static final List<EntityType> blacklisted = Arrays.asList(EntityTypes.BOAT, EntityTypes.CHEST_BOAT, EntityTypes.SHULKER);
     // Concurrent to support weird entity trackers
-    private final ConcurrentLinkedQueue<Integer> playerAttackQueue = new ConcurrentLinkedQueue<>();
-    private boolean cancelImpossibleHits;
-    private double threshold;
-    private double cancelBuffer; // For the next 4 hits after using reach, we aggressively cancel reach
+    public final ConcurrentLinkedQueue<Integer> playerAttackQueue = new ConcurrentLinkedQueue<>();
+    public boolean cancelImpossibleHits;
+    public double threshold;
+    public double cancelBuffer; // For the next 4 hits after using reach, we aggressively cancel reach
 
     public ReachA(GrimPlayer player) {
         super(player);

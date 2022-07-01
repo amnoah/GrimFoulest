@@ -9,59 +9,66 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 import lombok.Getter;
 import org.bukkit.Bukkit;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class ClientBrand extends PacketCheck {
 
-    public static final List<Pattern> IGNORED_BRANDS = Arrays.asList(
-            Pattern.compile("vanilla"),
-            Pattern.compile("fabric"),
-            Pattern.compile("^lunarclient:[a-z\\d]{7}"),
-            Pattern.compile("Feather Fabric"),
-            Pattern.compile("fml,forge"),
-            Pattern.compile("LiteLoader"),
-            Pattern.compile("\u0007vanilla"),
-            Pattern.compile("\u0007fml,forge"),
-            Pattern.compile("\u0007LiteLoader"),
-            Pattern.compile("\u0007fabric")
+    public static final List<String> IGNORED_BRANDS = Arrays.asList(
+            "vanilla",
+            "fabric",
+            "lunarclient:[a-z\\d]{7}",
+            "Feather Fabric",
+            "fml,forge",
+            "\tfml,forge",
+            "LiteLoader",
+            "\u0007vanilla",
+            "\u0007fml,forge",
+            "\u0007LiteLoader",
+            "\u0007fabric"
     );
 
-    public static final List<Pattern> HACKED_BRANDS = Arrays.asList(
-            Pattern.compile("\nLunar-Client"),
-            Pattern.compile("Vanilla"),
-            Pattern.compile("\u0007Vanilla"),
-            Pattern.compile("Synergy"),
-            Pattern.compile("\u0007Synergy"),
-            Pattern.compile("Created By "),
-            Pattern.compile("\u0007Created By ")
+    public static final List<String> HACKED_BRANDS = Arrays.asList(
+            "\nLunar-Client",
+            "Vanilla",
+            "\u0007Vanilla",
+            "Synergy",
+            "\u0007Synergy",
+            "Created By ",
+            "\u0007Created By ",
+            "\u0003FML", // Forge Spoof
+            "\u0003LMC", // LabyMod Spoof (Need to verify)
+            "PLC18", // PvPLounge Client Spoof (Need to verify)
+            "\u0002CB", // CheatBreaker Spoof (Need to verify)
+            "Geyser" // Geyser Spoof (Need to verify)
     );
 
-    public static final List<Pattern> IGNORED_REGISTERS = Collections.emptyList();
+    public static final List<String> IGNORED_REGISTERS = Arrays.asList();
 
-    public static final List<Pattern> HACKED_REGISTERS = Arrays.asList(
-            Pattern.compile("Lunar-Client")
+    public static final List<String> HACKED_REGISTERS = Arrays.asList(
+            "Lunar-Client"
     );
 
-    public static final List<Pattern> HACKED_CHANNELS = Arrays.asList(
-            Pattern.compile("^LOLIMAHCKER$"),
-            Pattern.compile("^CPS_BAN_THIS_NIGGER$"),
-            Pattern.compile("^EROUAXWASHERE$"),
-            Pattern.compile("^#unbanearwax$"),
-            Pattern.compile("^1946203560$"),
-            Pattern.compile("^cock$"),
-            Pattern.compile("^lmaohax$"),
-            Pattern.compile("^reach$"),
-            Pattern.compile("^gg$"),
-            Pattern.compile("^customGuiOpenBspkrs$"),
-            Pattern.compile("^0SO1Lk2KASxzsd$"),
-            Pattern.compile("^MCnetHandler$"),
-            Pattern.compile("^n$"),
-            Pattern.compile("^BLC|M$"),
-            Pattern.compile("^XDSMKDKFDKSDAKDFkEJF$")
+    public static final List<String> HACKED_CHANNELS = Arrays.asList(
+            "LOLIMAHCKER",
+            "CPS_BAN_THIS_NIGGER",
+            "EROUAXWASHERE",
+            "#unbanearwax",
+            "1946203560",
+            "cock",
+            "lmaohax",
+            "reach",
+            "gg",
+            "customGuiOpenBspkrs",
+            "0SO1Lk2KASxzsd",
+            "MCnetHandler",
+            "n",
+            "BLC|M",
+            "XDSMKDKFDKSDAKDFkEJF"
     );
 
     @Getter
@@ -92,6 +99,10 @@ public class ClientBrand extends PacketCheck {
                     data = "Empty";
                 }
 
+                if (data.contains("FML|HS")) {
+                    return;
+                }
+
                 // Remove Velocity's brand suffix.
                 data = data.replace(" (Velocity)", "");
 
@@ -99,19 +110,27 @@ public class ClientBrand extends PacketCheck {
                 brand = data;
 
                 // Kicks players with hacked brands.
-                if (isInPatternList(HACKED_BRANDS, brand)) {
-                    player.kick("Hacked Brand", event, "BRAND=" + brand);
+                if (HACKED_BRANDS.contains(data)) {
+                    player.kick("Hacked Brand", event, "BRAND=" + data);
                     return;
                 }
 
                 // Prints warnings for players with unknown brands.
-                if (!isInPatternList(IGNORED_BRANDS, brand)) {
-                    // TODO: Sync with prefix & shit
+                if (!IGNORED_BRANDS.contains(data)) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "grim sendalert &b[Grim] &f"
                             + player.user.getProfile().getName() + " &7sent an unknown brand: &f" + data);
+
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new FileWriter("unknown-brand.txt"));
+                        writer.write(data);
+                        writer.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
 
-            } else if (channelName.equalsIgnoreCase("minecraft:register") || channelName.equals("REGISTER")) {
+            } else if (channelName.equalsIgnoreCase("minecraft:register")
+                    || channelName.equals("REGISTER")) {
                 String data = new String(packet.getData(), StandardCharsets.UTF_8);
 
                 if (data.equals("")) {
@@ -119,16 +138,23 @@ public class ClientBrand extends PacketCheck {
                 }
 
                 // Kicks players with hacked registered data.
-                if (isInPatternList(HACKED_REGISTERS, data)) {
+                if (HACKED_REGISTERS.contains(data)) {
                     player.kick("Hacked Register Data", event, "BRAND=" + brand);
                     return;
                 }
 
                 // Prints warnings for players with unknown registered data.
-                if (!isInPatternList(IGNORED_REGISTERS, data)) {
-                    // TODO: Sync with prefix & shit
+                if (!IGNORED_REGISTERS.contains(data)) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "grim sendalert &b[Grim] &f"
                             + player.user.getProfile().getName() + " &7registered unknown data: &f" + data);
+
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new FileWriter("unknown-data.txt"));
+                        writer.write(data);
+                        writer.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
 
             } else {
@@ -139,20 +165,10 @@ public class ClientBrand extends PacketCheck {
                 }
 
                 // Kicks players with hacked channel data.
-                if (isInPatternList(HACKED_CHANNELS, channelName)) {
+                if (HACKED_CHANNELS.contains(channelName)) {
                     player.kick("Hacked Channel Data", event, "CHANNEL=" + channelName);
                 }
             }
         }
-    }
-
-    public boolean isInPatternList(List<Pattern> patternList, String text) {
-        for (Pattern pattern : patternList) {
-            if (pattern.matcher(text).find()) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

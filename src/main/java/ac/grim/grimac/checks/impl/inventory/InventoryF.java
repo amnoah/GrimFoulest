@@ -10,7 +10,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 @CheckData(name = "Inventory F")
 public class InventoryF extends PacketCheck {
 
-    private int stage;
+    public int stage;
 
     public InventoryF(GrimPlayer player) {
         super(player);

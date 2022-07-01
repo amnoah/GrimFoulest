@@ -13,16 +13,16 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 @CheckData(name = "PingSpoof H")
 public class PingSpoofH extends PacketCheck {
 
-    private final EvictingList<Long> changeFlyingList = new EvictingList<>(40);
-    private final EvictingList<Long> changeTransactionList = new EvictingList<>(20);
-    private final EvictingList<Integer> flyingCountList = new EvictingList<>(5);
-    private final EvictingList<Integer> transactionCountList = new EvictingList<>(5);
-    private long lastFlying;
-    private long lastTransaction;
-    private double lastAverageFlyingTimePercent;
-    private double lastAverageTransactionTimePercent;
-    private int flyingCount;
-    private int transactionCount;
+    public final EvictingList<Long> changeFlyingList = new EvictingList<>(40);
+    public final EvictingList<Long> changeTransactionList = new EvictingList<>(20);
+    public final EvictingList<Integer> flyingCountList = new EvictingList<>(5);
+    public final EvictingList<Integer> transactionCountList = new EvictingList<>(5);
+    public long lastFlying;
+    public long lastTransaction;
+    public double lastAverageFlyingTimePercent;
+    public double lastAverageTransactionTimePercent;
+    public int flyingCount;
+    public int transactionCount;
 
     public PingSpoofH(GrimPlayer player) {
         super(player);
@@ -31,7 +31,7 @@ public class PingSpoofH extends PacketCheck {
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
         if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            flyingCount++;
+            ++flyingCount;
             long timeBetweenFlying = System.nanoTime() - lastFlying;
             lastFlying = System.nanoTime();
             changeFlyingList.add(timeBetweenFlying);
@@ -45,7 +45,7 @@ public class PingSpoofH extends PacketCheck {
             }
 
         } else if (event.getPacketType() == PacketType.Play.Client.WINDOW_CONFIRMATION) {
-            transactionCount++;
+            ++transactionCount;
             long timeBetweenTransaction = System.nanoTime() - lastTransaction;
             lastTransaction = System.nanoTime();
             changeTransactionList.add(timeBetweenTransaction);

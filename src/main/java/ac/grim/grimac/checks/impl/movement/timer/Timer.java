@@ -11,17 +11,17 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 @CheckData(name = "Timer", setback = 10)
 public class Timer extends PacketCheck {
 
-    long timerBalanceRealTime = 0;
+    public long timerBalanceRealTime = 0;
 
     // Default value is real time minus max keep-alive time
-    long knownPlayerClockTime = (long) (System.nanoTime() - 6e10);
-    long lastMovementPlayerClock = (long) (System.nanoTime() - 6e10);
+    public long knownPlayerClockTime = (long) (System.nanoTime() - 6e10);
+    public long lastMovementPlayerClock = (long) (System.nanoTime() - 6e10);
 
     // How long should the player be able to fall back behind their ping?
     // Default: 120 milliseconds
-    long clockDrift = (long) 120e6;
+    public long clockDrift = (long) 120e6;
 
-    boolean hasGottenMovementAfterTransaction = false;
+    public boolean hasGottenMovementAfterTransaction = false;
 
     // Proof for this timer check
     // https://i.imgur.com/Hk2Wb6c.png

@@ -27,7 +27,7 @@ public class ScaffoldF extends BlockPlaceCheck {
                 float y = place.getBlockPosition().y;
                 float z = place.getBlockPosition().z;
 
-                if (x > 1.0F || y > 1.0F || z > 1.0F) {
+                if (x > 1.0 || y > 1.0 || z > 1.0) {
                     flagAndAlert("X=" + x + " Y=" + y + " Z=" + z, false);
                 }
             }

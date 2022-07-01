@@ -11,9 +11,9 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 @CheckData(name = "PingSpoof D")
 public class PingSpoofD extends PacketCheck {
 
-    private int flyingCount;
-    private int transactionCount;
-    private long lastReset;
+    public int flyingCount;
+    public int transactionCount;
+    public long lastReset;
 
     public PingSpoofD(GrimPlayer player) {
         super(player);
@@ -22,10 +22,10 @@ public class PingSpoofD extends PacketCheck {
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
         if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            flyingCount++;
+            ++flyingCount;
 
         } else if (event.getPacketType() == PacketType.Play.Client.WINDOW_CONFIRMATION) {
-            transactionCount++;
+            ++transactionCount;
 
         } else if (event.getPacketType() == PacketType.Play.Client.KEEP_ALIVE) {
             transactionCount = 0;

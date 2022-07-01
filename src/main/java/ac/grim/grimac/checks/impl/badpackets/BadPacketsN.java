@@ -4,16 +4,14 @@ import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientChatMessage;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientResourcePackStatus;
 
-// Detects sending empty chat messages
-@CheckData(name = "BadPackets U")
-public class BadPacketsU extends PacketCheck {
+// Detects sending invalid CHAT_MESSAGE packets
+@CheckData(name = "BadPackets N")
+public class BadPacketsN extends PacketCheck {
 
-    public BadPacketsU(GrimPlayer player) {
+    public BadPacketsN(GrimPlayer player) {
         super(player);
     }
 

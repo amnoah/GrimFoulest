@@ -17,7 +17,7 @@ import java.util.Queue;
 @CheckData(name = "PingSpoof G")
 public class PingSpoofG extends PacketCheck {
 
-    final Queue<Pair<Short, Long>> transactionMap = new LinkedList<>();
+    public final Queue<Pair<Short, Long>> transactionMap = new LinkedList<>();
 
     public PingSpoofG(GrimPlayer player) {
         super(player);

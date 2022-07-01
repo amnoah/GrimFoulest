@@ -11,7 +11,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.*;
 @CheckData(name = "Inventory A")
 public class InventoryA extends PacketCheck {
 
-    private int stage;
+    public int stage;
 
     public InventoryA(GrimPlayer player) {
         super(player);

@@ -17,7 +17,7 @@ import java.util.Queue;
 @CheckData(name = "PingSpoof C")
 public class PingSpoofC extends PacketCheck {
 
-    final Queue<Pair<Long, Long>> keepAliveMap = new LinkedList<>();
+    public final Queue<Pair<Long, Long>> keepAliveMap = new LinkedList<>();
 
     public PingSpoofC(GrimPlayer player) {
         super(player);

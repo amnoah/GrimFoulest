@@ -5,14 +5,13 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEntityAction;
+import com.github.retrooper.packetevents.protocol.player.GameMode;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientSpectate;
+import org.bukkit.Bukkit;
 
-// Detects sending two Sprint packets with the same state
+// Detects sending invalid SPECTATE packets
 @CheckData(name = "BadPackets C")
 public class BadPacketsC extends PacketCheck {
-
-    boolean thanksMojang; // Support 1.14+ clients starting on either true or false sprinting, we don't know
-    public boolean lastSprinting;
 
     public BadPacketsC(GrimPlayer player) {
         super(player);
@@ -20,34 +19,17 @@ public class BadPacketsC extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.ENTITY_ACTION) {
-            WrapperPlayClientEntityAction packet = new WrapperPlayClientEntityAction(event);
+        if (event.getPacketType() == PacketType.Play.Client.SPECTATE) {
+            WrapperPlayClientSpectate packet = new WrapperPlayClientSpectate(event);
 
-            if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SPRINTING) {
-                if (lastSprinting) {
-                    if (!thanksMojang) {
-                        thanksMojang = true;
-                        return;
-                    }
-                    
-                    player.kick(getCheckName(), event, "Sprinting (Start)");
-                    return;
-                }
+            // Detects spectating invalid targets.
+            if (Bukkit.getServer().getPlayer(packet.getTargetUUID()) == null) {
+                player.kick(getCheckName(), event, "Invalid Target");
+            }
 
-                lastSprinting = true;
-
-            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SPRINTING) {
-                if (!lastSprinting) {
-                    if (!thanksMojang) {
-                        thanksMojang = true;
-                        return;
-                    }
-                    
-                    player.kick(getCheckName(), event, "Sprinting (Stop)");
-                    return;
-                }
-
-                lastSprinting = false;
+            // Detects sending packets while not being in spectator mode.
+            if (player.gamemode != GameMode.SPECTATOR) {
+                player.kick(getCheckName(), event, "Not in Spectator");
             }
         }
     }

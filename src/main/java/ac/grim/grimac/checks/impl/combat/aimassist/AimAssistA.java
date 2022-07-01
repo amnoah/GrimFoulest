@@ -11,7 +11,7 @@ public class AimAssistA extends RotationCheck {
 
     public double lastDeltaYaw;
     public double lastDeltaPitch;
-    boolean exempt = false;
+    public boolean exempt = false;
 
     public AimAssistA(GrimPlayer playerData) {
         super(playerData);

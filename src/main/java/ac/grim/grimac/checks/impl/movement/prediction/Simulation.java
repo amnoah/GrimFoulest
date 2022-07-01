@@ -10,12 +10,12 @@ import org.bukkit.Bukkit;
 @CheckData(name = "Simulation", configName = "Simulation", decay = 0.02)
 public class Simulation extends PostPredictionCheck {
 
-    double setbackDecayMultiplier;
-    double threshold;
-    double immediateSetbackThreshold;
-    double maxAdvantage;
-    double maxCeiling;
-    double advantageGained = 0;
+    public double setbackDecayMultiplier;
+    public double threshold;
+    public double immediateSetbackThreshold;
+    public double maxAdvantage;
+    public double maxCeiling;
+    public double advantageGained = 0;
 
     public Simulation(GrimPlayer player) {
         super(player);
@@ -23,8 +23,8 @@ public class Simulation extends PostPredictionCheck {
 
     public void onPredictionComplete(PredictionComplete predictionComplete) {
         double offset = predictionComplete.getOffset();
-
         CompletePredictionEvent completePredictionEvent = new CompletePredictionEvent(getPlayer(), predictionComplete.getOffset());
+
         Bukkit.getPluginManager().callEvent(completePredictionEvent);
 
         if (completePredictionEvent.isCancelled()) {
@@ -40,10 +40,11 @@ public class Simulation extends PostPredictionCheck {
                 player.getSetbackTeleportUtil().executeViolationSetback();
             }
 
-            violations++;
+            ++violations;
             alert("(" + formatOffset(offset) + ")");
 
             advantageGained = Math.min(advantageGained, maxCeiling);
+
         } else {
             advantageGained *= setbackDecayMultiplier;
         }

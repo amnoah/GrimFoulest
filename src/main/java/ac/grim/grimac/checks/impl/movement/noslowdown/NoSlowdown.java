@@ -13,8 +13,8 @@ public class NoSlowdown extends PostPredictionCheck {
     // from a usable item to another usable item. Affects 1.8 (and most likely 1.7) clients.
     public boolean didSlotChangeLastTick = false;
     public boolean flaggedLastTick = false;
-    double offsetToFlag;
-    double bestOffset = 1;
+    public double offsetToFlag;
+    public double bestOffset = 1;
 
     public NoSlowdown(GrimPlayer player) {
         super(player);

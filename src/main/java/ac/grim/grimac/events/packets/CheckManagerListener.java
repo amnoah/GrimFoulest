@@ -503,7 +503,9 @@ public class CheckManagerListener extends PacketListenerAbstract {
                 if (Double.isNaN(pos.getX()) || Double.isNaN(pos.getY()) || Double.isNaN(pos.getZ())
                         || Double.isInfinite(pos.getX()) || Double.isInfinite(pos.getY()) || Double.isInfinite(pos.getZ())
                         || Float.isNaN(pos.getYaw()) || Float.isNaN(pos.getPitch())
-                        || Float.isInfinite(pos.getYaw()) || Float.isInfinite(pos.getPitch())) {
+                        || Float.isInfinite(pos.getYaw()) || Float.isInfinite(pos.getPitch())
+                        || Math.abs(pos.getX()) > 2.9999999E7D || Math.abs(pos.getY()) > 2.9999999E7D
+                        || Math.abs(pos.getZ()) > 2.9999999E7D) {
                     player.kick("Illegal Position", event, "");
                     return;
                 }

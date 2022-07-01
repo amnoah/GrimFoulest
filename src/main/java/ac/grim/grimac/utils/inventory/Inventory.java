@@ -28,7 +28,7 @@ public class Inventory extends AbstractContainerMenu {
         this.inventoryStorage = inventoryStorage;
 
         setPlayer(player);
-        setPlayerInventory(this);
+        setInventory(this);
 
         // Result slot
         addSlot(new ResultSlot(inventoryStorage, 0));
@@ -249,7 +249,7 @@ public class Inventory extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean canTakeItemForPickAll(ItemStack p_38908_, Slot p_38909_) {
-        return p_38909_.inventoryStorageSlot != 0; // Result slot
+    public boolean canTakeItemForPickAll(ItemStack itemStack, Slot slot) {
+        return slot.inventoryStorageSlot != 0; // Result slot
     }
 }

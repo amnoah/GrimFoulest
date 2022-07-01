@@ -11,7 +11,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientHe
 @CheckData(name = "Inventory D")
 public class InventoryD extends PacketCheck {
 
-    int lastSlot = -1;
+    public int lastSlot = -1;
 
     public InventoryD(GrimPlayer player) {
         super(player);

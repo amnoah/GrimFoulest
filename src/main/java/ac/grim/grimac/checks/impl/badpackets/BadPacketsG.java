@@ -4,15 +4,13 @@ import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.protocol.player.ClientVersion;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.protocol.player.GameMode;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientCreativeInventoryAction;
 
-// Detects sending same yaw & pitch twice
+// Detects sending invalid CREATIVE_INVENTORY_ACTION packets
 @CheckData(name = "BadPackets G")
 public class BadPacketsG extends PacketCheck {
-
-    private double lastYaw;
-    private double lastPitch;
 
     public BadPacketsG(GrimPlayer player) {
         super(player);
@@ -20,44 +18,13 @@ public class BadPacketsG extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
-            float posYaw = packet.getLocation().getYaw();
-            float posPitch = packet.getLocation().getPitch();
+        if (event.getPacketType() == PacketType.Play.Client.CREATIVE_INVENTORY_ACTION) {
+            WrapperPlayClientCreativeInventoryAction packet = new WrapperPlayClientCreativeInventoryAction(event);
 
-            // Player is inside unloaded chunk
-            if (player.getSetbackTeleportUtil().insideUnloadedChunk()) {
-                return;
+            // Detects sending packets while not being in creative mode.
+            if (player.gamemode != GameMode.CREATIVE) {
+                player.kick(getCheckName(), event, "Not in Creative");
             }
-
-            // Player just teleported
-            if (player.packetStateData.lastPacketWasTeleport) {
-                return;
-            }
-
-            // Player is in vehicle
-            if (player.compensatedEntities.getSelf().inVehicle()) {
-                return;
-            }
-
-            // Rotation hasn't changed
-            if (!packet.hasRotationChanged()) {
-                return;
-            }
-
-            // Ignore players newer than 1.9+
-            if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_9)) {
-                return;
-            }
-
-            // lastYaw and lastPitch are identical
-            if (lastYaw == posYaw && lastPitch == posPitch) {
-                player.kick(getCheckName(), event, "Identical Rotation");
-                return;
-            }
-
-            lastYaw = posYaw;
-            lastPitch = posPitch;
         }
     }
 }

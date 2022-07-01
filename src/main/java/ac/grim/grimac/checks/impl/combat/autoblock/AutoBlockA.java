@@ -12,7 +12,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPl
 @CheckData(name = "AutoBlock A")
 public class AutoBlockA extends PacketCheck {
 
-    private int stage;
+    public int stage;
 
     public AutoBlockA(GrimPlayer player) {
         super(player);

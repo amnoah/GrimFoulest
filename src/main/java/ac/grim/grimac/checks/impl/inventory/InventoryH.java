@@ -9,13 +9,11 @@ import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClientStatus;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-import javax.print.DocFlavor;
-
 @CheckData(name = "Inventory H")
 public class InventoryH extends PacketCheck {
 
-    private boolean was;
-    private boolean open;
+    public boolean was;
+    public boolean open;
 
     public InventoryH(GrimPlayer player) {
         super(player);

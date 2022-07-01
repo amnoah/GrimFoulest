@@ -2,13 +2,13 @@ package ac.grim.grimac.manager;
 
 import ac.grim.grimac.checks.Check;
 import ac.grim.grimac.checks.impl.badpackets.*;
-import ac.grim.grimac.checks.impl.badpackets.packetorder.*;
 import ac.grim.grimac.checks.impl.badpackets.pingspoof.*;
 import ac.grim.grimac.checks.impl.combat.aimassist.*;
 import ac.grim.grimac.checks.impl.combat.aimassist.baritone.Baritone;
 import ac.grim.grimac.checks.impl.combat.aimassist.processor.AimProcessor;
 import ac.grim.grimac.checks.impl.combat.aimassist.processor.Cinematic;
 import ac.grim.grimac.checks.impl.combat.autoblock.AutoBlockA;
+import ac.grim.grimac.checks.impl.combat.autoblock.AutoBlockB;
 import ac.grim.grimac.checks.impl.combat.autoheal.*;
 import ac.grim.grimac.checks.impl.combat.reach.ReachA;
 import ac.grim.grimac.checks.impl.combat.reach.ReachB;
@@ -87,29 +87,24 @@ public class CheckManager {
                 .put(BadPacketsF.class, new BadPacketsF(player))
                 .put(BadPacketsG.class, new BadPacketsG(player))
                 .put(BadPacketsH.class, new BadPacketsH(player))
+                .put(BadPacketsI.class, new BadPacketsI(player))
                 .put(BadPacketsJ.class, new BadPacketsJ(player))
                 .put(BadPacketsK.class, new BadPacketsK(player))
+                .put(BadPacketsL.class, new BadPacketsL(player))
+                .put(BadPacketsM.class, new BadPacketsM(player))
+                .put(BadPacketsN.class, new BadPacketsN(player))
                 .put(BadPacketsO.class, new BadPacketsO(player))
                 .put(BadPacketsP.class, new BadPacketsP(player))
                 .put(BadPacketsQ.class, new BadPacketsQ(player))
                 .put(BadPacketsR.class, new BadPacketsR(player))
                 .put(BadPacketsS.class, new BadPacketsS(player))
-                .put(BadPacketsT.class, new BadPacketsT(player))
-                .put(BadPacketsU.class, new BadPacketsU(player))
+                .put(BadPacketsZ.class, new BadPacketsZ(player))
 
                 .put(AutoBlockA.class, new AutoBlockA(player))
-
-                .put(PacketOrderA.class, new PacketOrderA(player))
-                .put(PacketOrderB.class, new PacketOrderB(player))
-                .put(PacketOrderC.class, new PacketOrderC(player))
+                .put(AutoBlockB.class, new AutoBlockB(player))
 
                 .put(AutoHealA.class, new AutoHealA(player))
                 .put(AutoHealB.class, new AutoHealB(player))
-                .put(AutoHealC.class, new AutoHealC(player))
-                .put(AutoHealD.class, new AutoHealD(player))
-                .put(AutoHealE.class, new AutoHealE(player))
-                .put(AutoHealF.class, new AutoHealF(player))
-                .put(AutoHealG.class, new AutoHealG(player))
 
                 .put(InventoryA.class, new InventoryA(player))
                 .put(InventoryB.class, new InventoryB(player))
@@ -132,7 +127,6 @@ public class CheckManager {
                 .put(PingSpoofG.class, new PingSpoofG(player))
                 .put(PingSpoofH.class, new PingSpoofH(player))
                 .put(PingSpoofI.class, new PingSpoofI(player))
-                .put(PingSpoofJ.class, new PingSpoofJ(player))
 
                 .put(FastBreak.class, new FastBreak(player))
 
@@ -151,7 +145,6 @@ public class CheckManager {
                 .put(Cinematic.class, new Cinematic(player))
                 .put(Baritone.class, new Baritone(player))
                 .put(AimAssistA.class, new AimAssistA(player))
-                .put(AimAssistB.class, new AimAssistB(player))
                 .put(AimAssistC.class, new AimAssistC(player))
                 .put(AimAssistD.class, new AimAssistD(player))
                 .put(AimAssistE.class, new AimAssistE(player))

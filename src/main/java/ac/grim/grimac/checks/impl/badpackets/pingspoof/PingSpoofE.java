@@ -11,7 +11,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientWi
 @CheckData(name = "PingSpoof E")
 public class PingSpoofE extends PacketCheck {
 
-    private int lastID;
+    public int lastID;
 
     public PingSpoofE(GrimPlayer player) {
         super(player);

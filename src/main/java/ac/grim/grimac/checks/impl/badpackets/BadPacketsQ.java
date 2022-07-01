@@ -9,10 +9,7 @@ import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPluginMessage;
 
-import javax.lang.model.element.ElementVisitor;
-import java.nio.charset.StandardCharsets;
-
-// Detects sending invalid book packets
+// Detects sending invalid PLUGIN_MESSAGE packets
 @CheckData(name = "BadPackets Q")
 public class BadPacketsQ extends PacketCheck {
 
@@ -26,6 +23,12 @@ public class BadPacketsQ extends PacketCheck {
             WrapperPlayClientPluginMessage packet = new WrapperPlayClientPluginMessage(event);
             String channel = packet.getChannelName().toString();
 
+            // Detects sending packets with invalid sizes.
+            if (packet.getData().length > 15000 || packet.getData().length <= 0) {
+                player.kick(getCheckName(), event, "SIZE=" + packet.getData().length);
+            }
+
+            // Detects sending invalid book-related channels.
             if (channel.equals("MC|BOpen") || channel.equals("MC|BEdit") || channel.equals("MC|BSign")) {
                 ItemStack itemStack = player.getInventory().getHeldItem();
 

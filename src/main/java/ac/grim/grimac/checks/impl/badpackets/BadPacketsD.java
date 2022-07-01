@@ -5,14 +5,11 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEntityAction;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientSteerVehicle;
 
-// Detects sending two Sneak packets with the same state
+// Detects sending invalid STEER_VEHICLE packets
 @CheckData(name = "BadPackets D")
 public class BadPacketsD extends PacketCheck {
-
-    boolean wasTeleport;
-    boolean lastSneaking;
 
     public BadPacketsD(GrimPlayer player) {
         super(player);
@@ -20,24 +17,20 @@ public class BadPacketsD extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        wasTeleport = player.packetStateData.lastPacketWasTeleport || wasTeleport;
+        if (event.getPacketType() == PacketType.Play.Client.STEER_VEHICLE) {
+            WrapperPlayClientSteerVehicle packet = new WrapperPlayClientSteerVehicle(event);
+            float forwards = Math.abs(packet.getForward());
+            float sideways = Math.abs(packet.getSideways());
 
-        if (event.getPacketType() == PacketType.Play.Client.ENTITY_ACTION) {
-            WrapperPlayClientEntityAction packet = new WrapperPlayClientEntityAction(event);
+            // Detects sending packets while not being in a vehicle.
+            if (!player.compensatedEntities.getSelf().inVehicle()) {
+                player.kick(getCheckName(), event, "Not In Vehicle");
+                return;
+            }
 
-            if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SNEAKING) {
-                if (lastSneaking && !wasTeleport) {
-                    player.kick(getCheckName(), event, "Sneaking (Start)");
-                } else {
-                    lastSneaking = true;
-                }
-
-            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SNEAKING) {
-                if (!lastSneaking && !wasTeleport) {
-                    player.kick(getCheckName(), event, "Sneaking (Stop)");
-                } else {
-                    lastSneaking = false;
-                }
+            // Detects sending invalid forwards and sideways values.
+            if (forwards > 0.9800000190734863 || sideways > 0.9800000190734863) {
+                player.kick(getCheckName(), event, "Vehicle Steer");
             }
         }
     }

@@ -8,12 +8,14 @@ import ac.grim.grimac.utils.math.GraphUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-// Frequency
 public class Cinematic extends RotationCheck {
-    private final List<Double> yawSamples = new ArrayList<>(20);
-    private final List<Double> pitchSamples = new ArrayList<>(20);
-    private long lastSmooth = 0L, lastHighRate = 0L;
-    private double lastDeltaYaw = 0.0d, lastDeltaPitch = 0.0d;
+
+    public final List<Double> yawSamples = new ArrayList<>(20);
+    public final List<Double> pitchSamples = new ArrayList<>(20);
+    public long lastSmooth = 0;
+    public long lastHighRate = 0;
+    public double lastDeltaYaw = 0.0;
+    public double lastDeltaPitch = 0.0;
 
     public Cinematic(GrimPlayer playerData) {
         super(playerData);

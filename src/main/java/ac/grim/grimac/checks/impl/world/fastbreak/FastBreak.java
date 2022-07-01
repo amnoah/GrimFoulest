@@ -31,20 +31,20 @@ import org.bukkit.entity.Player;
 public class FastBreak extends PacketCheck {
 
     // The block the player is currently breaking
-    Vector3i targetBlock = null;
+    public Vector3i targetBlock = null;
 
     // The maximum amount of damage the player deals to the block
-    double maximumBlockDamage = 0;
+    public double maximumBlockDamage = 0;
 
     // The last time a finish digging packet was sent, to enforce 0.3-second delay after non-instabreak
-    long lastFinishBreak = 0;
+    public long lastFinishBreak = 0;
 
     // The time the player started to break the block, to know how long the player waited until they finished breaking the block
-    long startBreak = 0;
+    public long startBreak = 0;
 
     // The buffer to this check
-    double blockBreakBalance = 0;
-    double blockDelayBalance = 0;
+    public double blockBreakBalance = 0;
+    public double blockDelayBalance = 0;
 
     public FastBreak(GrimPlayer playerData) {
         super(playerData);

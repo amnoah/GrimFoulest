@@ -62,7 +62,7 @@ public class CraftingMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean canTakeItemForPickAll(ItemStack p_38908_, Slot p_38909_) {
-        return p_38909_.inventoryStorageSlot != 0; // Result slot
+    public boolean canTakeItemForPickAll(ItemStack itemStack, Slot slot) {
+        return slot.inventoryStorageSlot != 0; // Result slot
     }
 }

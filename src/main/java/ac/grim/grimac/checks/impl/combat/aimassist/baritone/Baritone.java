@@ -11,8 +11,8 @@ import ac.grim.grimac.utils.math.GrimMath;
 @CheckData(name = "Baritone")
 public class Baritone extends RotationCheck {
 
-    private float lastDeltaPitch;
-    private int verbose;
+    public float lastDeltaPitch;
+    public int verbose;
 
     public Baritone(GrimPlayer playerData) {
         super(playerData);

@@ -5,15 +5,14 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientClientStatus;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
+// Detects sending invalid PERFORM_RESPAWN packets
 @CheckData(name = "BadPackets K")
 public class BadPacketsK extends PacketCheck {
 
-    private boolean attack;
-    private boolean interactAt;
-    private boolean interact;
+    public boolean sentRespawn;
 
     public BadPacketsK(GrimPlayer player) {
         super(player);
@@ -21,34 +20,23 @@ public class BadPacketsK extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.INTERACT_ENTITY) {
-            WrapperPlayClientInteractEntity packet = new WrapperPlayClientInteractEntity(event);
+        if (event.getPacketType() == PacketType.Play.Client.CLIENT_STATUS) {
+            WrapperPlayClientClientStatus packet = new WrapperPlayClientClientStatus(event);
 
-            if (packet.getAction() == WrapperPlayClientInteractEntity.InteractAction.ATTACK) {
-                if (!attack && interact != interactAt) {
-                    flagAndAlert("INTERACT=" + interact + " INTERACT_AT=" + interactAt, false);
-                    interact = false;
-                    interactAt = false;
+            if (packet.getAction() == WrapperPlayClientClientStatus.Action.PERFORM_RESPAWN) {
+                if (!player.compensatedEntities.getSelf().isDead) {
+                    player.kick(getCheckName(), event, "Respawn (Impossible)");
                 }
 
-                attack = true;
-
-            } else if (packet.getAction() == WrapperPlayClientInteractEntity.InteractAction.INTERACT) {
-                interact = true;
-
-            } else if (packet.getAction() == WrapperPlayClientInteractEntity.InteractAction.INTERACT_AT) {
-                if (!interactAt && interact) {
-                    flagAndAlert("Interact", false);
-                    interact = false;
+                if (sentRespawn) {
+                    player.kick(getCheckName(), event, "Respawn (Sent)");
                 }
 
-                interactAt = true;
-
-            } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-                attack = false;
-                interact = false;
-                interactAt = false;
+                sentRespawn = true;
             }
+
+        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            sentRespawn = false;
         }
     }
 }

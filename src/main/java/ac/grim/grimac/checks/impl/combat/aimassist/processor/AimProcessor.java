@@ -8,40 +8,43 @@ import ac.grim.grimac.utils.lists.RunningMode;
 import ac.grim.grimac.utils.math.GrimMath;
 import lombok.Getter;
 
-// From OverFlow V2 AntiCheat, modified from o(n^2) to best case o(1) worst case o(n) time.
+@Getter
 public class AimProcessor extends RotationCheck {
 
-    private final RunningMode<Double> yawSamples = new RunningMode<>(50);
-    private final RunningMode<Double> pitchSamples = new RunningMode<>(50);
-    @Getter
-    public double sensitivityX, sensitivityY, deltaX, deltaY;
-    private float lastDeltaYaw, lastDeltaPitch;
+    public final RunningMode<Double> yawSamples = new RunningMode<>(50);
+    public final RunningMode<Double> pitchSamples = new RunningMode<>(50);
+    public double sensitivityX;
+    public double sensitivityY;
+    public double deltaX;
+    public double deltaY;
+    public double lastDeltaPitch;
+    public double lastDeltaYaw;
 
     public AimProcessor(GrimPlayer playerData) {
         super(playerData);
     }
 
     private static double yawToF2(double yawDelta) {
-        return yawDelta / .15;
+        return yawDelta / 0.15;
     }
 
     private static double pitchToF3(double pitchDelta) {
-        int b0 = pitchDelta >= 0 ? 1 : -1; //Checking for inverted mouse.
-        return pitchDelta / .15 / b0;
+        int b0 = pitchDelta >= 0 ? 1 : -1; // Checking for inverted mouse.
+        return pitchDelta / 0.15 / b0;
     }
 
     private static double getSensitivityFromPitchGCD(double gcd) {
         double stepOne = pitchToF3(gcd) / 8;
         double stepTwo = Math.cbrt(stepOne);
-        double stepThree = stepTwo - .2f;
-        return stepThree / .6f;
+        double stepThree = stepTwo - 0.2f;
+        return stepThree / 0.6f;
     }
 
     private static double getSensitivityFromYawGCD(double gcd) {
         double stepOne = yawToF2(gcd) / 8;
         double stepTwo = Math.cbrt(stepOne);
-        double stepThree = stepTwo - .2f;
-        return stepThree / .6f;
+        double stepThree = stepTwo - 0.2f;
+        return stepThree / 0.6f;
     }
 
     @Override

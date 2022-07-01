@@ -17,12 +17,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @CheckData(name = "Velocity A", setback = 10, decay = 0.025)
 public class VelocityA extends PacketCheck {
 
-    final ConcurrentLinkedQueue<VelocityData> firstBreadMap = new ConcurrentLinkedQueue<>();
-    final ConcurrentLinkedQueue<VelocityData> lastKnockbackKnownTaken = new ConcurrentLinkedQueue<>();
-    VelocityData firstBreadOnlyKnockback = null;
-    boolean wasExplosionZeroPointZeroThree = false;
-    double offsetToFlag;
-    double setbackVL;
+    public final ConcurrentLinkedQueue<VelocityData> firstBreadMap = new ConcurrentLinkedQueue<>();
+    public final ConcurrentLinkedQueue<VelocityData> lastKnockbackKnownTaken = new ConcurrentLinkedQueue<>();
+    public VelocityData firstBreadOnlyKnockback = null;
+    public boolean wasExplosionZeroPointZeroThree = false;
+    public double offsetToFlag;
+    public double setbackVL;
 
     public VelocityA(GrimPlayer player) {
         super(player);

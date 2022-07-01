@@ -4,13 +4,23 @@ import ac.grim.grimac.checks.CheckData;
 import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEntityAction;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerFlying;
 
-// Detects moving outside of the world border
+// Detects sending invalid ENTITY_ACTION packets
 @CheckData(name = "BadPackets J")
 public class BadPacketsJ extends PacketCheck {
 
-    private static final double HARD_CODED_BORDER = 2.9999999E7D;
+    public boolean sentLeaveBed;
+    public boolean sentStartSprinting;
+    public boolean sentStopSprinting;
+    public boolean sentStartSneaking;
+    public boolean sentStopSneaking;
+    public boolean sentStartHorseJump;
+    public boolean sentStopHorseJump;
+    public boolean thanksMojang; // Support 1.14+ clients starting on either true or false sprinting, we don't know
+    public boolean wasTeleport;
 
     public BadPacketsJ(GrimPlayer player) {
         super(player);
@@ -18,24 +28,96 @@ public class BadPacketsJ extends PacketCheck {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
-            WrapperPlayClientPlayerFlying packet = new WrapperPlayClientPlayerFlying(event);
+        wasTeleport = player.packetStateData.lastPacketWasTeleport || wasTeleport;
 
-            // Player just teleported
-            if (player.packetStateData.lastPacketWasTeleport) {
-                return;
+        if (event.getPacketType() == PacketType.Play.Client.ENTITY_ACTION) {
+            WrapperPlayClientEntityAction packet = new WrapperPlayClientEntityAction(event);
+
+            if (packet.getAction() == WrapperPlayClientEntityAction.Action.LEAVE_BED) {
+                if (!player.isInBed) {
+                    player.kick(getCheckName(), event, "Leave Bed (Impossible)");
+                }
+
+                if (sentLeaveBed) {
+                    player.kick(getCheckName(), event, "Leave Bed (Sent)");
+                }
+
+                sentLeaveBed = true;
+
+            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SPRINTING) {
+                if (sentStartSprinting) {
+                    if (!thanksMojang) {
+                        thanksMojang = true;
+                        return;
+                    }
+
+                    player.kick(getCheckName(), event, "Sprinting (Start)");
+                }
+
+                sentStartSprinting = true;
+                sentStopSprinting = false;
+
+            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SPRINTING) {
+                if (sentStopSprinting) {
+                    if (!thanksMojang) {
+                        thanksMojang = true;
+                        return;
+                    }
+
+                    player.kick(getCheckName(), event, "Sprinting (Stop)");
+                }
+
+                sentStopSprinting = true;
+                sentStartSprinting = false;
+
+            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_SNEAKING) {
+                if (sentStartSneaking && !wasTeleport) {
+                    player.kick(getCheckName(), event, "Sneaking (Start)");
+                }
+
+                sentStartSneaking = true;
+                sentStopSneaking = false;
+
+            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_SPRINTING) {
+                if (sentStopSneaking && !wasTeleport) {
+                    player.kick(getCheckName(), event, "Sneaking (Stop)");
+                }
+
+                sentStopSneaking = true;
+                sentStartSneaking = false;
+
+            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.START_JUMPING_WITH_HORSE) {
+                if (!player.compensatedEntities.getSelf().inVehicle()) {
+                    player.kick(getCheckName(), event, "Start Horse Jump (Vehicle)");
+                }
+
+                if (sentStartHorseJump) {
+                    player.kick(getCheckName(), event, "Horse Jump (Start)");
+                }
+
+                sentStartHorseJump = true;
+                sentStopHorseJump = false;
+
+            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.STOP_JUMPING_WITH_HORSE) {
+                if (!player.compensatedEntities.getSelf().inVehicle()) {
+                    player.kick(getCheckName(), event, "Stop Horse Jump (Vehicle)");
+                }
+
+                if (sentStopHorseJump) {
+                    player.kick(getCheckName(), event, "Horse Jump (Stop)");
+                }
+
+                sentStopHorseJump = true;
+                sentStartHorseJump = false;
+
+            } else if (packet.getAction() == WrapperPlayClientEntityAction.Action.OPEN_HORSE_INVENTORY) {
+                if (!player.compensatedEntities.getSelf().inVehicle()) {
+                    player.kick(getCheckName(), event, "Horse Inventory (Vehicle)");
+                }
             }
 
-            // Position hasn't changed
-            if (!packet.hasPositionChanged()) {
-                return;
-            }
-
-            // Player location is above the max world border value
-            if (Math.abs(packet.getLocation().getX()) > HARD_CODED_BORDER
-                    || Math.abs(packet.getLocation().getZ()) > HARD_CODED_BORDER) {
-                player.kick(getCheckName(), event, "Outside Border");
-            }
+        } else if (WrapperPlayClientPlayerFlying.isFlying(event.getPacketType())) {
+            sentLeaveBed = false;
         }
     }
 }
